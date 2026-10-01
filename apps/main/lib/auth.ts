@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { createHmac, timingSafeEqual } from "crypto";
+import { createHmac, randomBytes, timingSafeEqual } from "crypto";
 
 /**
  * The IHERN account session.
@@ -17,11 +17,23 @@ const MAX_AGE_SECONDS = 60 * 60 * 24 * 30; // 30 days
 
 export type Session = { id: number; email: string; name: string } | null;
 
+// Production without IHERN_SESSION_SECRET: a random key for this process.
+// Everyone is signed out at each restart, but nobody can forge a session (or
+// an admin session) with the development key below, which is in the source.
+let processKey = "";
+
 export function secret(): string {
   const s = process.env.IHERN_SESSION_SECRET;
   if (s && s.length >= 16) return s;
   if (process.env.NODE_ENV === "production") {
-    console.warn("[IHERN] IHERN_SESSION_SECRET is not set; sessions are signed with a fallback key.");
+    if (!processKey) {
+      processKey = randomBytes(32).toString("hex");
+      console.error(
+        "[IHERN] IHERN_SESSION_SECRET is not set (or shorter than 16 characters): sessions use a random key " +
+          "and end at every restart. Set it in .env.production.local (openssl rand -hex 32)."
+      );
+    }
+    return processKey;
   }
   return "ihern-development-only-session-key-change-me";
 }
