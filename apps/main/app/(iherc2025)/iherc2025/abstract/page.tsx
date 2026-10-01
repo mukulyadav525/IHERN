@@ -153,9 +153,9 @@ export default function Iherc2025Abstract() {
                   </center>
                   <br />
                   <center>
-                    <h6>
+                    <p className="iherc-notice">
                       Abstract submission was closed on 10 August 2025. If you are interested in attending IHERC 2025, registration will open on September 1st 2025 and link for registration will be available on the conference website.
-                    </h6>
+                    </p>
                   </center>
                 </div>
               </div>

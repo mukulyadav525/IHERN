@@ -41,7 +41,7 @@ export async function Listing({
       {result.posts.length ? (
         <div className="b-list">
           {result.posts.map((p, i) => (
-            <PostRow key={p.id} post={p} eager={i < 2} />
+            <PostRow key={p.id} post={p} eager={i < 2} heading="h2" />
           ))}
         </div>
       ) : (

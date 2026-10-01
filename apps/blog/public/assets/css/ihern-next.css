@@ -49,3 +49,8 @@ body.defult-home .member-details td{ color:var(--ihern-ink); overflow-wrap:anywh
 /* Links inside running text are underlined, not told apart by colour alone (WCAG 1.4.1). */
 /* (!important: style.css sets "a { text-decoration: none !important }") */
 .auth-back a, .auth-info a, .ihern-form-note a, .ihern-form-submit a{ text-decoration:underline !important; text-underline-offset:2px; }
+/* Headings that sat a level too deep are now the right level (h4 under the
+   Events h2 -> h3; Blogs card titles under the page h1 -> h2). These keep
+   the look they had at the old level. */
+body.defult-home .event-card h3{ font-size:clamp(1.1rem,1.7vw,1.25rem); margin:0 0 12px; }
+body.defult-home .blog-card-body h2{ font-size:clamp(1.25rem,2.1vw,1.5rem); line-height:1.25; margin:0 0 10px; }

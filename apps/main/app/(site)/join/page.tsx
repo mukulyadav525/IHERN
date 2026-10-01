@@ -22,7 +22,7 @@ export default async function JoinPage() {
   if (member && member !== "unavailable") redirect("/membership/dashboard");
 
   return (
-    <>
+    <main id="main">
       <div className="container-fluid bg-primary py-5 page-header">
         <div className="container py-5">
           <div className="row justify-content-center">
@@ -33,11 +33,11 @@ export default async function JoinPage() {
         </div>
       </div>
 
-      <main className="ihern-form-section" id="main">
+      <div className="ihern-form-section">
         <div className="container">
           <JoinForm />
         </div>
-      </main>
-    </>
+      </div>
+    </main>
   );
 }

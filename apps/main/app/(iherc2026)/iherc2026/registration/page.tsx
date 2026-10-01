@@ -21,10 +21,10 @@ export default function Iherc2026Registration() {
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: PAGE_CSS }} />
-      <h1 className="ihern-visually-hidden">
-        IHERC 2026 - Registration
-      </h1>
       <header id="header-wrap">
+        <h1 className="ihern-visually-hidden">
+          IHERC 2026 - Registration
+        </h1>
         <nav className="navbar navbar-expand-xl bg-inverse fixed-top scrolling-navbar">
           <div className="container">
             <a href={u("/")} className="navbar-brand" aria-label="IHERN home">
@@ -131,21 +131,21 @@ export default function Iherc2026Registration() {
           <div className="row">
             <div className="col-12">
               <div className="section-title-header text-center">
-                <h6 style={{ "fontWeight": "bold", "fontSize": "20px" }}>
+                <p className="iherc-notice" style={{ "fontWeight": "bold", "fontSize": "20px" }}>
                   IHERN members receive a 50% reduction on the registration fee for IHERC 2026.
-                </h6>
-                <h6 style={{ "fontWeight": "bold", "fontSize": "20px" }}>
+                </p>
+                <p className="iherc-notice" style={{ "fontWeight": "bold", "fontSize": "20px" }}>
                   Become an IHERN Member for FREE by filling out the{" "}
                   <a href={u("/join")} target="_blank" style={{ "textDecoration": "underline", "color": "rgb(0, 0, 0)" }}>
                     membership form.
                   </a>
-                </h6>
-                <h6>
+                </p>
+                <p className="iherc-notice">
                   (Please note your membership number for future reference)
-                </h6>
-                <h5>
+                </p>
+                <h2 className="iherc-fee-title">
                   Registration fee
-                </h5>
+                </h2>
                 <div className="fee-table-wrap">
                   <table className="fee-table">
                     <tbody>

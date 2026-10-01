@@ -65,10 +65,10 @@ export default function Iherc2026Home() {
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: PAGE_CSS }} />
-      <h1 className="ihern-visually-hidden">
-        India Higher Education Research Conference 2026 (IHERC 2026)
-      </h1>
       <header id="header-wrap">
+        <h1 className="ihern-visually-hidden">
+          India Higher Education Research Conference 2026 (IHERC 2026)
+        </h1>
         <nav className="navbar navbar-expand-xl bg-inverse fixed-top scrolling-navbar">
           <div className="container">
             <a href={u("/")} className="navbar-brand" aria-label="IHERN home">
@@ -411,9 +411,9 @@ export default function Iherc2026Home() {
           <div className="row justify-content-center">
             <div className="col-12">
               <div className="governance-content">
-                <h4>
+                <h3>
                   General Chairs
-                </h4>
+                </h3>
                 <div className="row">
                   <div className="col-md-6">
                     <div className="team-item wow fadeInUp" data-wow-delay="0.2s">
@@ -457,9 +457,9 @@ export default function Iherc2026Home() {
                   </div>
                 </div>
                 <hr />
-                <h4>
+                <h3>
                   Program Chairs
-                </h4>
+                </h3>
                 <div className="row">
                   <div className="col-md-6">
                     <div className="team-item wow fadeInUp" data-wow-delay="0.2s">
@@ -520,9 +520,9 @@ export default function Iherc2026Home() {
           <ul className="iherc-committee-grid">
             <li className="iherc-person">
               <img className="iherc-person-photo" src={u("/assets/images/team/committee/camille-kandiko-howson.jpg")} alt="Camille B. Kandiko Howson" width="300" height="300" loading="lazy" decoding="async" />
-              <h4 className="iherc-person-name">
+              <h3 className="iherc-person-name">
                 Camille B. Kandiko Howson
-              </h4>
+              </h3>
               <p className="iherc-person-org">
                 Imperial College
               </p>
@@ -532,9 +532,9 @@ export default function Iherc2026Home() {
             </li>
             <li className="iherc-person">
               <img className="iherc-person-photo" src={u("/assets/images/team/committee/debananda-misra.jpg")} alt="Debananda Misra" width="300" height="300" loading="lazy" decoding="async" />
-              <h4 className="iherc-person-name">
+              <h3 className="iherc-person-name">
                 Debananda Misra
-              </h4>
+              </h3>
               <p className="iherc-person-org">
                 Indian Institute of Technology Delhi
               </p>
@@ -544,9 +544,9 @@ export default function Iherc2026Home() {
             </li>
             <li className="iherc-person">
               <img className="iherc-person-photo" src={u("/assets/images/team/committee/emon-nandi.jpg")} alt="Emon Nandi" width="300" height="300" loading="lazy" decoding="async" />
-              <h4 className="iherc-person-name">
+              <h3 className="iherc-person-name">
                 Emon Nandi
-              </h4>
+              </h3>
               <p className="iherc-person-org">
                 Tata Institute of Social Sciences
               </p>
@@ -556,9 +556,9 @@ export default function Iherc2026Home() {
             </li>
             <li className="iherc-person">
               <img className="iherc-person-photo" src={u("/assets/images/team/committee/giulio-marini.jpg")} alt="Giulio Marini" width="300" height="300" loading="lazy" decoding="async" />
-              <h4 className="iherc-person-name">
+              <h3 className="iherc-person-name">
                 Giulio Marini
-              </h4>
+              </h3>
               <p className="iherc-person-org">
                 University of Catania
               </p>
@@ -570,9 +570,9 @@ export default function Iherc2026Home() {
               <span className="iherc-person-photo iherc-person-initials" aria-hidden="true">
                 MC
               </span>
-              <h4 className="iherc-person-name">
+              <h3 className="iherc-person-name">
                 Malish C.M.
-              </h4>
+              </h3>
               <p className="iherc-person-org">
                 Indian Institute of Technology Bombay
               </p>
@@ -584,9 +584,9 @@ export default function Iherc2026Home() {
               <span className="iherc-person-photo iherc-person-initials" aria-hidden="true">
                 MW
               </span>
-              <h4 className="iherc-person-name">
+              <h3 className="iherc-person-name">
                 Matthew A. Witenstein
-              </h4>
+              </h3>
               <p className="iherc-person-org">
                 University of New Mexico
               </p>
@@ -596,9 +596,9 @@ export default function Iherc2026Home() {
             </li>
             <li className="iherc-person">
               <img className="iherc-person-photo" src={u("/assets/images/team/committee/sayantan-mandal.jpg")} alt="Sayantan Mandal" width="300" height="300" loading="lazy" decoding="async" />
-              <h4 className="iherc-person-name">
+              <h3 className="iherc-person-name">
                 Sayantan Mandal
-              </h4>
+              </h3>
               <p className="iherc-person-org">
                 Jawaharlal Nehru University
               </p>

@@ -21,10 +21,10 @@ export default function Iherc2026Abstract() {
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: PAGE_CSS }} />
-      <h1 className="ihern-visually-hidden">
-        IHERC 2026 - Abstract Submission
-      </h1>
       <header id="header-wrap">
+        <h1 className="ihern-visually-hidden">
+          IHERC 2026 - Abstract Submission
+        </h1>
         <nav className="navbar navbar-expand-xl bg-inverse fixed-top scrolling-navbar">
           <div className="container">
             <a href={u("/")} className="navbar-brand" aria-label="IHERN home">
@@ -149,9 +149,9 @@ export default function Iherc2026Abstract() {
                   </center>
                   <br />
                   <center>
-                    <h6>
+                    <p className="iherc-notice">
                       Abstract submission was closed on 10 August 2025. If you are interested in attending IHERC 2025, registration will open on September 1st 2025 and link for registration will be available on the conference website.
-                    </h6>
+                    </p>
                   </center>
                 </div>
               </div>

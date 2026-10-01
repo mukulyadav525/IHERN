@@ -1069,3 +1069,12 @@ a.back-to-top:hover{ background:var(--ihern-navy-deep, #02255a) !important; }
 @media (max-width:1279px){
   #iherc-footer .footer-bottom{ padding-bottom:76px; }
 }
+/* Heading levels corrected without changing the look: the Governance group
+   labels (h4 -> h3; only the direct children, not the names below them),
+   notices that were h6 headings (now paragraphs), and section titles that were
+   h5 (Registration fee -> h2, Key Dates / Themes -> h3). */
+.governance-content > h3{ text-align:center; font-size:clamp(1.15rem,1.9vw,1.4rem); font-weight:700; letter-spacing:-.015em; color:var(--ihern-ink); margin:8px 0 26px; }
+p.iherc-notice, .section-title-header p.iherc-notice{ font-family:'Poppins',sans-serif !important; font-size:1rem; font-weight:700; line-height:1.25; letter-spacing:-.015em; color:var(--ihern-ink); margin:0 0 .5rem; padding:0; }
+.section-title-header h2.iherc-fee-title{ font-size:36px !important; letter-spacing:-.015em; line-height:1.25; margin:0 0 .5rem; }
+.section-title-header h2.iherc-fee-title::after{ content:none !important; }
+#about .about-content h3.iherc-subhead{ font-size:36px; line-height:1.25; margin:0 0 .5rem; }

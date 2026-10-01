@@ -141,7 +141,7 @@ export default function BlogBrowser({ cards, filters, gated }: { cards: BlogCard
                 </div>
               ) : null}
 
-              <h3>{gated ? c.title : <a href={c.link}>{c.title}</a>}</h3>
+              <h2>{gated ? c.title : <a href={c.link}>{c.title}</a>}</h2>
 
               <div className="blog-meta">
                 {c.author}

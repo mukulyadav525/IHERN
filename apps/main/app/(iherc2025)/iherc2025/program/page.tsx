@@ -145,9 +145,9 @@ export default function Iherc2025Program() {
             <div className="col-lg-10 col-md-12 col-xs-12">
               <div className="about-content">
                 <div>
-                  <h5>
+                  <h3 className="iherc-subhead">
                     Key Dates
-                  </h5>
+                  </h3>
                   <ul className="stylish-list mb-3">
                     <li>
                       <i className="lni-check-mark-circle"></i>
@@ -186,9 +186,9 @@ export default function Iherc2025Program() {
                     </li>
                   </ul>
                   <br />
-                  <h5>
+                  <h3 className="iherc-subhead">
                     Themes
-                  </h5>
+                  </h3>
                   <ul>
                     <li>
                       <i className="lni-check-mark-circle"></i>

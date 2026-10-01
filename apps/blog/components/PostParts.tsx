@@ -79,15 +79,15 @@ export function PostImage({ post, eager = false }: { post: PostSummary; eager?: 
 }
 
 /** A post in a list: image, categories, title, excerpt, author and date. */
-export function PostRow({ post, eager = false }: { post: PostSummary; eager?: boolean }) {
+export function PostRow({ post, eager = false, heading: H = "h3" }: { post: PostSummary; eager?: boolean; heading?: "h2" | "h3" }) {
   return (
     <article className="b-card b-row">
       <PostImage post={post} eager={eager} />
       <div className="b-row-body">
         <Chips terms={post.categories} />
-        <h3 className="b-title">
+        <H className="b-title">
           <Link href={postPath(post)}>{post.title}</Link>
-        </h3>
+        </H>
         <p className="b-excerpt">{post.excerpt}</p>
         <PostMeta post={post} />
       </div>

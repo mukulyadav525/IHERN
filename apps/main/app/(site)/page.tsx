@@ -114,9 +114,9 @@ export default function HomePage() {
                 <p className="event-badge">
                   IHERN SIGs Webinar
                 </p>
-                <h4>
+                <h3>
                   Inaugural IHERN Special Interest Groups (SIGs) Webinar
-                </h4>
+                </h3>
                 <p>
                   The inaugural IHERN Special Interest Groups (SIGs) Webinar will provide an opportunity to introduce the IHERN SIGs, discuss their objectives and proposed activities, and explore how members can become active participants in the activities of their SIGs.
                 </p>
@@ -160,9 +160,9 @@ export default function HomePage() {
                 <p className="event-badge">
                   IHERN Webinar
                 </p>
-                <h4>
+                <h3>
                   Introducing the Emerging &apos;Components Toward an Indigenous Inclusive College Readiness Framework&apos; for Tribal Youth in India- Plus, Steps Forward
-                </h4>
+                </h3>
                 <p>
                   A session of the IHERN Higher Education Research Webinar Series, featuring a talk on Introducing the Emerging &apos;Components Toward an Indigenous Inclusive College Readiness Framework&apos; for Tribal Youth in India- Plus, Steps Forward. The talk will unpack the nuances of what it means to be &apos;college ready&apos; among the tribal youth of Odisha and Jharkhand, and how the knowledge gained can help them build a bridge program between the tribal communities and colleges.
                 </p>
@@ -212,9 +212,9 @@ export default function HomePage() {
                 <p className="event-badge">
                   IHERN Webinar
                 </p>
-                <h4>
+                <h3>
                   Integrating Research into Undergraduate Teacher Education
-                </h4>
+                </h3>
                 <p>
                   A session of the IHERN Higher Education Research Webinar Series, featuring a talk on Integrating Research into Undergraduate Teacher Education. The talk will delve into the nature of integrating research into higher education with special reference to initial teacher education, and an empirical study of a project(s) in the B.El.Ed teacher education degree programme of University of Delhi.
                 </p>
