@@ -206,30 +206,53 @@ export async function isSubscribed(subscriberId: number): Promise<boolean | null
 }
 
 /**
- * Mirrors ihern_subscription_set(): the same upsert, and the confirmation
+ * Mirrors ihern_subscription_set(): the same rows, and the confirmation
  * email only on the move into `active`, so re-clicking Subscribe sends
  * nothing. Mail is best-effort and never fails the subscription.
+ *
+ * The move into `active` is decided by the write itself, not by a read
+ * before it: two requests at once (a double click, two tabs) both read "not
+ * subscribed" and both sent the email. Now only the request whose UPDATE or
+ * INSERT changed a row sends it.
  */
 export async function setSubscribed(
   subscriberId: number,
   active: boolean,
   source = "blog"
 ): Promise<Result<{ subscribed: boolean }>> {
-  const was = await isSubscribed(subscriberId);
-  if (was === null) return fail("unavailable");
-  const res = await execute(
-    "cdnm",
-    `INSERT INTO blog_subscriptions (subscriber_id, status, source) VALUES (?, ?, ?)
-     ON DUPLICATE KEY UPDATE status = VALUES(status)`,
-    [subscriberId, active ? "active" : "unsubscribed", source]
-  );
-  if (res === null) return fail("unavailable");
+  if (!active) {
+    const res = await execute(
+      "cdnm",
+      `INSERT INTO blog_subscriptions (subscriber_id, status, source) VALUES (?, 'unsubscribed', ?)
+       ON DUPLICATE KEY UPDATE status = VALUES(status)`,
+      [subscriberId, source]
+    );
+    return res === null ? fail("unavailable") : ok({ subscribed: false });
+  }
 
-  if (active && !was) {
+  const reactivated = await execute(
+    "cdnm",
+    "UPDATE blog_subscriptions SET status = 'active' WHERE subscriber_id = ? AND status <> 'active'",
+    [subscriberId]
+  );
+  if (reactivated === null) return fail("unavailable");
+  let changed = reactivated.affectedRows > 0;
+  if (!changed) {
+    // No row yet, or already active (then the duplicate key leaves it alone).
+    const added = await execute(
+      "cdnm",
+      "INSERT IGNORE INTO blog_subscriptions (subscriber_id, status, source) VALUES (?, 'active', ?)",
+      [subscriberId, source]
+    );
+    if (added === null) return fail("unavailable");
+    changed = added.affectedRows > 0;
+  }
+
+  if (changed) {
     const user = await getAccountById(subscriberId);
     if (user.ok) await sendSubscriptionConfirmation(user.value.name, user.value.email);
   }
-  return ok({ subscribed: active });
+  return ok({ subscribed: true });
 }
 
 /** Active subscribers, for the new-post notification. */
