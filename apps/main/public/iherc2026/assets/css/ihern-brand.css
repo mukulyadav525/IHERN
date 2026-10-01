@@ -1,0 +1,1071 @@
+/* ============================================================
+   IHERN Brand Layer — IHERC 2026
+   Aligns the conference site with the main IHERN site
+   (assets/css/ihern-theme.css) so the two read as one property.
+   Loaded AFTER main.css; overrides only, no template edits.
+   Light theme only.
+   ============================================================ */
+
+:root{
+  --ihern-navy:#033b86;
+  --ihern-navy-deep:#02255a;
+  --ihern-navy-ink:#0b1733;
+  --ihern-accent:#0082f1;
+  --ihern-ink:#131822;
+  --ihern-body:#4a5266;
+  /* #79808f measured 3.96:1 on white - below WCAG AA (4.5:1) for the
+     12-15px metadata, chips and captions this token is used for.
+     #6b7280 is 5.0:1 and is the value the blog already uses. */
+  --ihern-muted:#6b7280;
+  --ihern-radius:12px;
+  --ihern-radius-sm:8px;
+  --ihern-ease:cubic-bezier(.4,0,.2,1);
+  --glass-bg:rgba(255,255,255,.68);
+  --glass-border:rgba(255,255,255,.75);
+  --glass-ring:rgba(3,59,134,.08);
+  --glass-blur:saturate(180%) blur(18px);
+  --glass-shadow:0 1px 1px rgba(11,23,51,.04),
+                 0 8px 24px rgba(11,23,51,.07),
+                 0 24px 48px rgba(11,23,51,.06);
+  --glass-shadow-hover:0 1px 1px rgba(11,23,51,.05),
+                       0 14px 34px rgba(11,23,51,.10),
+                       0 34px 68px rgba(11,23,51,.09);
+}
+
+/* ---------- Typography + ambient ground ---------- */
+body{
+  font-family:'Poppins',system-ui,-apple-system,"Segoe UI",sans-serif !important;
+  color:var(--ihern-body);
+  background:#fbfcfe;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+body::before{
+  content:"";
+  position:fixed; inset:0; z-index:-1; pointer-events:none;
+  background:
+    radial-gradient(56rem 34rem at 12% -8%,  rgba(0,130,241,.10), transparent 60%),
+    radial-gradient(48rem 30rem at 96% 4%,   rgba(3,59,134,.09),  transparent 62%),
+    radial-gradient(60rem 38rem at 50% 108%, rgba(0,130,241,.07), transparent 62%),
+    linear-gradient(180deg,#fbfcfe 0%,#f6f8fc 52%,#fbfcfe 100%);
+}
+h1,h2,h3,h4,h5,h6{
+  font-family:'Poppins',sans-serif !important;
+  color:var(--ihern-ink);
+  font-weight:700 !important;
+  letter-spacing:-.015em;
+  line-height:1.25;
+}
+/* main.css sets `p { font-family:'Open Sans' }`, which beats the body rule -
+   so body copy has to be named explicitly to pick up Poppins. */
+p, li, td, th, span, label, blockquote, .btn, input, select, textarea{
+  font-family:'Poppins',system-ui,-apple-system,"Segoe UI",sans-serif !important;
+}
+p{ font-size:15.5px; line-height:1.75; color:var(--ihern-body); }
+
+a{ color:var(--ihern-navy); transition:color .18s var(--ihern-ease); }
+a:hover{ color:var(--ihern-accent); }
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{
+  outline:2px solid var(--ihern-accent); outline-offset:3px; border-radius:4px;
+}
+
+/* ---------- Navbar: floating container, sibling of the main IHERN site ----------
+   The bar itself is a transparent rail; the .container inside it is the visible
+   surface. Same shape language as ihern-theme.css section 2 (radius, border,
+   blur, shadow, sticky behaviour), in IHERC's own blue. Total header height is
+   unchanged (92px), so the hero needs no offset change. */
+.navbar.bg-inverse,
+.navbar.scrolling-navbar,
+.navbar.fixed-top{
+  background:transparent !important;
+  border-bottom:0 !important;
+  box-shadow:none !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+  padding:14px 0 !important;
+  transition:padding .25s var(--ihern-ease);
+}
+.navbar.fixed-top > .container{
+  display:flex;
+  flex-wrap:nowrap;
+  align-items:center;
+  min-height:64px;
+  padding-left:24px;
+  padding-right:18px;
+  background:rgba(255,255,255,.88);
+  -webkit-backdrop-filter:saturate(165%) blur(14px);
+  backdrop-filter:saturate(165%) blur(14px);
+  border:1px solid rgba(11,23,51,.08);
+  border-radius:14px;
+  box-shadow:0 1px 2px rgba(11,23,51,.04), 0 6px 20px rgba(11,23,51,.06);
+  transition:background .25s var(--ihern-ease), border-color .25s var(--ihern-ease), box-shadow .25s var(--ihern-ease);
+}
+/* Scrolled state: same shape, a little more opaque and lifted. main.js adds
+   .top-nav-collapse; the template used it to repaint the whole bar. */
+.navbar.scrolling-navbar.top-nav-collapse{
+  background:transparent !important;
+  box-shadow:none !important;
+  padding:10px 0 !important;
+}
+.navbar.scrolling-navbar.top-nav-collapse > .container{
+  background:rgba(255,255,255,.95);
+  border-color:rgba(11,23,51,.10);
+  box-shadow:0 1px 2px rgba(11,23,51,.05), 0 10px 28px rgba(11,23,51,.10);
+}
+
+/* ---------- Brand + parent-site link ---------- */
+.navbar-brand{
+  flex:0 0 auto;
+  font-weight:800 !important;
+  font-size:20px !important;
+  letter-spacing:.045em;
+  line-height:1.1;
+  color:var(--ihern-navy) !important;
+  margin-right:0 !important;
+  white-space:nowrap;
+  transition:color .18s var(--ihern-ease);
+}
+.navbar-brand:hover{ color:var(--ihern-navy-deep) !important; }
+
+/* Secondary route back to the parent site. Deliberately quieter than the
+   conference navigation: smaller, lighter, separated by a hairline rule. */
+.nav-parent{
+  flex:0 0 auto;
+  align-items:center;
+  gap:5px;
+  margin-left:14px;
+  padding:5px 10px 5px 14px;
+  border-left:1px solid rgba(11,23,51,.14);
+  border-radius:0 8px 8px 0;
+  font-size:13px;
+  font-weight:600;
+  letter-spacing:.02em;
+  white-space:nowrap;
+  color:var(--ihern-muted) !important;
+  text-decoration:none !important;
+  transition:color .18s var(--ihern-ease), background-color .18s var(--ihern-ease);
+}
+.nav-parent:hover,
+.nav-parent:focus-visible{
+  color:var(--ihern-navy) !important;
+  background-color:rgba(3,59,134,.05);
+}
+.nav-parent-arrow{
+  font-size:14px;
+  line-height:1;
+  transition:transform .18s var(--ihern-ease);
+}
+.nav-parent:hover .nav-parent-arrow{ transform:translateX(-2px); }
+
+/* ---------- Items ---------- */
+/* The template's markup carries `w-100 mr-auto` on the list, which forced the
+   ul to the full container width; right-justified, its items then ran back
+   underneath the brand. The list sizes to its content and is pushed right. */
+.navbar .navbar-collapse{ min-width:0; flex:1 1 auto; }
+.navbar-nav{
+  flex-wrap:nowrap !important;
+  min-width:0;
+  align-items:center;
+  width:auto !important;
+  margin-left:auto !important;
+  margin-right:0 !important;
+}
+@media (min-width:1360px){
+  .navbar .navbar-collapse{ display:flex; justify-content:flex-end; }
+}
+
+.navbar-expand-xl .navbar-nav .nav-link,
+.navbar-nav .nav-link,
+.navbar-nav > li > a{
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  height:38px;
+  margin:0 !important;
+  padding:0 8px !important;
+  border-radius:9px;
+  font-family:'Poppins',sans-serif !important;
+  font-size:13px !important;
+  font-weight:600 !important;
+  line-height:1 !important;
+  letter-spacing:.005em;
+  /* the template set these UPPERCASE, which costs ~12% width across nine long
+     labels and reads differently from the parent site */
+  text-transform:none !important;
+  white-space:nowrap;
+  color:var(--ihern-ink) !important;
+  transition:color .18s var(--ihern-ease), background-color .18s var(--ihern-ease);
+}
+/* Restrained hover: a faint tint, no movement */
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link:focus,
+.navbar-nav .nav-link:focus-visible{
+  color:var(--ihern-navy) !important;
+  background-color:rgba(3,59,134,.055);
+}
+/* Active page: conference blue plus one thin, static underline */
+.navbar-nav .nav-item.active > .nav-link,
+.navbar li.active a.nav-link{
+  color:var(--ihern-navy) !important;
+  background-image:none !important;
+  -webkit-background-clip:border-box !important;
+  background-clip:border-box !important;
+  -webkit-text-fill-color:currentColor !important;
+  border-bottom:0 !important;
+}
+.navbar-nav .nav-item.active > .nav-link::after{
+  content:"";
+  position:absolute;
+  left:8px; right:8px; bottom:5px;
+  height:2px;
+  border-radius:2px;
+  background:var(--ihern-navy);
+  transform:none;
+}
+/* The template drew its own marker above the active link; the underline replaces it */
+.navbar-nav .nav-link::before,
+.navbar-nav .nav-item::before,
+.navbar li.active a.nav-link::before,
+.navbar-expand-lg .navbar-nav li > a:before,
+.navbar-expand-xl .navbar-nav li > a:before{ display:none !important; content:none !important; }
+
+/* Nine labels need a little more room on the widest screens and a little less
+   at the bottom of the expanded range. Layout changes at 1200, not type size. */
+@media (min-width:1500px){
+  .navbar-nav .nav-link{ font-size:13.5px !important; padding:0 11px !important; }
+  .navbar-nav .nav-item.active > .nav-link::after{ left:11px; right:11px; }
+}
+/* Nine labels — "Governance & Management" and "Travel & Accommodation" among
+   them — need about 1285px of container to sit on one row at a readable 13px.
+   Bootstrap caps .container at 1140, so the navbar's own container is allowed
+   to reach 1320 and the bar expands at 1360 instead of 1200. Below that the
+   layout changes to the menu rather than shrinking the type. */
+@media (min-width:1360px){
+  .navbar.fixed-top > .container{ max-width:min(1320px, calc(100% - 56px)); }
+}
+@media (max-width:1359.98px){
+  /* keep Bootstrap's expanded layout off until the row genuinely fits */
+  .navbar-expand-xl > .container{ flex-wrap:wrap; }
+  .navbar-expand-xl .navbar-toggler{ display:block !important; }
+  .navbar-expand-xl .navbar-collapse{ display:none !important; flex-basis:100%; }
+  .navbar-expand-xl .navbar-collapse.show,
+  .navbar-expand-xl .navbar-collapse.collapsing{ display:block !important; }
+}
+
+/* ---------- Collapsed menu (below 1200px) ---------- */
+.navbar-toggler{
+  flex:0 0 auto;
+  margin-left:auto;
+  padding:7px 11px !important;
+  border:1px solid rgba(3,59,134,.18) !important;
+  border-radius:9px !important;
+  background:transparent;
+  color:var(--ihern-navy) !important;
+  line-height:1;
+  transition:background-color .18s var(--ihern-ease), border-color .18s var(--ihern-ease);
+}
+.navbar-toggler:hover{ background-color:rgba(3,59,134,.05); border-color:rgba(3,59,134,.3) !important; }
+.navbar-toggler:focus{ outline:2px solid var(--ihern-accent); outline-offset:2px; }
+.navbar-toggler i{ font-size:20px; }
+
+@media (max-width:1359.98px){
+  .navbar.fixed-top > .container{ flex-wrap:wrap; padding-left:18px; padding-right:14px; }
+  /* the open panel is a tall surface over the hero, so it reads solid */
+  .navbar.fixed-top > .container:has(.navbar-collapse.show),
+  .navbar.fixed-top > .container:has(.navbar-collapse.collapsing){
+    background:rgba(255,255,255,.97);
+  }
+  .navbar .navbar-collapse{
+    flex-basis:100%;
+    width:100%;
+    max-height:calc(100vh - 150px);   /* never taller than the screen */
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+  .navbar-nav{
+    flex-wrap:wrap !important;
+    flex-direction:column;
+    align-items:stretch;
+    width:100% !important;
+    margin:4px 0 10px !important;
+    padding-top:10px;
+    border-top:1px solid rgba(11,23,51,.08);
+  }
+  .navbar-nav .nav-item{ width:100%; }
+  .navbar-expand-xl .navbar-nav .nav-link,
+  .navbar-nav .nav-link{
+    display:flex;
+    align-items:center;
+    width:100%;
+    height:auto;
+    min-height:48px;                  /* comfortable touch target */
+    margin:0 !important;
+    padding:12px 14px !important;
+    border-radius:8px;
+    font-size:15.5px !important;
+    line-height:1.35 !important;
+    white-space:normal;
+  }
+  .navbar-nav .nav-item + .nav-item{ margin-top:2px; }
+  .navbar-nav .nav-item.active > .nav-link{
+    background-color:rgba(3,59,134,.07);
+    padding-left:22px !important;
+  }
+  .navbar-nav .nav-item.active > .nav-link::after{
+    left:9px; right:auto; top:12px; bottom:12px;
+    width:3px; height:auto;
+    border-radius:3px;
+  }
+  /* the phone-only route back to IHERN sits above the conference items */
+  .nav-item-parent{ margin-bottom:8px; padding-bottom:8px; border-bottom:1px solid rgba(11,23,51,.08); }
+  .nav-item-parent .nav-link{
+    color:var(--ihern-muted) !important;
+    font-size:14px !important;
+    font-weight:600 !important;
+    min-height:42px;
+  }
+  .nav-item-parent .nav-link:hover{ color:var(--ihern-navy) !important; }
+}
+
+/* Browsers without :has() still get a readable panel */
+@supports not selector(:has(*)){
+  @media (max-width:1359.98px){
+    .navbar.fixed-top > .container{ background:rgba(255,255,255,.95); }
+  }
+}
+
+@media (max-width:575.98px){
+  .navbar.fixed-top{ padding:10px 0 !important; }
+  .navbar.scrolling-navbar.top-nav-collapse{ padding:8px 0 !important; }
+  .navbar.fixed-top > .container{
+    min-height:54px;
+    border-radius:12px;
+    padding-left:16px;
+    padding-right:12px;
+  }
+  .navbar-brand{ font-size:18px !important; }
+}
+
+/* ---------- Hero ---------- */
+.hero-area-bg{ position:relative; }
+.hero-area-bg::before{
+  content:"";
+  position:absolute; inset:0;
+  background:linear-gradient(135deg, rgba(3,59,134,.90) 0%, rgba(2,37,90,.86) 55%, rgba(11,23,51,.90) 100%);
+}
+.hero-area-bg > *{ position:relative; z-index:1; }
+.hero-area-bg h1,.hero-area-bg h2,.hero-area-bg h3,
+.hero-area-bg p,.hero-area-bg span,.hero-area-bg center{ color:#fff !important; }
+.hero-area-bg h2{
+  font-size:clamp(1.9rem,4.4vw,3.25rem) !important;
+  letter-spacing:-.02em;
+  text-shadow:0 2px 20px rgba(0,0,0,.22);
+}
+
+/* ---------- Buttons ---------- */
+.btn-common,
+.btn.btn-common{
+  background:var(--ihern-navy) !important;
+  border:1px solid var(--ihern-navy) !important;
+  color:#fff !important;
+  border-radius:var(--ihern-radius-sm) !important;
+  font-family:'Poppins',sans-serif !important;
+  font-weight:600 !important;
+  letter-spacing:.01em;
+  box-shadow:0 1px 2px rgba(11,23,51,.06), 0 2px 8px rgba(11,23,51,.05);
+  transition:transform .18s var(--ihern-ease), background .18s var(--ihern-ease), box-shadow .18s var(--ihern-ease);
+}
+.btn-common:hover,
+.btn.btn-common:hover{
+  background:var(--ihern-navy-deep) !important;
+  border-color:var(--ihern-navy-deep) !important;
+  color:#fff !important;
+  transform:translateY(-2px);
+  box-shadow:0 6px 18px rgba(11,23,51,.12);
+}
+
+/* ---------- Section titles ---------- */
+.section-title-header h2,
+.section-header h2{
+  font-size:clamp(1.7rem,3.2vw,2.2rem) !important;
+  letter-spacing:-.02em;
+}
+/* main.css decorates .section-title with literal "[" and "]" brackets via
+   :before/:after. The underline below replaces them - kill BOTH, otherwise
+   overriding only ::after leaves an orphaned "[" beside every heading. */
+.section-title::before,
+.section-title::after{ content:none !important; padding:0 !important; }
+
+.section-title-header h2::after,
+.section-header h2::after{
+  content:"" !important;
+  display:block;
+  width:56px; height:4px; border-radius:4px;
+  margin:18px auto 0;
+  padding:0;
+  background:linear-gradient(90deg,var(--ihern-navy),var(--ihern-accent));
+}
+
+/* ---------- Cards / speakers / schedule: frosted surfaces ---------- */
+.card,
+.schedule-area,
+.single-schedule,
+.speakers-item,
+.single-speaker,
+.team-item,
+.work-counter-widget,
+.pricing-table{
+  background:var(--glass-bg) !important;
+  backdrop-filter:var(--glass-blur);
+  -webkit-backdrop-filter:var(--glass-blur);
+  border:1px solid var(--glass-border) !important;
+  outline:1px solid var(--glass-ring);
+  outline-offset:-1px;
+  border-radius:var(--ihern-radius) !important;
+  box-shadow:var(--glass-shadow), inset 0 1px 0 rgba(255,255,255,.65) !important;
+  transition:transform .28s var(--ihern-ease), box-shadow .28s var(--ihern-ease);
+}
+.speakers-item:hover,
+.single-speaker:hover,
+.team-item:hover,
+.card:hover{
+  transform:translateY(-4px);
+  box-shadow:var(--glass-shadow-hover), inset 0 1px 0 rgba(255,255,255,.8) !important;
+}
+
+/* Portraits: the markup mixes col-md-3 / col-md-4 / col-md-6 wrappers, so an
+   unconstrained img renders ~690px wide in the 2-up rows and ~280px in the
+   4-up rows. Cap and centre them for one consistent portrait size everywhere. */
+.team-item .team-img,
+.speakers-item .team-img,
+.single-speaker .team-img{
+  max-width:240px;
+  margin:0 auto 16px;
+  position:relative;
+  overflow:hidden;
+  border-radius:var(--ihern-radius-sm);
+}
+.team-item .team-img img,
+.speakers-item img,
+.single-speaker img{
+  display:block;
+  width:100% !important;
+  height:auto !important;
+  aspect-ratio:4/5;              /* portrait, matches the 240x309 source ratio */
+  object-fit:cover;
+  object-position:center top;
+  border-radius:var(--ihern-radius-sm);
+}
+
+/* Equal-height cards in every row, whatever the column class */
+.team-row,
+.governance-content .row,
+#team .row,
+#speakers .row{ align-items:stretch; }
+.team-item{
+  display:flex;
+  flex-direction:column;
+  height:100%;
+  padding:22px 20px;
+  text-align:center;
+}
+.team-item .info-text{ flex:1; display:flex; flex-direction:column; justify-content:flex-start; }
+.team-item .info-text h3{ font-size:16px; margin:0 0 6px; letter-spacing:-.01em; }
+.team-item .info-text h3 a{ color:var(--ihern-ink); text-decoration:none; }
+.team-item .info-text h3 a:hover{ color:var(--ihern-navy); }
+.team-item .info-text p{ font-size:14px; margin:0; color:var(--ihern-muted); }
+
+/* Accordion (programme) */
+.card-header{
+  background:rgba(3,59,134,.05) !important;
+  border:0 !important;
+  border-radius:var(--ihern-radius-sm) !important;
+}
+.card-header a,
+.card-header button{
+  font-family:'Poppins',sans-serif !important;
+  font-weight:600 !important;
+  color:var(--ihern-ink) !important;
+}
+
+/* Counters */
+.counter-section{ background:transparent !important; }
+.counter .counterUp,
+.counter-content h3,
+.counter h3{
+  color:var(--ihern-navy) !important;
+  font-weight:800 !important;
+  font-variant-numeric:tabular-nums;
+}
+
+/* ---------- Forms ---------- */
+input[type="text"],input[type="email"],input[type="tel"],
+input[type="password"],textarea,select,.form-control{
+  background:rgba(255,255,255,.78) !important;
+  border:1px solid rgba(3,59,134,.16) !important;
+  border-radius:var(--ihern-radius-sm) !important;
+  color:var(--ihern-ink) !important;
+  font-family:'Poppins',sans-serif !important;
+}
+input:focus,textarea:focus,select:focus,.form-control:focus{
+  background:#fff !important;
+  border-color:var(--ihern-accent) !important;
+  box-shadow:0 0 0 4px rgba(0,130,241,.14) !important;
+}
+
+/* ---------- Footer ---------- */
+.footer-area,
+footer,
+.copyright-content{
+  background:linear-gradient(180deg,var(--ihern-navy-ink) 0%, #070d1d 100%) !important;
+  color:rgba(255,255,255,.72) !important;
+}
+.footer-area a,footer a{ color:rgba(255,255,255,.86) !important; }
+/* inner blocks kept a white background against the new dark footer */
+.footer-area .container,.footer-area .row,.footer-area [class*="col-"],
+footer .container,footer .row,footer [class*="col-"],
+.footer-top,.footer-content,.contact-info-bar{
+  background:transparent !important;
+  box-shadow:none !important;
+}
+.footer-area h1,.footer-area h2,.footer-area h3,.footer-area h4,
+.footer-area p,.footer-area span,.footer-area li,
+footer h4,footer p,footer span,footer li{ color:rgba(255,255,255,.82) !important; }
+.footer-area a:hover,footer a:hover{ color:#fff !important; }
+
+/* ---------- Long content must not overflow on phones ---------- */
+img{ max-width:100%; height:auto; }
+.table-responsive,.schedule-area{ overflow-x:auto; -webkit-overflow-scrolling:touch; }
+
+/* ---------- Fallbacks + motion safety ---------- */
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .card,.schedule-area,.single-schedule,.speakers-item,.single-speaker,
+  .team-item,.work-counter-widget,.pricing-table{ background:#fff !important; }
+  .navbar.fixed-top{ background:#fff !important; }
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{ animation-duration:.001ms !important; transition-duration:.001ms !important; }
+}
+
+/* ============================================================
+   IHERC polish pass — spacing, measure, cards, buttons, tables
+   Keeps the conference's own identity; only makes it consistent.
+   ============================================================ */
+
+/* ---------- Reading comfort ----------
+   The conference copy was justified, which produces wide rivers in a
+   ~700px column and looks worse again on a phone. Wording untouched. */
+#about .about-content p,
+#about .about-content li,
+section p[align="justify"],
+p[align="justify"]{ text-align:left !important; }
+#about .about-content p,
+#about .about-content ul{ max-width:80ch; }
+#about .about-content{ font-size:16px; line-height:1.75; }
+#about .about-content h3,
+#about .about-content h4{ margin:32px 0 14px; }
+#about .about-content ul{ padding-left:0; list-style:none; }
+#about .about-content ul li{ margin-bottom:8px; }
+
+/* The CMT attribution notice is a footnote, not body copy */
+.cmt-note,
+#about .container > .row:first-child p:only-child{
+  font-size:14.5px;
+  color:var(--ihern-muted);
+}
+
+/* ---------- Section rhythm ---------- */
+.section-padding{ padding-top:clamp(48px,6vw,86px) !important; padding-bottom:clamp(48px,6vw,86px) !important; }
+.section-title-header{ margin-bottom:36px; }
+.section-title-header + .section-title-header{ margin-top:8px; }
+
+/* ---------- Speaker / chair cards: one card size in every row ----------
+   The markup mixes col-md-3 / col-md-4 / col-md-6, so the two-up rows drew a
+   560px-wide card around a 240px portrait. The column, not the card, is
+   capped, so every row centres a set of identical cards. Section-title rows
+   (.col-12) are excluded so headings stay full width and centred. */
+.governance-content .row,
+#speakers .row,
+#team .row{ justify-content:center; align-items:stretch; }
+
+.governance-content .row > [class*="col-"]:not(.col-12),
+#speakers .row > [class*="col-"]:not(.col-12),
+#team .row > [class*="col-"]:not(.col-12){
+  display:flex;
+  flex:0 1 340px;
+  max-width:340px;
+  margin-bottom:26px;
+}
+.governance-content .row > [class*="col-"]:not(.col-12) > .team-item,
+#speakers .row > [class*="col-"]:not(.col-12) > .team-item,
+#team .row > [class*="col-"]:not(.col-12) > .team-item{ width:100%; }
+@media (max-width:575px){
+  .governance-content .row > [class*="col-"]:not(.col-12),
+  #speakers .row > [class*="col-"]:not(.col-12),
+  #team .row > [class*="col-"]:not(.col-12){ flex:0 1 100%; max-width:340px; }
+}
+
+/* Section headings stay centred and full width */
+.section-title-header{ width:100%; text-align:center; }
+.section-title-header .section-title{ display:block; }
+
+/* ---------- Buttons ---------- */
+.btn.btn-common{
+  display:inline-flex; align-items:center; justify-content:center;
+  min-height:46px;
+  max-width:100%;
+  padding:12px 26px !important;
+  border-radius:var(--ihern-radius-sm) !important;
+  font-size:15px !important;
+  font-weight:600 !important;
+  line-height:1.3;
+  white-space:normal;
+  text-align:center;
+}
+@media (max-width:575px){
+  .btn.btn-common{ width:100%; padding:12px 16px !important; }
+}
+
+/* ---------- Sponsors band ----------
+   Was a fixed-attachment photo (a parallax effect, and a dark grey band that
+   matched neither palette). It becomes the conference's own navy. */
+#sponsors{
+  background:linear-gradient(135deg,var(--ihern-navy) 0%,var(--ihern-navy-deep) 60%,var(--ihern-navy-ink) 100%) !important;
+  background-attachment:scroll !important;
+}
+#sponsors p, #sponsors a{ color:#fff !important; }
+#sponsors a{ text-decoration:underline; }
+
+/* ---------- Registration fee table ---------- */
+.fee-table-wrap{
+  max-width:640px;
+  margin:22px auto 8px;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+  border:1px solid var(--ihern-line);
+  border-radius:var(--ihern-radius);
+  background:#fff;
+  box-shadow:var(--glass-shadow);
+}
+.fee-table{
+  width:100%;
+  min-width:420px;
+  border-collapse:collapse;
+  margin:0;
+}
+.fee-table th,
+.fee-table td{
+  padding:13px 16px;
+  border:0;
+  border-bottom:1px solid var(--ihern-line-soft);
+  text-align:left;
+  font-size:15px;
+}
+.fee-table th{
+  background:var(--ihern-surface-alt);
+  color:var(--ihern-ink);
+  font-weight:700;
+  font-size:12.5px;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+  border-bottom:1px solid var(--ihern-line);
+}
+.fee-table tr:last-child td{ border-bottom:0; }
+.fee-table td + td, .fee-table th + th{ text-align:right; font-variant-numeric:tabular-nums; }
+
+/* ---------- Nothing overflows the phone viewport ---------- */
+@media (max-width:575px){
+  .container{ padding-left:18px; padding-right:18px; }
+  h1,h2,h3,h4{ overflow-wrap:break-word; }
+}
+
+/* Sub-section headings (Distinguished Speakers / General Chairs / Program
+   Chairs) are h4s under an h2 — one shared treatment, no decorative rule so
+   the hierarchy against the h2 section titles stays readable. */
+#speakers h4,
+#team h4,
+.governance-content h4{
+  text-align:center;
+  font-size:clamp(1.15rem,1.9vw,1.4rem);
+  font-weight:700;
+  letter-spacing:-.015em;
+  color:var(--ihern-ink);
+  margin:8px 0 26px;
+}
+.governance-content .row + .section-title-header,
+#team .row + .section-title-header{ margin-top:26px; }
+
+/* Contact strip above the footer: a real centred band instead of a
+   full-bleed white slab produced by an empty spacer column */
+#contact-text{ padding-bottom:8px; }
+#contact-text .contact-wrapper{
+  justify-content:center;
+  align-items:center;
+  gap:8px 34px;
+  max-width:760px;
+  margin:0 auto;
+  padding:18px 24px;
+  border-radius:var(--ihern-radius);
+  border:1px solid var(--ihern-line);
+  background:#fff;
+  box-shadow:var(--glass-shadow);
+}
+#contact-text .contact-wrapper > [class*="col-"]:empty{ display:none; }
+#contact-text .contact-wrapper > [class*="col-"]{ width:auto; max-width:none; flex:0 0 auto; }
+#contact-text ul{ display:flex; align-items:center; gap:10px; margin:0; padding:0; list-style:none; }
+#contact-text ul li{ margin:0; }
+#contact-text ul li span{ font-size:15px; color:var(--ihern-body); }
+#contact-text ul li i{ color:var(--ihern-navy); }
+
+/* ============================================================
+   Footer — the IHERN footer system in the conference's own voice.
+   Same proportions, type scale, rules and hover behaviour as
+   ihern-theme.css section 7; different link set.
+   ============================================================ */
+#iherc-footer.iherc-footer{
+  background:linear-gradient(180deg,#0b1733 0%, #070f22 100%);
+  color:rgba(255,255,255,.80);
+  margin-top:0;
+}
+#iherc-footer .footer-main{
+  padding-top:clamp(44px,5vw,64px);
+  padding-bottom:clamp(34px,4vw,48px);
+}
+#iherc-footer .footer-grid{
+  display:grid;
+  grid-template-columns:minmax(0,1.6fr) repeat(3, minmax(0,1fr));
+  gap:34px 40px;
+  align-items:start;
+  text-align:left;
+}
+#iherc-footer .footer-brand{ max-width:36ch; }
+#iherc-footer .footer-wordmark{
+  display:inline-block;
+  font-size:22px;
+  font-weight:800;
+  letter-spacing:.05em;
+  color:#fff !important;
+  text-decoration:none;
+  margin-bottom:10px;
+  transition:color .18s var(--ihern-ease);
+}
+#iherc-footer .footer-wordmark:hover{ color:var(--ihern-accent) !important; }
+#iherc-footer .footer-org{
+  margin:0 0 12px;
+  font-size:14.5px; font-weight:600;
+  color:rgba(255,255,255,.88);
+}
+#iherc-footer .footer-desc{
+  margin:0 0 12px;
+  font-size:14.5px; line-height:1.7;
+  color:rgba(255,255,255,.62);
+}
+#iherc-footer .footer-meta{
+  margin:0;
+  font-size:13.5px;
+  color:rgba(255,255,255,.52);
+}
+#iherc-footer .footer-heading{
+  margin:0 0 14px;
+  font-size:12px; font-weight:700;
+  letter-spacing:.09em; text-transform:uppercase;
+  color:rgba(255,255,255,.56);
+}
+#iherc-footer .footer-links{ margin:0; padding:0; list-style:none; }
+#iherc-footer .footer-links li{ margin:0 0 9px; }
+#iherc-footer .footer-links li:last-child{ margin-bottom:0; }
+#iherc-footer .footer-links a{
+  font-size:15px; line-height:1.5;
+  color:rgba(255,255,255,.80);
+  text-decoration:none;
+  overflow-wrap:break-word;
+  transition:color .18s var(--ihern-ease);
+}
+#iherc-footer .footer-links a:hover{
+  color:#fff;
+  text-decoration:underline;
+  text-underline-offset:3px;
+}
+#iherc-footer a:focus-visible{
+  outline:2px solid var(--ihern-accent);
+  outline-offset:3px;
+  border-radius:3px;
+}
+/* the route back to the parent site reads as navigation, not a CTA */
+#iherc-footer .footer-parent-link span{
+  display:inline-block;
+  margin-right:2px;
+  transition:transform .18s var(--ihern-ease);
+}
+#iherc-footer .footer-parent-link:hover span{ transform:translateX(-2px); }
+
+#iherc-footer .footer-bottom{
+  border-top:1px solid rgba(255,255,255,.10);
+  padding:22px 0 24px;
+  background:transparent;
+}
+#iherc-footer .footer-bottom-row{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:12px; flex-wrap:wrap;
+}
+#iherc-footer .footer-copyright,
+#iherc-footer .site-info{
+  margin:0;
+  font-size:14px;
+  color:rgba(255,255,255,.58);
+}
+#iherc-footer .site-info a{
+  color:rgba(255,255,255,.72);
+  text-decoration:underline;
+  text-underline-offset:3px;
+}
+#iherc-footer .site-info a:hover{ color:#fff; }
+
+@media (max-width:991px){
+  #iherc-footer .footer-grid{ grid-template-columns:repeat(2, minmax(0,1fr)); gap:30px 32px; }
+  #iherc-footer .footer-brand{ grid-column:1 / -1; max-width:56ch; }
+}
+@media (max-width:575px){
+  #iherc-footer .footer-grid{ grid-template-columns:1fr; gap:26px; }
+  #iherc-footer .footer-brand{ max-width:none; }
+  #iherc-footer .footer-bottom-row{ justify-content:center; text-align:center; }
+  #iherc-footer .footer-links li{ margin-bottom:11px; }
+}
+
+/* Visually hidden page-level heading (production pass, 4 Sep 2026):
+   the IHERC pages carry their title in the banner artwork, so each page had
+   no <h1> at all. */
+.ihern-visually-hidden{
+  position:absolute !important;
+  width:1px; height:1px;
+  padding:0; margin:-1px;
+  overflow:hidden;
+  clip:rect(0 0 0 0);
+  clip-path:inset(50%);
+  white-space:nowrap;
+  border:0;
+}
+
+/* ============================================================
+   FINAL PASS (September 2026): one IHERN identity
+   The conference is a section of IHERN, presented the way the
+   blog is: the IHERN wordmark first, the section name after it.
+   ============================================================ */
+.navbar .navbar-brand{
+  font-size:26px !important;
+  letter-spacing:.06em;
+}
+.nav-section{
+  flex:0 0 auto;
+  display:inline-flex; align-items:center;
+  margin-left:10px;
+  padding-left:10px;
+  border-left:1px solid rgba(11,23,51,.14);
+  font-size:15px; font-weight:600;
+  letter-spacing:.01em;
+  white-space:nowrap;
+  color:var(--ihern-body, #4a5266) !important;
+  text-decoration:none !important;
+}
+.nav-section:hover,
+.nav-section:focus-visible{ color:var(--ihern-navy) !important; }
+@media (max-width:1199px){
+  .navbar .navbar-brand{ font-size:23px !important; }
+}
+@media (max-width:479px){
+  .navbar .navbar-brand{ font-size:21px !important; }
+  .nav-section{ font-size:14px; margin-left:8px; padding-left:8px; }
+}
+#iherc-footer .footer-grid{ grid-template-columns:minmax(0,1.4fr) repeat(3,minmax(0,1fr)); }
+@media (max-width:991px){ #iherc-footer .footer-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (max-width:575px){ #iherc-footer .footer-grid{ grid-template-columns:1fr; } }
+
+/* IHERC 2025 archive: the hero title and partner logos carry inline sizes
+   written for a desktop screen. */
+.hero-area-bg .head-title{ font-size:clamp(1.75rem,5.2vw,3.75rem) !important; overflow-wrap:normal; word-break:normal; hyphens:manual; }
+.hero-area-bg h2.head-title + h2.head-title,
+.hero-area-bg h1.head-title + h2.head-title{ font-size:clamp(1.1rem,2.6vw,1.9rem) !important; }
+.hero-area-bg .intro-wrapper img{ max-width:140px; height:auto; }
+@media (max-width:767px){
+  .hero-area-bg .intro-wrapper{ display:flex; justify-content:space-between; align-items:center; }
+  .hero-area-bg .intro-wrapper > [class*="col-"]{ flex:0 0 auto; width:auto; max-width:45%; }
+  .hero-area-bg .intro-wrapper img{ max-width:96px; padding-top:0 !important; }
+}
+
+/* ---- Venue (R&D Building, IIIT-Delhi) ---- */
+.iherc-venue{ padding:clamp(56px,7vw,96px) 0; background:#fff; }
+.iherc-venue-grid{
+  display:grid;
+  grid-template-columns:minmax(0,5fr) minmax(0,7fr);
+  gap:28px;
+  align-items:stretch;
+  margin-top:8px;
+}
+@media (max-width:991px){ .iherc-venue-grid{ grid-template-columns:1fr; } }
+.iherc-venue-info{
+  padding:28px 28px 30px;
+  border:1px solid var(--ihern-line, #e5e8ef);
+  border-radius:var(--ihern-radius, 12px);
+  background:var(--ihern-surface-alt, #f7f9fc);
+  text-align:left;
+  display:flex; flex-direction:column; align-items:flex-start;
+}
+.iherc-venue-label{
+  margin:0 0 8px;
+  font-size:12px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+  color:var(--ihern-navy, #033b86);
+}
+.iherc-venue-name{ margin:0 0 6px; font-size:clamp(1.35rem,2.4vw,1.7rem); font-weight:700; color:var(--ihern-ink, #131822); }
+.iherc-venue-org{ margin:0 0 18px; font-size:15.5px; line-height:1.6; color:var(--ihern-body, #4a5266); }
+.iherc-venue-facts{
+  display:grid; grid-template-columns:max-content 1fr; gap:6px 16px;
+  margin:0 0 22px; font-size:15px;
+}
+.iherc-venue-facts dt{ font-size:12px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--ihern-navy, #033b86); align-self:center; }
+.iherc-venue-facts dd{ margin:0; color:var(--ihern-ink, #131822); font-weight:600; overflow-wrap:anywhere; }
+.iherc-venue-open{ margin-top:auto; }
+.iherc-venue-map{
+  position:relative;
+  min-height:360px;
+  border:1px solid var(--ihern-line, #e5e8ef);
+  border-radius:var(--ihern-radius, 12px);
+  overflow:hidden;               /* clips the embedded map to the rounded frame */
+  background:var(--ihern-surface-alt, #f7f9fc);
+}
+.iherc-venue-map iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
+@media (max-width:991px){ .iherc-venue-map{ min-height:0; height:clamp(260px,70vw,420px); } }
+
+/* ---- Footer: the conference line ---- */
+#iherc-footer .footer-bottom-row{ display:flex; justify-content:space-between; align-items:center; gap:10px 24px; flex-wrap:wrap; }
+#iherc-footer .footer-conf{ margin:0; font-size:13.5px; color:rgba(255,255,255,.72); }
+#iherc-footer .footer-conf a{ color:rgba(255,255,255,.88); }
+#iherc-footer .footer-conf a:hover{ color:#fff; }
+
+/* ---- Contact cards: stack cleanly on small screens ---- */
+#contact .team-item .team-img img{ width:100%; height:auto; }
+
+/* ============================================================
+   FINAL PASS 2 (September 2026)
+   ============================================================ */
+
+/* ---- The navbar sits on white, above the hero, as on the main site ----
+   The bar is fixed; the header reserves its height on a white band so the
+   blue hero starts below it instead of running underneath. */
+#header-wrap{ padding-top:92px; background:#fff; }
+@media (max-width:1199.98px){ #header-wrap{ padding-top:80px; } }
+@media (max-width:575.98px){ #header-wrap{ padding-top:76px; } }
+.navbar.fixed-top > .container{ background:rgba(255,255,255,.96); }
+
+/* ---- Navbar type: the main site's scale (ihern-theme.css section 2) ---- */
+@media (min-width:1200px){
+  .navbar-expand-xl .navbar-nav .nav-link,
+  .navbar-expand-lg .navbar-nav .nav-link,
+  .navbar-nav .nav-link,
+  .navbar-nav > li > a{
+    font-size:15px !important;
+    font-weight:600 !important;
+    padding:0 12px !important;
+    margin:0 clamp(1px,.3vw,5px) !important;
+    color:var(--ihern-ink) !important;
+  }
+}
+@media (min-width:1200px) and (max-width:1365.98px){
+  .navbar-nav .nav-link,
+  .navbar-nav > li > a{ font-size:14px !important; padding:0 10px !important; }
+}
+
+/* ---- Text uses the full content width, like the rest of the site ---- */
+#about .about-content p,
+#about .about-content ul,
+#about .container > .row:first-child p{ max-width:none; }
+
+/* ---- Photos: no dark overlay on hover ----
+   The template darkened every portrait to 90% black on hover to reveal
+   social icons that none of the cards has. */
+.team-item .team-overlay{ display:none !important; }
+.team-item{ cursor:default; }
+.team-item:hover .team-img img{ filter:none !important; opacity:1 !important; }
+
+/* ---- Back-to-top: the main site's button ---- */
+a.back-to-top{
+  width:42px !important; height:42px !important;
+  border-radius:8px !important;
+  background:var(--ihern-navy, #033b86) !important;
+  box-shadow:0 2px 8px rgba(11,23,51,.18) !important;
+  display:flex; align-items:center; justify-content:center;
+}
+a.back-to-top i{ font-size:18px !important; line-height:1 !important; color:#fff !important; }
+a.back-to-top:hover{ background:var(--ihern-navy-deep, #02255a) !important; }
+
+/* ---- IHERC 2026 Program Committee ---- */
+.iherc-committee{ padding:clamp(48px,6vw,80px) 0; }
+.iherc-committee .section-title-header p{ max-width:72ch; margin:0 auto; color:var(--ihern-body, #4a5266); font-size:16px; }
+.iherc-committee-grid{
+  list-style:none; margin:28px 0 0; padding:0;
+  display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:24px;
+}
+@media (max-width:1199px){ .iherc-committee-grid{ grid-template-columns:repeat(3,minmax(0,1fr)); } }
+@media (max-width:767px){ .iherc-committee-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; } }
+@media (max-width:479px){ .iherc-committee-grid{ grid-template-columns:1fr; } }
+.iherc-person{
+  display:flex; flex-direction:column;
+  padding:16px 16px 20px;
+  background:#fff;
+  border:1px solid var(--ihern-line, #e5e8ef);
+  border-radius:var(--ihern-radius, 12px);
+  box-shadow:0 1px 2px rgba(11,23,51,.04), 0 4px 14px rgba(11,23,51,.04);
+  text-align:center;
+}
+.iherc-person-photo{
+  display:block; width:100%; aspect-ratio:1/1; height:auto; object-fit:cover;
+  border-radius:var(--ihern-radius-sm, 8px);
+  margin:0 0 16px;
+  background:var(--ihern-surface-alt, #f7f9fc);
+}
+.iherc-person-initials{
+  display:flex; align-items:center; justify-content:center;
+  font-size:clamp(2rem,4vw,2.75rem); font-weight:700; letter-spacing:.04em;
+  color:var(--ihern-navy, #033b86);
+  background:linear-gradient(180deg,#f3f6fb,#e8eef8);
+}
+.iherc-person-name{ font-size:17px !important; line-height:1.35 !important; margin:0 0 6px !important; color:var(--ihern-ink, #131822) !important; text-transform:none !important; }
+.iherc-person p{ margin:0; }
+.iherc-person-org{ font-size:14.5px; line-height:1.5; color:var(--ihern-body, #4a5266); }
+.iherc-person-place{ font-size:13.5px; line-height:1.5; color:var(--ihern-muted, #6b7280); margin-top:2px !important; }
+
+/* ---- Hero: the two actions side by side ---- */
+.hero-actions{
+  display:flex; flex-wrap:wrap; justify-content:center; gap:14px 16px;
+  margin:28px 0 8px;
+}
+.hero-actions .btn{ margin:0 !important; min-width:220px; }
+@media (max-width:479.98px){
+  .hero-actions{ flex-wrap:nowrap; gap:10px; }
+  .hero-actions .btn{ flex:1 1 0; min-width:0; padding:12px 8px !important; font-size:12.5px !important; letter-spacing:.02em; white-space:nowrap; }
+}
+
+/* ---- Fixed navbar: a solid white strip (content scrolls underneath) ---- */
+.navbar.fixed-top,
+.navbar.scrolling-navbar.top-nav-collapse{
+  background:#fff !important;
+}
+.navbar.scrolling-navbar.top-nav-collapse{
+  border-bottom:1px solid var(--ihern-line, #e5e8ef) !important;
+  box-shadow:0 2px 12px rgba(11,23,51,.05) !important;
+}
+
+/* Developer credit beside the copyright: wraps as one unit */
+#iherc-footer .footer-credit{ display:inline-block; margin-left:.35em; }
+#iherc-footer .footer-credit::before{ content:"\00b7"; margin-right:.5em; }
+#iherc-footer .footer-credit a{ color:rgba(255,255,255,.78); text-decoration:underline; text-underline-offset:3px; }
+#iherc-footer .footer-credit a:hover,
+#iherc-footer .footer-credit a:focus-visible{ color:#fff; }
+@media (max-width:575px){
+  #iherc-footer .footer-credit{ display:block; margin:4px 0 0; }
+  #iherc-footer .footer-credit::before{ content:none; }
+  #iherc-footer .footer-bottom-row{ flex-direction:column; justify-content:center; text-align:center; }
+}
+/* Below 1280px the footer reaches the fixed back-to-top button (bottom 18px, 42px tall) */
+@media (max-width:1279px){
+  #iherc-footer .footer-bottom{ padding-bottom:76px; }
+}

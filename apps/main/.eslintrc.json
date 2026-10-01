@@ -1,0 +1,8 @@
+{
+  "extends": "next/core-web-vitals",
+  "rules": {
+    // The pages reproduce the PHP site's markup and images exactly, served
+    // unoptimised (next.config.mjs: images.unoptimized), so plain <img> is intended.
+    "@next/next/no-img-element": "off"
+  }
+}
