@@ -130,7 +130,7 @@ change both.
 
 ## Deploying
 
-The app needs Node.js 20.9 or newer and the two MySQL databases.
+The app needs Node.js 22.12 or newer (Node 22 LTS) and the two MySQL databases.
 
 1. **Database.** The tables are the PHP site's; nothing new. If the server has
    not had them yet, run the scripts from the PHP project's `_setup/sql/`

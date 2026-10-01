@@ -21,7 +21,7 @@
     "blog:add-editor": "tsx scripts/add-editor.ts"
   },
   "engines": {
-    "node": ">=20.9"
+    "node": ">=22.12"
   },
   "devDependencies": {
     "tsx": "^4.23.15"

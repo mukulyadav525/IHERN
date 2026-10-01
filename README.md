@@ -90,8 +90,11 @@ not emailed about them again. It only reads WordPress; run it again any time
 
 ## Deploying
 
-The server needs **Node.js 20.9 or newer** (22 LTS recommended) and access to
-the MySQL server.
+The server needs **Node.js 22.12 or newer** (Node 22 LTS; `.nvmrc` says 22)
+and access to the MySQL server. `npm ci` refuses to install on an older Node
+(`.npmrc`), because the blog's HTML cleaner needs 22.12+ and would otherwise
+fail only at run time. Check the Node that pm2 actually uses, not just the
+shell's: `pm2 show ihern-blog` lists it as "node.js version".
 
 1. `npm ci` then fill in `apps/main/.env.production.local` and
    `apps/blog/.env.production.local` from the `.env.example` files. The two
