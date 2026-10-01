@@ -105,6 +105,9 @@ export async function fetchGoogleProfile(
       grant_type: "authorization_code",
     }),
     cache: "no-store",
+    // A slow Google answer fails the sign-in (the callback says so) instead
+    // of holding the request open for minutes.
+    signal: AbortSignal.timeout(10_000),
   });
   if (!tokenRes.ok) throw new Error(`Token request failed (HTTP ${tokenRes.status})`);
   const token = (await tokenRes.json()) as { access_token?: string };
@@ -113,6 +116,7 @@ export async function fetchGoogleProfile(
   const profileRes = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
     headers: { Authorization: `Bearer ${token.access_token}` },
     cache: "no-store",
+    signal: AbortSignal.timeout(10_000),
   });
   if (!profileRes.ok) throw new Error(`Profile request failed (HTTP ${profileRes.status})`);
   const profile = (await profileRes.json()) as {
