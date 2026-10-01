@@ -1,0 +1,15 @@
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+.DS_Store
+
+# settings with real values
+.env
+.env*.local
+
+# runtime data: blog cache, local mail log, uploaded files
+.data/
+apps/main/uploads/
+apps/blog/uploads/
