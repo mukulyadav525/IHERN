@@ -18,7 +18,16 @@ export default async function Page(props: { params: Promise<{ slug: string[] }> 
   const params = await props.params;
   if (params.slug.length !== 1) notFound();
   const page = await getPublishedBySlug("page", params.slug[0]);
-  if (!page) notFound();
+  if (page === undefined) notFound();
+  if (page === null) {
+    // The database is unreachable: say so, rather than a 404 that tells
+    // readers (and search engines) the page is gone.
+    return (
+      <main className="b-wrap" id="main">
+        <div className="b-card b-empty">The blog is temporarily unavailable. Please try again shortly.</div>
+      </main>
+    );
+  }
   return (
     <main className="b-wrap b-wrap--post" id="main">
       <article className="b-card b-post">
