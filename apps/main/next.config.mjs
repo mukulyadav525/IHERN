@@ -67,6 +67,9 @@ const nextConfig = {
     // copy left on disk could outlive a deletion across a restart. One process
     // per site (deploy/ecosystem.config.cjs): a restart simply starts fresh.
     isrFlushToDisk: false,
+    // Unknown addresses get app/global-not-found.tsx: complete HTML with a 404
+    // status, readable without JavaScript.
+    globalNotFound: true,
     serverActions: {
       // The membership form accepts a photograph of up to 5 MB.
       bodySizeLimit: "6mb",
