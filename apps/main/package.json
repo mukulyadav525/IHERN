@@ -1,0 +1,26 @@
+{
+  "name": "@ihern/main",
+  "version": "1.0.0",
+  "private": true,
+  "description": "IHERN main website (iiitd.ac.in/IHERN)",
+  "scripts": {
+    "dev": "next dev -p 3000",
+    "build": "next build",
+    "start": "next start -p 3000",
+    "lint": "eslint app components lib --ext .ts,.tsx --max-warnings 0 --report-unused-disable-directives"
+  },
+  "dependencies": {
+    "next": "15.5.27",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "@ihern/core": "*"
+  },
+  "devDependencies": {
+    "@types/node": "20.14.10",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.2.0",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "15.5.27",
+    "typescript": "5.5.3"
+  }
+}

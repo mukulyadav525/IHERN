@@ -1,0 +1,56 @@
+/* ---------------------------------------------------------------------------
+   Next.js port: the few rules the PHP pages express inline in a way React
+   cannot (inline `!important`). Everything else comes unchanged from
+   ihern-theme.css. Loaded after it.
+   ------------------------------------------------------------------------- */
+
+/* sig.php: <span style="color:#000 !important"> on the coordinator labels */
+.sig-leads span.sig-lead-role{ color:#000 !important; }
+
+/* The PHP auth pages put `ihern-auth-page` on <body>; here a wrapper carries
+   it, so the one rule written against the body class is repeated for it. */
+body.defult-home .ihern-auth-page h1.auth-title{ font-size:clamp(1.5rem,2.4vw,1.75rem); margin-bottom:8px; }
+
+/* ---- Member dashboard (applications/dashboard.php's details table, in the
+   site frame). Uses the same tokens as the account card. ---- */
+.ihern-auth-page .auth-card.member-card{ max-width:780px; }
+.member-details{ width:100%; margin:6px 0 22px; border-collapse:collapse; }
+.member-details caption{
+  caption-side:top; text-align:left; padding:0 0 10px;
+  font-size:13px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--ihern-navy);
+}
+body.defult-home .member-details th,
+body.defult-home .member-details td{
+  padding:11px 14px; border-bottom:1px solid var(--ihern-line);
+  font-size:15px; text-align:left; vertical-align:top; background:transparent;
+  text-transform:none; letter-spacing:normal;
+}
+body.defult-home .member-details th{ width:38%; color:var(--ihern-navy); font-weight:600; }
+body.defult-home .member-details td{ color:var(--ihern-ink); overflow-wrap:anywhere; }
+.member-actions{ display:flex; gap:12px; flex-wrap:wrap; margin:0; }
+.member-actions .auth-submit,
+.member-actions .auth-secondary{ width:auto; flex:1 1 180px; text-align:center; text-decoration:none; }
+@media (max-width:575px){
+  body.defult-home .member-details th,
+  body.defult-home .member-details td{ display:block; width:auto; border-bottom:0; padding:6px 0; }
+  body.defult-home .member-details tr{ display:block; border-bottom:1px solid var(--ihern-line); padding:8px 0; }
+}
+
+/* Printing the membership details: only the table. */
+@media print{
+  .full-width-header, #rs-footer, #scrollUp, .offwrap, .hidden-print, .member-actions, .auth-sub{ display:none !important; }
+  .ihern-auth-page .auth-wrap{ padding:0 !important; }
+  .ihern-auth-page .auth-card{ box-shadow:none !important; border:0 !important; max-width:none !important; padding:0 !important; }
+}
+
+/* Skip link: off screen until reached with the keyboard (first Tab on a page). */
+.ihern-skip{ position:absolute; left:12px; top:-80px; z-index:100000; padding:10px 16px; background:#033b86; color:#fff !important; border-radius:6px; font-weight:600; text-decoration:none; }
+.ihern-skip:focus{ top:12px; outline:3px solid #9ccaff; outline-offset:2px; }
+/* Links inside running text are underlined, not told apart by colour alone (WCAG 1.4.1). */
+/* (!important: style.css sets "a { text-decoration: none !important }") */
+.auth-back a, .auth-info a, .ihern-form-note a, .ihern-form-submit a{ text-decoration:underline !important; text-underline-offset:2px; }
+/* Headings that sat a level too deep are now the right level (h4 under the
+   Events h2 -> h3; Blogs card titles under the page h1 -> h2). These keep
+   the look they had at the old level. */
+body.defult-home .event-card h3{ font-size:clamp(1.1rem,1.7vw,1.25rem); margin:0 0 12px; }
+body.defult-home .blog-card-body h2{ font-size:clamp(1.25rem,2.1vw,1.5rem); line-height:1.25; margin:0 0 10px; }

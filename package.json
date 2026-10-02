@@ -1,0 +1,34 @@
+{
+  "name": "ihern",
+  "private": true,
+  "description": "IHERN websites: the main site and the blog, in one repository",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:main": "npm run dev -w apps/main",
+    "dev:blog": "npm run dev -w apps/blog",
+    "build": "npm run build -w apps/main && npm run build -w apps/blog",
+    "build:main": "npm run build -w apps/main",
+    "build:blog": "npm run build -w apps/blog",
+    "start:main": "npm run start -w apps/main",
+    "start:blog": "npm run start -w apps/blog",
+    "lint": "npm run lint -w apps/main && npm run lint -w apps/blog",
+    "typecheck": "tsc --noEmit -p apps/main && tsc --noEmit -p apps/blog && tsc --noEmit -p packages/core",
+    "db:schema": "tsx scripts/apply-schema.ts",
+    "db:migrate-wordpress": "tsx scripts/migrate-wordpress.ts",
+    "blog:add-editor": "tsx scripts/add-editor.ts"
+  },
+  "engines": {
+    "node": ">=22.12"
+  },
+  "devDependencies": {
+    "tsx": "^4.23.15"
+  },
+  "overrides": {
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "postcss": "^8.5.28"
+  }
+}
