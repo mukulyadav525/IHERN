@@ -32,10 +32,12 @@ module.exports = {
       args: "start -p 3000 -H 127.0.0.1",
       interpreter: "node",
       env: { NODE_ENV: "production" },
-      // A safety net for a leak, not a limit for busy moments: under 100
-      // simultaneous requests a process was measured at ~600 MB, falling back
-      // to well under 100 MB when idle. Restarting at 600 MB would restart it
-      // in the middle of a traffic peak.
+      // Node's heap is capped below pm2's restart limit, so under heavy traffic
+      // Node collects garbage harder instead of growing past 1 GB and being
+      // restarted mid-peak (measured: without the cap the blog passed 1 GB at
+      // ~500 requests/s and pm2 restarted it). max_memory_restart stays as the
+      // safety net for a real leak; idle, a process falls back to ~150 MB.
+      node_args: "--max-old-space-size=768",
       max_memory_restart: "1G",
     },
     {
@@ -47,10 +49,12 @@ module.exports = {
       args: "start -p 3001 -H 127.0.0.1",
       interpreter: "node",
       env: { NODE_ENV: "production" },
-      // A safety net for a leak, not a limit for busy moments: under 100
-      // simultaneous requests a process was measured at ~600 MB, falling back
-      // to well under 100 MB when idle. Restarting at 600 MB would restart it
-      // in the middle of a traffic peak.
+      // Node's heap is capped below pm2's restart limit, so under heavy traffic
+      // Node collects garbage harder instead of growing past 1 GB and being
+      // restarted mid-peak (measured: without the cap the blog passed 1 GB at
+      // ~500 requests/s and pm2 restarted it). max_memory_restart stays as the
+      // safety net for a real leak; idle, a process falls back to ~150 MB.
+      node_args: "--max-old-space-size=768",
       max_memory_restart: "1G",
     },
   ],
