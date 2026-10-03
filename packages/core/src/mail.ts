@@ -38,10 +38,15 @@ let cached: Transporter | null = null;
 function transport(): Transporter {
   if (cached) return cached;
   const port = Number(process.env.IHERN_SMTP_PORT || 587);
+  // Through a tunnel (IHERN_SMTP_HOST=127.0.0.1 forwarded to smtp.gmail.com:465):
+  // IHERN_SMTP_SECURE=1 and IHERN_SMTP_TLS_SERVERNAME=smtp.gmail.com, so the
+  // connection is still encrypted and checked against Gmail's certificate.
+  const servername = process.env.IHERN_SMTP_TLS_SERVERNAME || undefined;
   cached = nodemailer.createTransport({
     host: process.env.IHERN_SMTP_HOST,
     port,
-    secure: port === 465,
+    secure: port === 465 || process.env.IHERN_SMTP_SECURE === "1",
+    tls: servername ? { servername } : undefined,
     auth: process.env.IHERN_SMTP_USER
       ? { user: process.env.IHERN_SMTP_USER, pass: process.env.IHERN_SMTP_PASS || "" }
       : undefined,
