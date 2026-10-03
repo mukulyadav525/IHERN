@@ -22,7 +22,12 @@ member sign-in and dashboard, password reset, the Blogs page (now read from the
 blog's tables), the single sign-on server the blog uses, and the **membership
 admin panel** at `/membership/admin`. Staff sign in with their existing admin
 accounts and get the registered members with photographs, activation, editing,
-password reset emails, deletion, the CSV export, and admin users.
+password reset emails, deletion, the CSV export and import, and admin users.
+An admin signed in to their IHERN account goes straight in once the account
+is linked to their admin account (signing in to the admin once with the admin
+password while signed in to the website, or signing in to the website with
+Google or with the admin password). A matching email alone never links them:
+anyone can create an IHERN account with any address.
 
 **Blog** (`apps/blog`):
 

@@ -106,11 +106,14 @@ export function AdminShell({ navLabel, nav, children, ...bar }: BarProps & { nav
   );
 }
 
-/** Sign-in, no access, unavailable: the bar and one card, like the public sign-in page. */
+/** Sign-in, no access, unavailable: the bar (with the same phone drawer) and one card, like the public sign-in page. */
 export function AdminGate({ wide = true, children, ...bar }: BarProps & { wide?: boolean; children: ReactNode }) {
   return (
     <>
-      <AdminBar {...bar} />
+      <AdminBar
+        {...bar}
+        menu={<AdminDrawer label={bar.section} links={bar.links} user={bar.user} signOut={bar.signOut} />}
+      />
       <main className="adm-gate" id="main">
         <div className={`adm-card${wide ? "" : " adm-login"}`}>{children}</div>
       </main>

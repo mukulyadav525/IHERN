@@ -15,8 +15,10 @@ export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
   const q = req.nextUrl.searchParams;
-  const returnTo = safeReturn(q.get("return"));
-  const silent = q.get("prompt") === "none";
+  // The middleware's silent check names the page in a header (a rewrite keeps the page's own query string).
+  const probe = req.headers.get("x-ihern-sso-probe");
+  const returnTo = safeReturn(probe ?? q.get("return"));
+  const silent = probe !== null || q.get("prompt") === "none";
 
   const res = (location: string) => {
     const r = new NextResponse(null, { status: 302, headers: { Location: location, "Cache-Control": "no-store" } });

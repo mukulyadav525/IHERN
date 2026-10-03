@@ -60,9 +60,9 @@ export default async function PostTable({ type, status, q }: { type: PostType; s
                     {p.status === "published" && !live ? <span className="adm-badge">Scheduled</span> : null}
                     {counts.get(p.id) ? <span className="adm-muted"> · {counts.get(p.id)} comments</span> : null}
                   </td>
-                  {type === "post" ? <td>{p.author?.name ?? "—"}</td> : null}
-                  {type === "post" ? <td className="adm-muted">{p.categories.map((c) => c.name).join(", ") || "—"}</td> : null}
-                  <td className="adm-nowrap">{p.status === "published" ? formatDate(p.publishedAt) : `Edited ${formatDate(p.updatedAt)}`}</td>
+                  {type === "post" ? <td data-label="Author">{p.author?.name ?? "—"}</td> : null}
+                  {type === "post" ? <td className="adm-muted" data-label="Categories">{p.categories.map((c) => c.name).join(", ") || "—"}</td> : null}
+                  <td className="adm-nowrap" data-label="Date">{p.status === "published" ? formatDate(p.publishedAt) : `Edited ${formatDate(p.updatedAt)}`}</td>
                   <td className="adm-actions">
                     {p.status !== "trash" ? <Link className="adm-link" href={`${base}/${p.id}`}>Edit</Link> : null}
                     {live ? <a className="adm-link" href={u(postPath(p))} target="_blank" rel="noopener">View</a> : null}

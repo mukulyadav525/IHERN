@@ -36,9 +36,9 @@ export default async function EditorsPage() {
           <tbody>
             {editors.map((e) => (
               <tr key={e.id}>
-                <td>{e.email}</td>
-                <td>{e.role === "admin" ? "Admin" : "Editor"}</td>
-                <td>{formatDate(e.createdAt)}</td>
+                <td className="adm-strong adm-wrap">{e.email}</td>
+                <td data-label="Role">{e.role === "admin" ? "Admin" : "Editor"}</td>
+                <td data-label="Added">{formatDate(e.createdAt)}</td>
                 <td className="adm-actions">
                   {e.email !== me.email.toLowerCase() ? (
                     <ActionButton action={removeEditorAction.bind(null, e.id)} label="Remove" className="adm-link adm-danger" confirm={`Remove ${e.email} from the blog editors?`} />

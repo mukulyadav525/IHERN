@@ -4,8 +4,8 @@ import { useActionState, useEffect, useRef } from "react";
 import { Submit } from "@/components/admin/Forms";
 import { signInAdmin, type LoginState } from "../actions";
 
-export default function AdminLoginForm() {
-  const [state, run] = useActionState(signInAdmin, { error: "", email: "" } as LoginState);
+export default function AdminLoginForm({ email = "" }: { email?: string }) {
+  const [state, run] = useActionState(signInAdmin, { error: "", email } as LoginState);
   const errorRef = useRef<HTMLParagraphElement>(null);
   useEffect(() => {
     if (state.error) errorRef.current?.focus();

@@ -23,7 +23,7 @@ export default function AdminDrawer({
   links: AdminLink[];
   user?: AdminUser;
   signOut?: ReactNode;
-  children: ReactNode;
+  children?: ReactNode;
 }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();

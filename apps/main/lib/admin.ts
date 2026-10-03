@@ -2,7 +2,7 @@ import { cache } from "react";
 import { cookies } from "next/headers";
 import { createHash, createHmac, randomBytes } from "crypto";
 import { query, execute } from "@ihern/core/db";
-import { readSigned, secret, signValue, SECURE_COOKIES } from "./auth";
+import { readSession, readSigned, secret, signValue, SECURE_COOKIES } from "./auth";
 import { BASE_PATH } from "./paths";
 import { removePhoto } from "./membership";
 import { allowed, clear, hit, ADMIN_SIGN_IN_FAILURES } from "@ihern/core/ratelimit";
@@ -21,9 +21,23 @@ import { allowed, clear, hit, ADMIN_SIGN_IN_FAILURES } from "@ihern/core/ratelim
  * This panel keeps its session in a signed cookie instead. The cookie carries
  * a fingerprint of the admin's password hash and status: changing the
  * password or deactivating the account ends every session at once.
+ *
+ * An admin can also come in through their IHERN account (the website
+ * sign-in), once that account is linked to the admin account in
+ * `cdnm.membership_admin_accounts`. A matching email alone is not enough:
+ * anyone can create an IHERN account with any address, unchecked. The link
+ * is made only with proof that the account holder owns the admin account -
+ *   - signing in here with the admin password while signed in to the account,
+ *   - signing in to the account with the admin password (the same password), or
+ *   - signing in to the account with Google, which has checked the address.
+ * The admin must still be active, under the same email.
  */
 
-export type Admin = { id: number; name: string; email: string; mobile: string; active: boolean; added: string };
+export type Admin = {
+  id: number; name: string; email: string; mobile: string; active: boolean; added: string;
+  /** signed in through the linked IHERN account rather than the admin password */
+  viaAccount?: boolean;
+};
 
 type AdminRow = { adID: number; adName: string; adEmail: string; adMobile: string; adPassword: string; adDate: string; userStatus: string | null };
 type AdminSession = { id: number; fp: string; exp: number };
@@ -62,6 +76,9 @@ export async function adminLogin(email: string, password: string): Promise<"ok" 
   if (rows[0].userStatus !== "Y") return "inactive";
   clear(ADMIN_SIGN_IN_FAILURES, email);
   await startAdminSession(rows[0]);
+  // Signed in to the IHERN account with the same address: link the two.
+  const account = await readSession();
+  if (account && sameEmail(account.email, rows[0].adEmail)) await linkAccount(account.id, Number(rows[0].adID));
   return "ok";
 }
 
@@ -77,13 +94,64 @@ export async function adminLogout(): Promise<void> {
 /** The signed-in admin; null when signed out (or the account changed since). */
 export const currentAdmin = cache(async (): Promise<Admin | null | "unavailable"> => {
   const s = readSigned<AdminSession>((await cookies()).get(ADMIN_COOKIE)?.value);
-  if (!s || typeof s.id !== "number" || typeof s.fp !== "string" || typeof s.exp !== "number" || Date.now() > s.exp) return null;
+  if (!s || typeof s.id !== "number" || typeof s.fp !== "string" || typeof s.exp !== "number" || Date.now() > s.exp) return adminFromAccount();
   const rows = await query<AdminRow>("ihern2024", "SELECT * FROM adminlogin WHERE adID = ?", [s.id]);
   if (rows === null) return "unavailable";
   const row = rows[0];
-  if (!row || row.userStatus !== "Y" || fingerprint(row) !== s.fp) return null;
+  if (!row || row.userStatus !== "Y" || fingerprint(row) !== s.fp) return adminFromAccount();
   return toAdmin(row);
 });
+
+/* ---------------- the linked IHERN account ---------------- */
+
+const sameEmail = (a: string, b: string) => a.trim().toLowerCase() === b.trim().toLowerCase();
+
+async function linkAccount(subscriberId: number, adminId: number): Promise<void> {
+  await execute(
+    "cdnm",
+    "INSERT INTO membership_admin_accounts (subscriber_id, admin_id) VALUES (?, ?) ON DUPLICATE KEY UPDATE admin_id = VALUES(admin_id)",
+    [subscriberId, adminId]
+  );
+}
+
+/** The admin the signed-in IHERN account is linked to, if it is still active under the same email. */
+async function adminFromAccount(): Promise<Admin | null | "unavailable"> {
+  const account = await readSession();
+  if (!account) return null;
+  const link = await query<{ admin_id: number }>("cdnm", "SELECT admin_id FROM membership_admin_accounts WHERE subscriber_id = ?", [account.id]);
+  if (!link?.length) return null;
+  const rows = await query<AdminRow>("ihern2024", "SELECT * FROM adminlogin WHERE adID = ?", [Number(link[0].admin_id)]);
+  if (rows === null) return "unavailable";
+  const row = rows[0];
+  if (!row || row.userStatus !== "Y" || !sameEmail(row.adEmail, account.email)) return null;
+  return { ...toAdmin(row), viaAccount: true };
+}
+
+/**
+ * After an IHERN account sign-in: links the account to the admin account with
+ * the same email when the sign-in proves the holder owns it - the admin
+ * password (`password`), or an address Google has checked (`password` null).
+ */
+export async function linkAdminOnSignIn(subscriberId: number, email: string, password: string | null): Promise<void> {
+  try {
+    const rows = await query<AdminRow>("ihern2024", "SELECT * FROM adminlogin WHERE LOWER(adEmail) = ? AND userStatus = 'Y'", [email.trim().toLowerCase()]);
+    const row = rows?.length === 1 ? rows[0] : null;
+    if (!row) return;
+    if (password !== null && row.adPassword !== sha256(password)) return;
+    await linkAccount(subscriberId, Number(row.adID));
+  } catch (e) {
+    // Never in the way of signing in.
+    console.error("[membership admin] link:", (e as Error).message);
+  }
+}
+
+/** Whether the signed-in IHERN account could be linked (same email as an active admin), for the sign-in page's note. */
+export async function accountMatchingAdmin(): Promise<{ email: string } | null> {
+  const account = await readSession();
+  if (!account) return null;
+  const rows = await query("ihern2024", "SELECT 1 FROM adminlogin WHERE LOWER(adEmail) = ? AND userStatus = 'Y' LIMIT 1", [account.email.toLowerCase()]);
+  return rows?.length ? { email: account.email } : null;
+}
 
 export class NotSignedIn extends Error {}
 

@@ -38,6 +38,7 @@ export default async function MembersPage(props: { searchParams: Promise<Search>
         <div className="adm-row">
           <a className="adm-btn" href={u("/membership/admin/export")}>Export active members (CSV)</a>
           <a className="adm-btn adm-btn--ghost" href={u("/membership/admin/export?all=1")}>Export everyone</a>
+          <Link className="adm-btn adm-btn--ghost" href="/membership/admin/members/import">Import members (CSV)</Link>
         </div>
       </header>
       <div className="adm-tabs">

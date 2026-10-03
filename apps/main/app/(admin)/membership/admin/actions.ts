@@ -8,6 +8,7 @@ import {
   adminLogin,
   adminLogout,
   changeAdminPassword,
+  currentAdmin,
   deleteMember,
   getMember,
   NotSignedIn,
@@ -21,6 +22,9 @@ import { createResetToken, imageType, removePhoto, storePhoto } from "@/lib/memb
 import { sendPasswordReset } from "@ihern/core/mail";
 import { absoluteUrl } from "@ihern/core/env";
 import { take, RESET_EMAILS } from "@ihern/core/ratelimit";
+import { endSession, readSession } from "@/lib/auth";
+import { backchannelLogout } from "@/lib/sso";
+import { importMembers, readMembersCsv, IMPORT_MAX_BYTES } from "@/lib/member-import";
 
 /** Every action checks the admin session itself: an action can be called without loading a page. */
 
@@ -29,7 +33,7 @@ const done = (message: string): ActionResult => ({ ok: true, message, error: "" 
 const failed = (error: string): ActionResult => ({ ok: false, message: "", error });
 const UNAVAILABLE = "The membership database could not be reached. Please try again shortly.";
 
-async function guard(fn: (adminId: number) => Promise<ActionResult>): Promise<ActionResult> {
+async function guard<T extends ActionResult>(fn: (adminId: number) => Promise<T | ActionResult>): Promise<T | ActionResult> {
   try {
     const who = await requireAdmin();
     return await fn(who.id);
@@ -67,7 +71,15 @@ export async function signInAdmin(prev: LoginState, form: FormData): Promise<Log
 }
 
 export async function signOutAdmin(): Promise<void> {
+  const who = await currentAdmin();
   await adminLogout();
+  // In through the IHERN account: sign out of that too, everywhere (as
+  // /logout does), or the account would sign the admin straight back in.
+  if (who && who !== "unavailable" && who.viaAccount) {
+    const session = await readSession();
+    if (session) await backchannelLogout(session.id);
+    await endSession();
+  }
   redirect("/membership/admin/login");
 }
 
@@ -194,3 +206,37 @@ export async function changePasswordAction(prev: ActionResult, form: FormData): 
   });
 }
 
+
+/* ---------------- import ---------------- */
+
+export type ImportState = ActionResult & {
+  /** set after a check or an import */
+  report?: { dryRun: boolean; added: number; updated: number; unchanged: number; problems: { line: number; reason: string }[] };
+};
+
+/** Members from a CSV file: "check" counts what would happen, "import" does it. */
+export async function importMembersAction(prev: ImportState, form: FormData): Promise<ImportState> {
+  return guard<ImportState>(async () => {
+    const file = form.get("file");
+    if (!(file instanceof File) || file.size === 0) return failed("Please choose a CSV file.");
+    if (file.size > IMPORT_MAX_BYTES) return failed("The file is larger than 2 MB. Please split it.");
+    if (!/\.csv$/i.test(file.name) && !/csv|text\/plain|excel/i.test(file.type)) return failed("Please choose a CSV file (in a spreadsheet: Save as / Download as → CSV).");
+    const read = readMembersCsv(await file.text());
+    if (read.error) return failed(read.error);
+
+    const dryRun = form.get("mode") !== "import";
+    const sum = await importMembers(read.rows, {
+      update: form.get("update") === "1",
+      newStatus: form.get("newStatus") === "N" ? "N" : "Y",
+      dryRun,
+    });
+    if (!sum) return failed(UNAVAILABLE);
+    if (!dryRun && (sum.added || sum.updated)) refresh();
+    const problems = [...read.problems, ...sum.failed].sort((a, b) => a.line - b.line);
+    const report = { dryRun, added: sum.added, updated: sum.updated, unchanged: sum.unchanged, problems };
+    const message = dryRun
+      ? "Checked. Nothing has been changed yet: review the numbers below, then choose Import."
+      : `Imported: ${sum.added} added, ${sum.updated} updated.`;
+    return { ...done(message), report };
+  });
+}
