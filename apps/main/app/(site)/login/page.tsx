@@ -17,7 +17,7 @@ type Search = { mode?: string; return?: string; error?: string };
 export async function generateMetadata(props: { searchParams: Promise<Search> }): Promise<Metadata> {
   const searchParams = await props.searchParams;
   return {
-    title: searchParams.mode === "register" ? "Create your IHERN account" : "Sign in",
+    title: "Sign in",
     robots: { index: false },
   };
 }
@@ -42,7 +42,12 @@ function googleError(code: string | undefined): string {
 export default async function LoginPage(props: { searchParams: Promise<Search> }) {
   const searchParams = await props.searchParams;
   const returnTo = safeReturn(searchParams.return);
-  const mode = searchParams.mode === "register" ? "register" : "login";
+  const mode = "login" as const;
+
+  // "Create account" is the membership form: everyone who signs up is a
+  // registered member, so IHERN knows who uses the site. (Members then sign
+  // in here with the email and password they chose.)
+  if (searchParams.mode === "register") redirect(searchParams.return ? `/join?return=${encodeURIComponent(returnTo)}` : "/join");
 
   if (!(await isFormSubmission()) && (await readSession())) redirect(returnTo);
 

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import JoinForm from "./JoinForm";
 import { currentMember } from "@/lib/membership";
+import { safeReturn } from "@/lib/auth";
 import { pageMeta } from "@/lib/seo";
 
 /** Join IHERN - the membership form (applications/register.php). */
@@ -15,7 +16,9 @@ export const metadata: Metadata = pageMeta(
 
 export const dynamic = "force-dynamic";
 
-export default async function JoinPage() {
+export default async function JoinPage(props: { searchParams: Promise<{ return?: string }> }) {
+  // Where to go after signing in (the page "Create account" was clicked on, e.g. a blog post).
+  const returnTo = safeReturn((await props.searchParams).return, "");
   // A member who is signed in to the membership area goes to their registration.
   // Only a sign-in the membership system still recognises (a stale cookie would loop with the dashboard).
   const member = await currentMember();
@@ -35,7 +38,7 @@ export default async function JoinPage() {
 
       <div className="ihern-form-section">
         <div className="container">
-          <JoinForm />
+          <JoinForm returnTo={returnTo} />
         </div>
       </div>
     </main>

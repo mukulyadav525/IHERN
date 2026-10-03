@@ -17,7 +17,7 @@ function Submit() {
 }
 
 /** The membership form and its thank-you page (applications/register.php). */
-export default function JoinForm() {
+export default function JoinForm({ returnTo = "" }: { returnTo?: string }) {
   const [state, action] = useActionState(submitMembership, { seq: 0, errors: [], old: EMPTY_FIELDS, done: null } as JoinState);
   const old = state.old;
   const [position, setPosition] = useState(old.yourTitle);
@@ -57,7 +57,7 @@ export default function JoinForm() {
           </p>
         )}
         <p>
-          You can use the same email and password to <Link href="/login">sign in to your IHERN account</Link>.
+          You can use the same email and password to <Link href={returnTo ? `/login?mode=login&return=${encodeURIComponent(returnTo)}` : "/login"}>sign in to your IHERN account</Link>.
         </p>
         <p className="ihern-form-actions">
           <Link className="btn-ihern" href="/">
