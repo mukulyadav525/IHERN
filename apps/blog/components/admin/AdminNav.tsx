@@ -1,9 +1,6 @@
-"use client";
+import SharedNav, { type AdminNavItem } from "@ihern/core/ui/AdminNav";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-
-const ITEMS = [
+const ITEMS: AdminNavItem[] = [
   { href: "/admin", label: "Dashboard", exact: true },
   { href: "/admin/posts", label: "Posts" },
   { href: "/admin/pages", label: "Pages" },
@@ -14,19 +11,7 @@ const ITEMS = [
   { href: "/admin/comments", label: "Comments" },
 ];
 
+/** The blog admin's pages; Editors only for admins. */
 export default function AdminNav({ isAdmin }: { isAdmin: boolean }) {
-  const path = usePathname() || "";
-  const items = isAdmin ? [...ITEMS, { href: "/admin/editors", label: "Editors" }] : ITEMS;
-  return (
-    <nav className="adm-nav" aria-label="Admin">
-      {items.map((it) => {
-        const active = it.exact ? path === it.href : path === it.href || path.startsWith(it.href + "/");
-        return (
-          <Link key={it.href} href={it.href} className={active ? "is-active" : undefined} aria-current={active ? "page" : undefined}>
-            {it.label}
-          </Link>
-        );
-      })}
-    </nav>
-  );
+  return <SharedNav label="Blog admin" items={isAdmin ? [...ITEMS, { href: "/admin/editors", label: "Editors" }] : ITEMS} />;
 }

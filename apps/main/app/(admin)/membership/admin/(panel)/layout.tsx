@@ -1,11 +1,13 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import AdminNav from "@/components/admin/AdminNav";
+import { AdminBar, AdminGate, AdminShell } from "@ihern/core/ui/AdminFrame";
 import { currentAdmin } from "@/lib/admin";
 import { u } from "@/lib/paths";
 import { signOutAdmin } from "../actions";
 
 export const dynamic = "force-dynamic";
+
+const SITE = { href: u("/"), label: "View site" };
 
 /** Every page of the panel needs a signed-in admin (page-top.php). */
 export default async function PanelLayout({ children }: { children: React.ReactNode }) {
@@ -13,33 +15,31 @@ export default async function PanelLayout({ children }: { children: React.ReactN
   if (who === null) redirect("/membership/admin/login");
   if (who === "unavailable") {
     return (
-      <main className="adm-gate">
-        <div className="adm-card">
-          <h1>The membership admin is unavailable</h1>
-          <p>The membership database could not be reached. Please try again shortly.</p>
-        </div>
-      </main>
+      <AdminGate bar={<AdminBar section="Membership admin" home="/membership/admin" site={SITE} />}>
+        <h1>The membership admin is unavailable</h1>
+        <p>The membership database could not be reached. Please try again shortly.</p>
+      </AdminGate>
     );
   }
   return (
-    <div className="adm-shell">
-      <aside className="adm-side">
-        <Link className="adm-brand" href="/membership/admin">
-          <strong>IHERN</strong> <span>Membership admin</span>
-        </Link>
-        <AdminNav />
-        <div className="adm-me">
-          <span className="adm-me-name">{who.name || who.email}</span>
-          <span className="adm-me-role">{who.email}</span>
-          <a href={u("/")}>View site</a>
-          <form action={signOutAdmin}>
-            <button type="submit" className="adm-me-out">Sign out</button>
-          </form>
-        </div>
-      </aside>
-      <main className="adm-main" id="main">
-        {children}
-      </main>
-    </div>
+    <AdminShell
+      navLabel="Membership admin"
+      nav={<AdminNav />}
+      bar={
+        <AdminBar
+          section="Membership admin"
+          home="/membership/admin"
+          site={SITE}
+          user={{ name: who.name || who.email, detail: who.email }}
+          signOut={
+            <form action={signOutAdmin}>
+              <button type="submit" className="adm-me-out">Sign out</button>
+            </form>
+          }
+        />
+      }
+    >
+      {children}
+    </AdminShell>
   );
 }

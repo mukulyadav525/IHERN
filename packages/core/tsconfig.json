@@ -1,7 +1,10 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "lib": ["dom", "esnext"],
+    "lib": [
+      "dom",
+      "esnext"
+    ],
     "module": "esnext",
     "moduleResolution": "bundler",
     "strict": true,
@@ -9,7 +12,11 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "isolatedModules": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "jsx": "preserve"
   },
-  "include": ["src/**/*.ts"]
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx"
+  ]
 }
