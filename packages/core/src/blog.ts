@@ -12,7 +12,8 @@ import { plainText, trimWords } from "./text";
  */
 
 export type Term = { id: number; taxonomy: "category" | "tag"; slug: string; name: string; description: string; count: number };
-export type Author = { id: number; slug: string; name: string; bio: string };
+/** `photo` is the path of the author's picture in the media library (blog_media), or null. */
+export type Author = { id: number; slug: string; name: string; bio: string; photo: string | null; photoMediaId: number | null };
 export type Media = { id: number; path: string; mime: string; width: number | null; height: number | null; alt: string; title: string; size: number; createdAt: string };
 export type PostStatus = "draft" | "published" | "trash";
 export type { PostType } from "./blog-paths";
@@ -55,7 +56,7 @@ export function autoExcerpt(content: string, words = 55): string {
 type PostRow = {
   id: number; type: PostType; slug: string; title: string; excerpt: string | null; content?: string; status: PostStatus;
   published_at: string | null; updated_at: string; comments_open?: number; notified_at?: string | null; wp_id?: number | null;
-  a_id: number | null; a_slug: string | null; a_name: string | null; a_bio: string | null;
+  a_id: number | null; a_slug: string | null; a_name: string | null; a_bio: string | null; a_photo_id: number | null; a_photo: string | null;
   m_id: number | null; m_path: string | null; m_mime: string | null; m_width: number | null; m_height: number | null; m_alt: string | null; m_title: string | null; m_size: number | null; m_created: string | null;
   excerpt_source?: string;
 };
@@ -63,11 +64,12 @@ type PostRow = {
 const SELECT_SUMMARY = `
   SELECT p.id, p.type, p.slug, p.title, p.excerpt, p.status, p.published_at, p.updated_at,
          LEFT(p.content, 6000) AS excerpt_source,
-         a.id AS a_id, a.slug AS a_slug, a.name AS a_name, a.bio AS a_bio,
+         a.id AS a_id, a.slug AS a_slug, a.name AS a_name, a.bio AS a_bio, a.photo_media_id AS a_photo_id, am.path AS a_photo,
          m.id AS m_id, m.path AS m_path, m.mime AS m_mime, m.width AS m_width, m.height AS m_height,
          m.alt AS m_alt, m.title AS m_title, m.size AS m_size, m.created_at AS m_created
     FROM blog_posts p
     LEFT JOIN blog_authors a ON a.id = p.author_id
+    LEFT JOIN blog_media am ON am.id = a.photo_media_id
     LEFT JOIN blog_media m ON m.id = p.featured_media_id`;
 
 function toMedia(r: PostRow): Media | null {
@@ -89,7 +91,9 @@ function toSummary(r: PostRow, terms: Map<number, Term[]>): PostSummary {
     status: r.status,
     publishedAt: r.published_at,
     updatedAt: r.updated_at,
-    author: r.a_id ? { id: Number(r.a_id), slug: r.a_slug ?? "", name: r.a_name ?? "", bio: r.a_bio ?? "" } : null,
+    author: r.a_id
+      ? { id: Number(r.a_id), slug: r.a_slug ?? "", name: r.a_name ?? "", bio: r.a_bio ?? "", photo: r.a_photo ?? null, photoMediaId: r.a_photo_id ? Number(r.a_photo_id) : null }
+      : null,
     categories: t.filter((x) => x.taxonomy === "category"),
     tags: t.filter((x) => x.taxonomy === "tag"),
     image: toMedia(r),
@@ -263,24 +267,33 @@ export async function getTerm(taxonomy: "category" | "tag", by: { slug?: string;
   return r ? { id: Number(r.id), taxonomy, slug: r.slug, name: r.name, description: r.description ?? "", count: 0 } : undefined;
 }
 
+type AuthorRow = { id: number; slug: string; name: string; bio: string | null; photo_media_id: number | null; photo: string | null };
+const toAuthor = (r: AuthorRow): Author => ({
+  id: Number(r.id), slug: r.slug, name: r.name, bio: r.bio ?? "", photo: r.photo ?? null, photoMediaId: r.photo_media_id ? Number(r.photo_media_id) : null,
+});
+
 export async function listAuthors(onlyWithPosts = false): Promise<(Author & { count: number })[] | null> {
-  const rows = await query<{ id: number; slug: string; name: string; bio: string | null; n: number }>(
+  const rows = await query<AuthorRow & { n: number }>(
     "cdnm",
-    `SELECT a.id, a.slug, a.name, a.bio,
+    `SELECT a.id, a.slug, a.name, a.bio, a.photo_media_id, am.path AS photo,
             (SELECT COUNT(*) FROM blog_posts p WHERE p.author_id = a.id AND p.type = 'post' AND p.status = 'published' AND p.published_at <= NOW()) AS n
-       FROM blog_authors a ORDER BY a.name`
+       FROM blog_authors a LEFT JOIN blog_media am ON am.id = a.photo_media_id ORDER BY a.name`
   );
   if (rows === null) return null;
-  const list = rows.map((r) => ({ id: Number(r.id), slug: r.slug, name: r.name, bio: r.bio ?? "", count: Number(r.n) }));
+  const list = rows.map((r) => ({ ...toAuthor(r), count: Number(r.n) }));
   return onlyWithPosts ? list.filter((a) => a.count > 0) : list;
 }
 
 export async function getAuthor(by: { slug?: string; id?: number; wpId?: number }): Promise<Author | null | undefined> {
   const [col, val] = by.slug !== undefined ? ["slug", by.slug] : by.id !== undefined ? ["id", by.id] : ["wp_id", by.wpId ?? -1];
-  const rows = await query<{ id: number; slug: string; name: string; bio: string | null }>("cdnm", `SELECT id, slug, name, bio FROM blog_authors WHERE ${col} = ? LIMIT 1`, [val as string | number]);
+  const rows = await query<AuthorRow>(
+    "cdnm",
+    `SELECT a.id, a.slug, a.name, a.bio, a.photo_media_id, am.path AS photo
+       FROM blog_authors a LEFT JOIN blog_media am ON am.id = a.photo_media_id WHERE a.${col} = ? LIMIT 1`,
+    [val as string | number]
+  );
   if (rows === null) return null;
-  const r = rows[0];
-  return r ? { id: Number(r.id), slug: r.slug, name: r.name, bio: r.bio ?? "" } : undefined;
+  return rows[0] ? toAuthor(rows[0]) : undefined;
 }
 
 /** Months that have posts, newest first: [{ year, month, count }]. */
@@ -445,15 +458,15 @@ export async function deleteTerm(id: number): Promise<boolean> {
   return (await execute("cdnm", "DELETE FROM blog_terms WHERE id = ?", [id])) !== null;
 }
 
-export async function saveAuthor(id: number | null, a: { name: string; slug: string; bio: string }): Promise<number | null | "exists"> {
+export async function saveAuthor(id: number | null, a: { name: string; slug: string; bio: string; photoMediaId: number | null }): Promise<number | null | "exists"> {
   const dupe = await query("cdnm", "SELECT id FROM blog_authors WHERE slug = ? AND id <> ?", [a.slug, id ?? 0]);
   if (dupe === null) return null;
   if (dupe.length) return "exists";
   if (id === null) {
-    const res = await execute("cdnm", "INSERT INTO blog_authors (slug, name, bio) VALUES (?, ?, ?)", [a.slug, a.name, a.bio]);
+    const res = await execute("cdnm", "INSERT INTO blog_authors (slug, name, bio, photo_media_id) VALUES (?, ?, ?, ?)", [a.slug, a.name, a.bio, a.photoMediaId]);
     return res === null ? null : Number(res.insertId);
   }
-  const res = await execute("cdnm", "UPDATE blog_authors SET slug = ?, name = ?, bio = ? WHERE id = ?", [a.slug, a.name, a.bio, id]);
+  const res = await execute("cdnm", "UPDATE blog_authors SET slug = ?, name = ?, bio = ?, photo_media_id = ? WHERE id = ?", [a.slug, a.name, a.bio, a.photoMediaId, id]);
   return res === null ? null : id;
 }
 

@@ -38,7 +38,7 @@ export default async function TermsPage() {
                     <Submit label="Save" className="adm-btn adm-btn--small" />
                   </ActionForm>
                 </td>
-                <td>{t.count ? <a href={u(`/category/${t.slug}`)} target="_blank" rel="noopener">{t.count}</a> : 0}</td>
+                <td data-label="Posts">{t.count ? <a href={u(`/category/${t.slug}`)} target="_blank" rel="noopener">{t.count}</a> : 0}</td>
                 <td className="adm-actions">
                   <ActionButton action={deleteTermAction.bind(null, t.id)} label="Delete" className="adm-link adm-danger" confirm={`Delete “${t.name}”? Posts keep their other categories and tags.`} />
                 </td>

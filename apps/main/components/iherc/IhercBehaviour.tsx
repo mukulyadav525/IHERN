@@ -44,16 +44,44 @@ export default function IhercBehaviour() {
       });
     }
 
-    /* Collapsed navigation */
+    /* Collapsed navigation: the main site's black drawer (ihern-brand.css),
+       with a close button and a backdrop added here; Escape also closes it */
     const toggler = document.querySelector<HTMLElement>(".navbar-toggler");
     const menu = document.getElementById("navbarCollapse");
+    const close = document.createElement("button");
+    close.type = "button";
+    close.className = "iherc-nav-close";
+    close.setAttribute("aria-label", "Close menu");
+    close.innerHTML = '<span aria-hidden="true"></span><span aria-hidden="true"></span>';
+    const shade = document.createElement("div");
+    shade.className = "iherc-nav-shade";
     const setOpen = (open: boolean) => {
       menu?.classList.toggle("show", open);
       toggler?.setAttribute("aria-expanded", String(open));
       toggler?.classList.toggle("collapsed", !open);
+      document.body.classList.toggle("iherc-nav-open", open);
+      if (open) close.focus();
     };
     if (toggler && menu) {
+      menu.prepend(close);
+      menu.parentElement?.appendChild(shade);
+      cleanups.push(() => {
+        close.remove();
+        shade.remove();
+        document.body.classList.remove("iherc-nav-open");
+      });
       on(toggler, "click", () => setOpen(!menu.classList.contains("show")));
+      on(close, "click", () => {
+        setOpen(false);
+        toggler.focus();
+      });
+      on(shade, "click", () => setOpen(false));
+      on(document, "keydown", ((e: KeyboardEvent) => {
+        if (e.key === "Escape" && menu.classList.contains("show")) {
+          setOpen(false);
+          toggler.focus();
+        }
+      }) as EventListener);
       menu.querySelectorAll("a").forEach((a) => on(a, "click", () => setOpen(false)));
     }
 

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getPublishedBySlug } from "@/lib/content";
 import { postUrl } from "@ihern/core/blog-paths";
+import PageBanner from "@/components/PageBanner";
 
 /** Pages written in the admin area (About us, ...), at /<slug>. Anything else is a 404. */
 
@@ -29,13 +30,16 @@ export default async function Page(props: { params: Promise<{ slug: string[] }> 
     );
   }
   return (
-    <main className="b-wrap b-wrap--post" id="main">
-      <article className="b-card b-post">
-        <div className="b-post-inner">
-          <h1 className="b-post-title">{page.title}</h1>
-          <div className="b-content" dangerouslySetInnerHTML={{ __html: page.content }} />
-        </div>
-      </article>
+    // Like the main site's About page: the banner, then the text.
+    <main id="main">
+      <PageBanner title={page.title} titleClass="b-post-title" />
+      <div className="b-wrap b-wrap--post">
+        <article className="b-card b-post">
+          <div className="b-post-inner">
+            <div className="b-content" dangerouslySetInnerHTML={{ __html: page.content }} />
+          </div>
+        </article>
+      </div>
     </main>
   );
 }

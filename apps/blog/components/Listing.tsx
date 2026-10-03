@@ -2,6 +2,9 @@ import Link from "next/link";
 import { listAuthors, listPosts, listTerms, PAGE_SIZE, type PostQuery } from "@/lib/content";
 import { EmptyState, Pagination, PostRow } from "./PostParts";
 import { u } from "@/lib/paths";
+import PageBanner from "./PageBanner";
+import FilterToggle, { HideFilters } from "@ihern/core/ui/FilterToggle";
+import { mainUrl } from "@/lib/site";
 
 /**
  * A list of posts with paging - the "All posts" page, the category, tag,
@@ -56,8 +59,10 @@ export async function Listing({
 export async function FilterBar({ values, total }: { values: Record<string, string>; total?: number }) {
   const [authors, categories, tags, all] = await Promise.all([listAuthors(true), listTerms("category", true), listTerms("tag", true), listPosts({ limit: 200 })]);
   const years = Array.from(new Set((all?.posts ?? []).map((p) => (p.publishedAt ?? "").slice(0, 4)).filter(Boolean))).sort().reverse();
-  const active = ["q", "author", "category", "tag", "year"].some((k) => values[k]) || (values.sort && values.sort !== "newest");
+  const inUse = ["q", "author", "category", "tag", "year"].filter((k) => values[k]).length + (values.sort && values.sort !== "newest" ? 1 : 0);
+  const active = inUse > 0;
   return (
+    <FilterToggle link={{ label: "IHERN", href: mainUrl("") }} active={inUse} panelId="b-filters">
     <form className="b-card b-filters" action={u("/posts")} method="get" role="search" aria-label="Filter posts">
       <div className="b-filters-grid">
         <div className="b-field">
@@ -123,22 +128,22 @@ export async function FilterBar({ values, total }: { values: Record<string, stri
               Clear filters
             </Link>
           ) : null}
+          <HideFilters className="b-btn b-btn--ghost" />
           <button type="submit" className="b-btn">
             Apply
           </button>
         </span>
       </div>
     </form>
+    </FilterToggle>
   );
 }
 
-/** "Category / Funding" heading for an archive page. */
-export function ArchiveHeading({ kind, title, children }: { kind: string; title: string; children?: React.ReactNode }) {
+/** "Category / Funding" heading for an archive page: the IHERN page banner. */
+export function ArchiveHeading({ kind, title, photo, children }: { kind: string; title: string; photo?: React.ReactNode; children?: React.ReactNode }) {
   return (
-    <header className="b-card b-archive-head">
-      <p className="b-archive-kind">{kind}</p>
-      <h1 className="b-archive-title">{title}</h1>
+    <PageBanner kind={kind} title={title} titleClass="b-archive-title" photo={photo}>
       {children}
-    </header>
+    </PageBanner>
   );
 }

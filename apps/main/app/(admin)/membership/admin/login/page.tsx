@@ -1,28 +1,39 @@
 import { redirect } from "next/navigation";
-import { currentAdmin } from "@/lib/admin";
+import { AdminGate } from "@ihern/core/ui/AdminFrame";
+import { blogUrl } from "@ihern/core/env";
+import { accountMatchingAdmin, currentAdmin } from "@/lib/admin";
 import { u } from "@/lib/paths";
 import AdminLoginForm from "./AdminLoginForm";
 
 export const metadata = { title: "Sign in" };
 export const dynamic = "force-dynamic";
 
-/** applications/admin/index.php: staff sign-in. */
+/** applications/admin/index.php: staff sign-in, in the same card as the public sign-in page. */
 export default async function AdminLoginPage() {
   const who = await currentAdmin();
   if (who && who !== "unavailable") redirect("/membership/admin");
+  const account = await accountMatchingAdmin();
   return (
-    <main className="adm-gate">
-      <div className="adm-card adm-login">
-        <p className="adm-login-brand">
-          <img src={u("/assets/images/iiit-logo.png")} alt="" width={40} height={40} />
-          <span>
-            <strong>IHERN</strong> Membership admin
-          </span>
+    <AdminGate
+      wide={false}
+      section="Membership admin"
+      home="/membership/admin"
+      ihernHome={u("/")}
+      links={[
+        { label: "IHERN website", href: u("/") },
+        { label: "IHERN Blog", href: blogUrl() },
+      ]}
+    >
+      <h1>Sign in</h1>
+      <p className="adm-muted">
+        For IHERN staff. Members sign in at <a href={u("/membership/login")}>Member sign in</a>.
+      </p>
+      {account ? (
+        <p className="adm-flash adm-flash--note">
+          You are signed in to IHERN as {account.email}. Sign in here once with your admin password: after that, your IHERN sign-in opens the membership admin.
         </p>
-        <h1>Sign in</h1>
-        <p className="adm-muted">For IHERN staff. Members sign in at <a href={u("/membership/login")}>Member sign in</a>.</p>
-        <AdminLoginForm />
-      </div>
-    </main>
+      ) : null}
+      <AdminLoginForm email={account?.email} />
+    </AdminGate>
   );
 }

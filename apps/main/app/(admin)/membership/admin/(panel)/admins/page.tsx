@@ -30,9 +30,9 @@ export default async function AdminsPage() {
           {admins.map((a) => (
             <tr key={a.id}>
               <td className="adm-strong">{a.name}</td>
-              <td>{a.email}{a.mobile ? <div className="adm-muted">{a.mobile}</div> : null}</td>
-              <td className="adm-nowrap">{a.added.slice(0, 10)}</td>
-              <td><span className={`adm-status ${a.active ? "is-on" : "is-off"}`}>{a.active ? "Active" : "Inactive"}</span></td>
+              <td data-label="Email" className="adm-wrap">{a.email}{a.mobile ? <div className="adm-muted">{a.mobile}</div> : null}</td>
+              <td className="adm-nowrap" data-label="Added">{a.added.slice(0, 10)}</td>
+              <td data-label="Status"><span className={`adm-status ${a.active ? "is-on" : "is-off"}`}>{a.active ? "Active" : "Inactive"}</span></td>
               <td className="adm-actions">
                 {a.id === me.id ? (
                   <span className="adm-muted">you</span>

@@ -4,6 +4,8 @@
   "private": true,
   "description": "Shared by the IHERN main site and blog: database access, IHERN accounts and subscriptions, blog content, mail",
   "exports": {
+    "./ui/*": "./src/ui/*.tsx",
+    "./styles/*": "./styles/*",
     "./*": "./src/*.ts"
   },
   "dependencies": {

@@ -11,6 +11,7 @@ export type Slide = {
   excerpt: string;
   author: string;
   authorHref: string | null;
+  authorPhoto: string | null;
   date: string;
   image: { path: string; width: number | null; height: number | null } | null;
   categories: { slug: string; name: string }[];
@@ -74,9 +75,13 @@ export default function HeroCarousel({ slides }: { slides: Slide[] }) {
           <div className="b-meta">
             {s.authorHref ? (
               <Link className="b-meta-author" href={s.authorHref}>
-                <span className="b-author-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" width="14" height="14"><path fill="currentColor" d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0 2c-4.42 0-8 2.24-8 5v3h16v-3c0-2.76-3.58-5-8-5Z" /></svg>
-                </span>
+                {s.authorPhoto ? (
+                  <img className="b-author-icon b-author-photo" src={u(mediaPath(s.authorPhoto, 96))} alt="" width={22} height={22} />
+                ) : (
+                  <span className="b-author-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="14" height="14"><path fill="currentColor" d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0 2c-4.42 0-8 2.24-8 5v3h16v-3c0-2.76-3.58-5-8-5Z" /></svg>
+                  </span>
+                )}
                 {s.author}
               </Link>
             ) : null}

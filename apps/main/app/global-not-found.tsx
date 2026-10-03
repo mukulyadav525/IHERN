@@ -32,7 +32,8 @@ export default function GlobalNotFound() {
         </div>
         <div className="rs-about style2 pb-100 md-pb-70">
           <div className="container-xxl">
-            <div className="sec-title">
+            {/* centred, as the blog's "Page not found" */}
+            <div className="sec-title text-center">
               <p>The page you were looking for is not here. It may have moved, or the address may be mistyped.</p>
               <div className="btn-part mt-45 md-mt-30">
                 {" "}

@@ -44,6 +44,8 @@ export default function RichText({ name, initial }: { name: string; initial: str
       Placeholder.configure({ placeholder: "Write the post…" }),
     ],
     content: mode === "visual" ? initial : "",
+    // A name for screen readers: the editing area is otherwise an unlabelled box.
+    editorProps: { attributes: { role: "textbox", "aria-multiline": "true", "aria-label": "Post text" } },
     onUpdate: ({ editor }) => setHtml(editor.getHTML()),
     onSelectionUpdate: () => force((n) => n + 1),
   });

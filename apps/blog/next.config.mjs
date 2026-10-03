@@ -10,7 +10,9 @@ const nextConfig = {
   transpilePackages: ["@ihern/core"],
   // The middleware runs where only build-time values are visible: it needs
   // the main site's address to recognise readers arriving from there.
-  env: { IHERN_SITE_URL: process.env.IHERN_SITE_URL || "" },
+  // IHERN_ASSET_VERSION: a version for this build, appended to the
+  // stylesheet links (lib/paths.ts css()).
+  env: { IHERN_SITE_URL: process.env.IHERN_SITE_URL || "", IHERN_ASSET_VERSION: Date.now().toString(36) },
   poweredByHeader: false,
   images: { unoptimized: true },
   experimental: {

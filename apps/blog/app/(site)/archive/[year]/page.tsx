@@ -30,9 +30,11 @@ export default async function ArchivePage(props: { params: Promise<Params>; sear
   if (!year || month === null) notFound();
   const base = month ? `/archive/${year}/${String(month).padStart(2, "0")}` : `/archive/${year}`;
   return (
-    <main className="b-wrap" id="main">
+    <main id="main">
       <ArchiveHeading kind={month ? "Month" : "Year"} title={month ? `${monthName(month)} ${year}` : String(year)} />
-      <Listing base={base} page={parsePage(searchParams.page)} query={{ year, month }} empty="No posts from this time." />
+      <div className="b-wrap">
+        <Listing base={base} page={parsePage(searchParams.page)} query={{ year, month }} empty="No posts from this time." />
+      </div>
     </main>
   );
 }

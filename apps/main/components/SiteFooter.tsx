@@ -68,34 +68,19 @@ export default function SiteFooter() {
         <div className="container-xxl">
           <div className="footer-bottom-row">
             <div className="copyright">
-              <p>
-                &copy; {new Date().getFullYear()} IHERN IIITD. All rights reserved.{" "}
-                <span className="footer-credit">
-                  Developed by{" "}
-                  <a href="https://iiitd.ac.in/people/administration" target="_blank" rel="noopener">
-                    Web Admin
-                  </a>{" "}
-                  &amp;{" "}
-                  <a href="https://www.linkedin.com/in/mukulyadav525/" target="_blank" rel="noopener">
-                    Mukul Yadav
-                  </a>
-                </span>
-              </p>
+              <p>&copy; {new Date().getFullYear()} IHERN IIITD. All rights reserved.</p>
             </div>
-            <ul className="footer-social">
-              <li>
-                <a
-                  href="https://www.linkedin.com/company/india-higher-education-research-network/about/"
-                  aria-label="IHERN on LinkedIn"
-                  target="_blank"
-                  rel="noopener"
-                >
-                  <span>
-                    <i className="fa fa-linkedin" aria-hidden="true"></i>
-                  </span>
-                </a>
-              </li>
-            </ul>
+            {/* The credit sits on the right; LinkedIn is in the Connect column above. */}
+            <p className="footer-credit">
+              Developed by{" "}
+              <a href="https://iiitd.ac.in/people/administration" target="_blank" rel="noopener">
+                Web Admin
+              </a>{" "}
+              &amp;{" "}
+              <a href="https://www.linkedin.com/in/mukulyadav525/" target="_blank" rel="noopener">
+                Mukul Yadav
+              </a>
+            </p>
           </div>
         </div>
       </div>

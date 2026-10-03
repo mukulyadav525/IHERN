@@ -5,7 +5,8 @@
    site's own. This file adds only the blog's pieces. Prefix: .b-
    ========================================================================== */
 
-body.ihern-blog{ background:var(--ihern-surface-alt); }
+/* White, as the main site's pages; cards carry their own border and shadow. */
+body.ihern-blog{ background:#fff; }
 
 /* ---- page frame ---- */
 .b-wrap{
@@ -29,6 +30,19 @@ body.defult-home .b-page-title{
   font-size:clamp(1.6rem,3vw,2.1rem); line-height:1.25; margin:4px 0 0; color:var(--ihern-ink);
 }
 
+/* ---- page banner: the main site's .page-header (components/PageBanner) ---- */
+body.defult-home .page-header h1.display-3{ color:#fff; margin:0; line-height:1.15; overflow-wrap:break-word; }
+body.defult-home .b-banner-kind{
+  position:relative; z-index:1; margin:0 0 10px;
+  font-size:13px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:rgba(255,255,255,.78);
+}
+body.defult-home .page-header .b-archive-desc{
+  position:relative; z-index:1; max-width:720px; margin:18px auto 0;
+  font-size:16px; line-height:1.65; color:rgba(255,255,255,.86);
+}
+.b-wrap--message{ text-align:center; padding-top:clamp(32px,5vw,56px); }
+.b-wrap--message .b-actions{ justify-content:center; }
+
 /* ---- wordmark: IHERN | Blog ---- */
 .b-wordmark{ display:flex; align-items:center; gap:12px; }
 body.defult-home .b-wordmark a.b-wordmark-section{
@@ -37,34 +51,7 @@ body.defult-home .b-wordmark a.b-wordmark-section{
 }
 body.defult-home .b-wordmark a.b-wordmark-section:hover{ color:var(--ihern-navy); }
 
-/* ---- account menu (signed in) ---- */
-.b-account{ position:relative; display:inline-block; }
-.b-account-toggle{
-  display:inline-flex; align-items:center; padding:0; margin:0 0 0 6px;
-  border:0; background:none; cursor:pointer; border-radius:50%;
-}
-.b-account-toggle:focus-visible{ outline:2px solid var(--ihern-accent); outline-offset:3px; }
-.b-account-toggle:hover .ihern-avatar{ background:var(--ihern-navy-deep); }
-.b-account-menu{
-  position:absolute; right:0; top:calc(100% + 12px); z-index:1000;
-  min-width:272px; padding:16px 18px;
-  background:#fff; border:1px solid var(--ihern-line); border-radius:var(--ihern-radius);
-  box-shadow:var(--ihern-shadow-lg); text-align:left;
-  display:flex; flex-direction:column; gap:2px;
-}
-.b-account-menu[hidden]{ display:none; }
-body.defult-home .b-account-menu p{ margin:0; }
-.b-account-person{ font-weight:700; color:var(--ihern-ink) !important; font-size:15px; }
-.b-account-email{ font-size:13px; color:var(--ihern-muted) !important; margin-bottom:10px !important; overflow-wrap:anywhere; }
-body.defult-home .b-account-menu a.b-account-link{
-  display:block; padding:8px 0; font-size:14.5px; font-weight:500; color:var(--ihern-ink);
-  border-top:1px solid var(--ihern-line-soft); line-height:1.4; height:auto;
-}
-body.defult-home .b-account-menu a.b-account-link:hover{ color:var(--ihern-navy); }
-body.defult-home .b-account-menu a.b-account-link--quiet{ color:var(--ihern-muted); }
-.b-account-status{ display:block; padding:8px 0; font-size:14px; color:#0f7a43; border-top:1px solid var(--ihern-line-soft); font-weight:600; }
-/* in the mobile drawer: the menu opens inline, on the dark drawer */
-#mobile-navbar-menu .b-account-menu{ position:static; margin-top:12px; box-shadow:none; }
+/* (the account menu is shared with the main site: ihern-next.css, .ihern-acct-*) */
 
 /* ---- notice ---- */
 .b-notice{ max-width:1200px; margin:12px auto 0; padding:0 var(--ihern-gutter, 20px); width:100%; }
@@ -224,10 +211,6 @@ body.defult-home .b-section-title::after{ content:""; flex:1; height:2px; backgr
 @media (max-width:480px){ .b-missed-grid{ grid-template-columns:1fr; } }
 
 /* ---- archives ---- */
-.b-archive-head{ padding:22px 24px; }
-body.defult-home .b-archive-kind{ margin:0 0 4px; font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--ihern-navy); }
-body.defult-home .b-archive-title{ margin:0; font-size:clamp(1.5rem,2.8vw,2rem); }
-body.defult-home .b-archive-desc{ margin:10px 0 0; }
 .b-empty{ padding:28px 24px; text-align:center; color:var(--ihern-body); }
 .b-empty .b-actions{ justify-content:center; margin-top:16px; }
 
@@ -284,6 +267,10 @@ body.defult-home .b-gate p{ margin:0 0 16px; }
   display:inline-flex; align-items:center; justify-content:center;
 }
 .b-author-avatar .b-author-icon{ width:56px; height:56px; background:none; }
+/* the author's photo, where they have one (blog admin, Authors) */
+.b-author-photo{ object-fit:cover; padding:0; border:1px solid var(--ihern-line); }
+body.defult-home .page-header .b-banner-photo{ position:relative; z-index:1; margin:0 auto 16px; width:112px; height:112px; }
+body.defult-home .page-header .b-banner-photo img{ width:112px; height:112px; border-radius:50%; object-fit:cover; border:3px solid rgba(255,255,255,.9); box-shadow:0 8px 24px rgba(0,0,0,.25); }
 .b-author-avatar svg{ width:28px; height:28px; }
 body.defult-home .b-author-name{ font-size:19px; margin:0 0 6px; }
 body.defult-home .b-author-name a{ color:var(--ihern-ink); }

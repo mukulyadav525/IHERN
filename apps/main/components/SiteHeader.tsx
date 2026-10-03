@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Fragment, useEffect } from "react";
+import AccountMenu, { type AccountMenuData } from "@ihern/core/ui/AccountMenu";
 import { NAV_ITEMS, currentNavKey } from "@/lib/nav";
 
 /**
@@ -13,9 +14,9 @@ import { NAV_ITEMS, currentNavKey } from "@/lib/nav";
  * same way.
  */
 
-export type HeaderAccount = { initials: string; name: string; email: string } | null;
+export type HeaderAccount = AccountMenuData | null;
 
-function NavList({ current, account, signInHref }: { current: string | null; account: HeaderAccount; signInHref: string }) {
+function NavList({ current, account, signInHref, drawer }: { current: string | null; account: HeaderAccount; signInHref: string; drawer?: boolean }) {
   return (
     <ul className="nav-menu">
       {NAV_ITEMS.map((item) => {
@@ -31,17 +32,7 @@ function NavList({ current, account, signInHref }: { current: string | null; acc
       })}
       <li className="ihern-account-item">
         {account ? (
-          <Link
-            className="ihern-avatar-link"
-            href="/account"
-            title={account.name ? `${account.name} · ${account.email}` : account.email}
-            aria-label={`My account: ${account.name || account.email}`}
-          >
-            <span className="ihern-avatar" aria-hidden="true">
-              {account.initials}
-            </span>
-            <span className="ihern-avatar-label">My account</span>
-          </Link>
+          <AccountMenu data={account} variant={drawer ? "drawer" : "dropdown"} />
         ) : (
           <Link className="ihern-signin-btn" href={signInHref}>
             Sign in
@@ -144,7 +135,7 @@ export default function SiteHeader({ account }: { account: HeaderAccount }) {
               </div>
             </a>{" "}
           </div>
-          <NavList current={current} account={account} signInHref={signInHref} />
+          <NavList current={current} account={account} signInHref={signInHref} drawer />
         </nav>
       </header>
     </div>

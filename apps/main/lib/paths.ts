@@ -19,3 +19,14 @@ export function u(path: string): string {
   if (BASE_PATH && (p === "/" || p[1] === "#" || p[1] === "?")) return BASE_PATH + p.slice(1);
   return BASE_PATH + p;
 }
+
+/**
+ * A stylesheet in /public, with this build's version appended. The files
+ * keep their names between releases and browsers keep them for a day
+ * (next.config.mjs), so without the version a phone could show a new page
+ * with yesterday's styles. IHERN_ASSET_VERSION is fixed at build time.
+ */
+export function css(path: string): string {
+  const v = process.env.IHERN_ASSET_VERSION;
+  return v ? `${u(path)}?v=${v}` : u(path);
+}

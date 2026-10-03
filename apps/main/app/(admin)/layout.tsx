@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import { u } from "@/lib/paths";
+import "@ihern/core/styles/admin.css";
 
 /**
- * The membership admin panel's frame (applications/admin on the PHP site):
- * a plain working area with its own stylesheet, not the public site's.
+ * The membership admin panel's document (applications/admin on the PHP
+ * site). Its frame and look are shared with the blog admin
+ * (@ihern/core/ui/AdminFrame, @ihern/core/styles/admin.css), both drawn in
+ * the main site's visual language.
  */
 
 export const metadata: Metadata = {
@@ -18,9 +21,9 @@ export default function AdminRootLayout({ children }: { children: React.ReactNod
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* The public site's font request, so it is already cached. */}
         {/* eslint-disable-next-line @next/next/no-page-custom-font */}
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" />
-        <link rel="stylesheet" href={u("/assets/css/admin.css")} />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900&display=swap" />
       </head>
       <body className="adm">{children}</body>
     </html>

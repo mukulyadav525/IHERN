@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Listing, parsePage, type ListingParams } from "@/components/Listing";
+import PageBanner from "@/components/PageBanner";
 
 /** All posts, with the filter bar. The filters arrive as ordinary query parameters. */
 
@@ -18,16 +19,18 @@ export default async function AllPostsPage(props: { searchParams: Promise<Listin
   const year = /^\d{4}$/.test(params.year ?? "") ? Number(params.year) : undefined;
   const sort = params.sort === "oldest" || params.sort === "az" ? params.sort : "newest";
   return (
-    <main className="b-wrap" id="main">
-      <h1 className="b-page-title">{params.q ? `Search results for “${params.q}”` : "All posts"}</h1>
-      <Listing
-        filters
-        base="/posts"
-        params={params}
-        page={parsePage(searchParams.page)}
-        query={{ search: params.q, author: params.author, category: params.category, tag: params.tag, year, sort }}
-        empty="No posts match these filters."
-      />
+    <main id="main">
+      <PageBanner title={params.q ? `Search results for “${params.q}”` : "All posts"} />
+      <div className="b-wrap">
+        <Listing
+          filters
+          base="/posts"
+          params={params}
+          page={parsePage(searchParams.page)}
+          query={{ search: params.q, author: params.author, category: params.category, tag: params.tag, year, sort }}
+          empty="No posts match these filters."
+        />
+      </div>
     </main>
   );
 }

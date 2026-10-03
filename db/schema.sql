@@ -55,6 +55,9 @@ CREATE TABLE IF NOT EXISTS `blog_authors` (
   `slug`       VARCHAR(190) NOT NULL,
   `name`       VARCHAR(190) NOT NULL,
   `bio`        TEXT NULL,
+  -- their picture: an image in blog_media (no foreign key: blog_media is
+  -- created below; a deleted image simply reads as "no picture")
+  `photo_media_id` INT NULL,
   `wp_id`      INT NULL,
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -173,4 +176,15 @@ CREATE TABLE IF NOT EXISTS `blog_sessions` (
   KEY `idx_session_subscriber` (`subscriber_id`),
   KEY `idx_session_expires` (`expires_at`),
   CONSTRAINT `fk_session_subscriber` FOREIGN KEY (`subscriber_id`) REFERENCES `blog_subscribers` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- IHERN accounts that open the membership admin (ihern2024.adminlogin)
+-- without its separate sign-in. A row is added only with proof the account
+-- holder owns the admin account (see apps/main/lib/admin.ts); the admin must
+-- still be active under the same email.
+CREATE TABLE IF NOT EXISTS `membership_admin_accounts` (
+  `subscriber_id` INT NOT NULL PRIMARY KEY,
+  `admin_id`      INT NOT NULL,
+  `created_at`    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT `fk_admin_account_subscriber` FOREIGN KEY (`subscriber_id`) REFERENCES `blog_subscribers` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

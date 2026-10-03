@@ -51,23 +51,27 @@ export default function MemberTable({ rows, compact = false }: { rows: MemberRec
                 <Link className="adm-strong" href={`/membership/admin/members/${m.studentID}`}>{m.studentName || "(no name)"}</Link>
                 <div className="adm-muted adm-nowrap">{membershipNumber(m.studentID)}</div>
               </td>
-              <td>
-                <a href={`mailto:${m.studentEmail}`} className="adm-wrap">{m.studentEmail}</a>
+              <td data-label="Contact">
+                <a href={`mailto:${m.studentEmail}`} className="adm-email">
+                  {/* a long address breaks before the @, not mid-word */}
+                  {m.studentEmail.split("@")[0]}
+                  {m.studentEmail.includes("@") ? <><wbr />@{m.studentEmail.split("@").slice(1).join("@")}</> : null}
+                </a>
                 <div className="adm-muted">{m.studentMobile}</div>
               </td>
-              <td>
+              <td data-label="Position">
                 {m.yourTitle}
                 {m.institutionName ? <div className="adm-muted">{m.institutionName}</div> : null}
                 <Website url={m.url} />
               </td>
               {compact ? null : (
-                <td className="adm-interests">
+                <td className="adm-interests" data-label="Interests">
                   {m.areasofinterest ? <div><span className="adm-label">Research / dept.</span> {m.areasofinterest}</div> : null}
                   {m.areasofinteresthe ? <div><span className="adm-label">Higher education</span> {m.areasofinteresthe}</div> : null}
                 </td>
               )}
-              <td className="adm-nowrap">{m.regDate.slice(0, 10)}<div className="adm-muted">{m.regDate.slice(11, 16)}</div></td>
-              <td>
+              <td className="adm-nowrap" data-label="Registered">{m.regDate.slice(0, 10)}<div className="adm-muted">{m.regDate.slice(11, 16)}</div></td>
+              <td data-label="Status">
                 <span className={`adm-status ${m.userStatus === "Y" ? "is-on" : "is-off"}`}>{m.userStatus === "Y" ? "Active" : "Inactive"}</span>
               </td>
               <td className="adm-actions">

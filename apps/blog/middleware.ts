@@ -20,6 +20,8 @@ const SSO_ROUTES: Record<string, string> = {
   logout: "/api/sso/logout",
 };
 const LEGACY_PARAMS = ["p", "page_id", "cat", "tag", "author", "s", "feed", "m", "paged"];
+/** The silent sign-in check's page, for /api/sso/login (see below). */
+const PROBE_HEADER = "x-ihern-sso-probe";
 const BOTS = /bot|crawl|spider|slurp|facebookexternalhit|preview|monitor|curl|wget|python|headless/i;
 
 export function middleware(req: NextRequest) {
@@ -49,11 +51,14 @@ export function middleware(req: NextRequest) {
     if (!req.cookies.get("ihern_sso_probed") || fromMain) {
       // Served in place (a rewrite, not a redirect): the sign-in route
       // answers this request with its redirect to the main site, and its
-      // cookies land on whatever host the reader used.
+      // cookies land on whatever host the reader used. The route sees this
+      // request's own query string, not one set here, so "silently, then
+      // back to this page" travels in a request header.
       const to = url.clone();
       to.pathname = "/api/sso/login";
-      to.search = new URLSearchParams({ prompt: "none", return: url.pathname + url.search }).toString();
-      return NextResponse.rewrite(to);
+      const headers = new Headers(req.headers);
+      headers.set(PROBE_HEADER, url.pathname + url.search);
+      return NextResponse.rewrite(to, { request: { headers } });
     }
   }
   return NextResponse.next();

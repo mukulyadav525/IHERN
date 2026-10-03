@@ -34,6 +34,7 @@ export default async function HomePage() {
     excerpt: p.excerpt,
     author: p.author?.name ?? "",
     authorHref: p.author ? `/author/${p.author.slug}` : null,
+    authorPhoto: p.author?.photo ?? null,
     date: formatDate(p.publishedAt),
     image: p.image ? { path: p.image.path, width: p.image.width, height: p.image.height } : null,
     categories: p.categories.map((c) => ({ slug: c.slug, name: c.name })),

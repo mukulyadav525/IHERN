@@ -4,6 +4,7 @@ import { safeReturn, startSession } from "@/lib/auth";
 import { accountsAvailable, createAccount, domainHint, emailDomainAllowed, normaliseEmail, verifyCredentials } from "@ihern/core/store";
 import { allowed, clear, hit, take, SIGN_IN_FAILURES, SIGN_UPS } from "@ihern/core/ratelimit";
 import { clientIp } from "@/lib/request";
+import { linkAdminOnSignIn } from "@/lib/admin";
 
 const TOO_MANY = "Too many unsuccessful attempts. Please wait 15 minutes and try again, or reset your password.";
 /**
@@ -58,5 +59,7 @@ export async function authenticate(prev: AuthState, form: FormData): Promise<Aut
   }
   clear(SIGN_IN_FAILURES, email);
   await startSession(result.value.id, result.value.email, result.value.name);
+  // A membership admin signing in with the admin password: the account opens the membership admin from now on.
+  await linkAdminOnSignIn(result.value.id, result.value.email, password);
   return { ...state(""), next: returnTo };
 }

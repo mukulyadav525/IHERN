@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createSessionToken, SESSION_COOKIE, SESSION_COOKIE_OPTIONS } from "@/lib/auth";
 import { fetchGoogleProfile, googleEnabled, googleRedirectUri, OAUTH_STATE_COOKIE, readStateCookie } from "@/lib/oauth";
 import { emailDomainAllowed, findOrCreateOAuthAccount } from "@ihern/core/store";
+import { linkAdminOnSignIn } from "@/lib/admin";
 import { BASE_PATH, u } from "@/lib/paths";
 
 /**
@@ -51,6 +52,9 @@ export async function GET(req: NextRequest) {
 
   const account = await findOrCreateOAuthAccount(profile.email, profile.name);
   if (!account.ok) return fail(account.reason === "domain_not_allowed" ? "domain" : "unavailable", ret);
+
+  // Google has checked the address: a membership admin's account opens the membership admin.
+  await linkAdminOnSignIn(account.value.id, account.value.email, null);
 
   const res = back(u(ret));
   res.cookies.set(SESSION_COOKIE, createSessionToken(account.value.id, account.value.email, account.value.name), SESSION_COOKIE_OPTIONS);

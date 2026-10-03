@@ -19,7 +19,11 @@ export function Chips({ terms, kind = "category" }: { terms: Term[]; kind?: "cat
   );
 }
 
-export function AuthorIcon() {
+/** The author's photo (from the image library), or a person icon without one. */
+export function AuthorIcon({ photo, size = 96 }: { photo?: string | null; size?: 96 | 320 }) {
+  if (photo) {
+    return <img className="b-author-icon b-author-photo" src={u(mediaPath(photo, size))} alt="" width={size === 96 ? 22 : 56} height={size === 96 ? 22 : 56} loading="lazy" decoding="async" />;
+  }
   return (
     <span className="b-author-icon" aria-hidden="true">
       <svg viewBox="0 0 24 24" width="14" height="14"><path fill="currentColor" d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0 2c-4.42 0-8 2.24-8 5v3h16v-3c0-2.76-3.58-5-8-5Z" /></svg>
@@ -40,7 +44,7 @@ export function PostMeta({ post, comments }: { post: PostSummary; comments?: num
     <div className="b-meta">
       {post.author ? (
         <Link className="b-meta-author" href={`/author/${post.author.slug}`}>
-          <AuthorIcon />
+          <AuthorIcon photo={post.author.photo} />
           {post.author.name}
         </Link>
       ) : null}
