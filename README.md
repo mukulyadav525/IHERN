@@ -126,6 +126,21 @@ The membership admin panel replaces `applications/admin`. Point
 `IHERN_UPLOAD_DIR` (main site) at the PHP `applications/uploadDoc` folder so
 existing member photographs show there.
 
+### A fresh database (no old data)
+
+`npm run db:schema` creates the blog and account tables in `cdnm`. The
+membership tables in `ihern2024` come from the old system, so on an empty
+server create them first, then the first staff sign-in:
+
+```bash
+mysql -u <user> -p ihern2024 < db/membership-schema.sql
+mysql -u <user> -p ihern2024 -e "INSERT INTO adminlogin (adName, adEmail, adMobile, adPassword, tokenCode, userStatus) VALUES ('Your Name', 'you@iiitd.ac.in', '', SHA2('a-long-password', 256), 'x', 'Y')"
+npm run blog:add-editor -- you@iiitd.ac.in admin
+```
+
+The WordPress migration is only for carrying the old blog across; skip it.
+Change the password at once in the membership admin (Change password).
+
 ### Before go-live: the PHP admin scripts
 
 Ten scripts in the PHP site's `applications/admin/` answer **without
