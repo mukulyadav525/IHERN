@@ -52,7 +52,11 @@ export default function MemberTable({ rows, compact = false }: { rows: MemberRec
                 <div className="adm-muted adm-nowrap">{membershipNumber(m.studentID)}</div>
               </td>
               <td data-label="Contact">
-                <a href={`mailto:${m.studentEmail}`} className="adm-wrap">{m.studentEmail}</a>
+                <a href={`mailto:${m.studentEmail}`} className="adm-email">
+                  {/* a long address breaks before the @, not mid-word */}
+                  {m.studentEmail.split("@")[0]}
+                  {m.studentEmail.includes("@") ? <><wbr />@{m.studentEmail.split("@").slice(1).join("@")}</> : null}
+                </a>
                 <div className="adm-muted">{m.studentMobile}</div>
               </td>
               <td data-label="Position">

@@ -62,6 +62,8 @@ body.adm{
 a.adm-strong:hover{ color:var(--ihern-navy) !important; }
 .adm-nowrap{ white-space:nowrap; }
 .adm-wrap{ overflow-wrap:anywhere; }
+/* an email address: breaks only where it is given a <wbr> (before the @), or anywhere as a last resort */
+.adm-email{ overflow-wrap:break-word; }
 
 /* skip link, as on the public site (.ihern-skip) */
 .adm-skip{ position:absolute; left:12px; top:-80px; z-index:1000; padding:10px 16px; background:var(--ihern-navy); color:#fff !important; border-radius:6px; font-weight:600; text-decoration:none; }
@@ -366,6 +368,10 @@ a.adm-stat:hover{ border-color:rgba(3,59,134,.3); box-shadow:var(--ihern-shadow-
   .adm-table td.adm-photo-cell + td{ margin-top:0; min-height:44px; }
 }
 .adm-members td{ font-size:13.5px; }
+/* the widest table: tighter cells, so it fits beside the side panel */
+@media (min-width:761px){ .adm-members th, .adm-members td{ padding-left:11px; padding-right:11px; } }
+/* many columns: the row actions may stack, so the table fits its box */
+.adm-members td.adm-actions{ white-space:normal; width:auto; }
 .adm-photo-cell{ width:60px; }
 .adm-thumb{ display:inline-flex; align-items:center; justify-content:center; width:44px; height:44px; border-radius:50%; object-fit:cover; background:var(--ihern-line-soft); border:1px solid var(--ihern-line); }
 .adm-thumb--none{ color:var(--ihern-navy); font-weight:700; background:rgba(3,59,134,.07); border-color:transparent; }
@@ -447,9 +453,16 @@ a.adm-stat:hover{ border-color:rgba(3,59,134,.3); box-shadow:var(--ihern-shadow-
 .adm-gate{ display:flex; justify-content:center; align-items:flex-start; padding:clamp(32px,6vw,72px) 20px clamp(48px,8vw,96px); }
 .adm-gate .adm-card{ width:100%; max-width:520px; padding:36px 34px; box-shadow:0 1px 2px rgba(11,23,51,.04), 0 10px 30px rgba(11,23,51,.06); }
 .adm-gate h1{ margin-bottom:8px; }
-.adm-login{ max-width:440px !important; }
-.adm-login .adm-btn{ width:100%; align-self:stretch !important; padding:13px 18px; font-size:15px; margin-top:4px; }
-@media (max-width:575px){ .adm-gate .adm-card{ padding:28px 22px; } }
+/* the staff sign-in card: the public sign-in card's size, intro text and button (ihern-theme.css .auth-card / .auth-submit) */
+.adm-login{ max-width:440px !important; padding:40px 38px !important; }
+.adm-login > .adm-muted{ font-size:14.5px; line-height:1.65; margin-bottom:18px; }
+.adm-login .adm-btn{
+  width:100%; align-self:stretch !important; padding:13px 18px; font-size:15px; margin-top:6px;
+  border:0; background:linear-gradient(135deg,var(--ihern-navy),var(--ihern-navy-deep));
+  transition:transform .18s var(--ihern-ease), box-shadow .18s var(--ihern-ease), filter .18s var(--ihern-ease);
+}
+.adm-login .adm-btn:hover{ transform:translateY(-2px); filter:brightness(1.06); box-shadow:0 8px 22px rgba(3,59,134,.34); }
+@media (max-width:575px){ .adm-gate .adm-card, .adm-login{ padding:28px 22px !important; } }
 .adm-narrow{ max-width:480px; }
 
 @media (max-width:760px){

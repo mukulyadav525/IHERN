@@ -67,9 +67,10 @@ export default function ImportForm() {
       <label className="adm-field">
         <span>New members are</span>
         <select name="newStatus" defaultValue="Y">
-          <option value="Y">Active (when the file has no Status column)</option>
-          <option value="N">Inactive (when the file has no Status column)</option>
+          <option value="Y">Active</option>
+          <option value="N">Inactive</option>
         </select>
+        <small>Used when the file has no Status column.</small>
       </label>
       <label className="adm-check">
         <input type="checkbox" name="update" value="1" /> Update members who are already registered (same email address)
