@@ -17,6 +17,7 @@ export default async function AdminLoginPage() {
       wide={false}
       section="Membership admin"
       home="/membership/admin"
+      ihernHome={u("/")}
       links={[
         { label: "IHERN website", href: u("/") },
         { label: "IHERN Blog", href: blogUrl() },

@@ -20,7 +20,7 @@ export default async function PanelLayout({ children }: { children: React.ReactN
   if (who === null) redirect("/membership/admin/login");
   if (who === "unavailable") {
     return (
-      <AdminGate section="Membership admin" home="/membership/admin" links={LINKS}>
+      <AdminGate section="Membership admin" home="/membership/admin" ihernHome={u("/")} links={LINKS}>
         <h1>The membership admin is unavailable</h1>
         <p>The membership database could not be reached. Please try again shortly.</p>
       </AdminGate>
@@ -30,7 +30,7 @@ export default async function PanelLayout({ children }: { children: React.ReactN
   return (
     <AdminShell
       section="Membership admin"
-      home="/membership/admin"
+      home="/membership/admin" ihernHome={u("/")}
       links={links}
       user={{ name: who.name || who.email, detail: who.email }}
       signOut={

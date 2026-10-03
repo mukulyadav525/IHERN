@@ -45,7 +45,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       </head>
       <body className="adm">
         {typeof who === "string" ? (
-          <AdminGate section="Blog admin" home="/admin" links={links} signOut={who === "unavailable" ? undefined : signOut}>
+          <AdminGate section="Blog admin" home="/admin" ihernHome={mainUrl("")} links={links} signOut={who === "unavailable" ? undefined : signOut}>
             <h1>{who === "unavailable" ? "The blog admin is unavailable" : "No access to the blog admin"}</h1>
             {who === "unavailable" ? (
               <p>The database could not be reached. Please try again shortly.</p>
@@ -63,7 +63,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         ) : (
           <AdminShell
             section="Blog admin"
-            home="/admin"
+            home="/admin" ihernHome={mainUrl("")}
             links={links}
             user={{ name: who.name || who.email, detail: who.role === "admin" ? "Admin" : "Editor" }}
             signOut={signOut}

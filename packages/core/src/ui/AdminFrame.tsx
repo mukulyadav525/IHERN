@@ -25,21 +25,28 @@ export type AdminLink = { label: string; href: string };
 
 type BarProps = {
   section: string;
+  /** the admin's own dashboard (the section label links there) */
   home: string;
+  /** the main IHERN website's home page (the IHERN wordmark links there, as everywhere) */
+  ihernHome: string;
   links: AdminLink[];
   user?: AdminUser;
   signOut?: ReactNode;
 };
 
 /** The IHERN bar. `menu` is the phone menu button (signed-in pages only). */
-export function AdminBar({ section, home, links, user, signOut, menu }: BarProps & { menu?: ReactNode }) {
+export function AdminBar({ section, home, ihernHome, links, user, signOut, menu }: BarProps & { menu?: ReactNode }) {
   return (
     <header className="adm-top">
       <div className={`adm-bar${menu ? " adm-bar--menu" : ""}`}>
-        <Link className="adm-brand" href={home}>
-          <span className="adm-wordmark">IHERN</span>
-          <span className="adm-section">{section}</span>
-        </Link>
+        <div className="adm-brand">
+          <a className="adm-wordmark" href={ihernHome} aria-label="IHERN home">
+            IHERN
+          </a>
+          <Link className="adm-section" href={home}>
+            {section}
+          </Link>
+        </div>
         <div className="adm-bar-end">
           {links.map((l) => (
             <a key={l.href} className="adm-bar-link" href={l.href}>
