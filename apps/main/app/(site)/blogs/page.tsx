@@ -102,7 +102,7 @@ export default async function BlogsPage() {
               Blog posts couldn&rsquo;t be loaded right now. You can still read them on the <a href={base}>IHERN Blog</a> directly.
             </div>
           ) : (
-            <BlogBrowser cards={cards} filters={filters} gated={!loggedIn} />
+            <BlogBrowser cards={cards} filters={filters} gated={!loggedIn} blog={{ label: "IHERN Blogs", href: base }} />
           )}
         </div>
       </div>

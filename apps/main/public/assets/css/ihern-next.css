@@ -148,3 +148,33 @@ body.defult-home .blog-card-body h2{ font-size:clamp(1.25rem,2.1vw,1.5rem); line
 }
 #scrollUp i:hover{ opacity:1; }
 #scrollUp:focus-visible{ outline:3px solid #9ccaff; outline-offset:3px; }
+
+/* ---- Blogs: "IHERN Blogs" / "IHERN" and "Filters", side by side, the
+   filter panel folded under them (@ihern/core/ui/FilterToggle). The
+   buttons are the IHERC hero's (Call for papers / Abstract submission). */
+.ihern-pair{ display:flex; justify-content:center; flex-wrap:wrap; gap:14px; margin:8px 0 28px; }
+.ihern-pair-btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:10px;
+  min-width:200px; min-height:52px; padding:12px 32px;
+  border:1px solid var(--ihern-navy, #033b86); border-radius:8px;
+  background:var(--ihern-navy, #033b86); color:#fff !important;
+  font-family:inherit; font-size:15px; font-weight:600; line-height:1.2; letter-spacing:.04em; text-transform:uppercase; text-decoration:none !important;
+  cursor:pointer; box-shadow:0 6px 16px rgba(3,59,134,.18);
+  transition:background .18s ease, color .18s ease, transform .18s ease, box-shadow .18s ease;
+}
+.ihern-pair-btn:hover, .ihern-pair-btn:focus-visible{ background:var(--ihern-navy-deep, #02255a); color:#fff !important; transform:translateY(-1px); box-shadow:0 10px 22px rgba(3,59,134,.24); }
+.ihern-pair-btn:focus-visible{ outline:3px solid #9ccaff; outline-offset:2px; }
+.ihern-pair-btn.is-open{ background:#fff; color:var(--ihern-navy, #033b86) !important; box-shadow:none; }
+.ihern-pair-btn.is-open:hover{ background:rgba(3,59,134,.05); color:var(--ihern-navy-deep, #02255a) !important; }
+.ihern-pair-count{
+  display:inline-flex; align-items:center; justify-content:center; min-width:22px; height:22px; padding:0 6px;
+  border-radius:999px; background:#fff; color:var(--ihern-navy, #033b86); font-size:12.5px; font-weight:700; letter-spacing:0;
+}
+.ihern-pair-panel[hidden]{ display:none !important; }
+.ihern-pair-panel{ margin-bottom:28px; }
+.ihern-pair-panel > .blog-toolbar, .ihern-pair-panel > .b-filters{ margin-top:0; margin-bottom:0; }
+.blog-toolbar-buttons{ display:inline-flex; flex-wrap:wrap; gap:10px; }
+@media (max-width:575.98px){
+  .ihern-pair{ gap:10px; }
+  .ihern-pair-btn{ flex:1 1 0; min-width:0; padding:12px 14px; font-size:14px; }
+}

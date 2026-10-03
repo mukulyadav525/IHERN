@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { u } from "@/lib/paths";
+import FilterToggle, { HideFilters } from "@ihern/core/ui/FilterToggle";
 
 /**
  * The blog listing with its filter bar (blog.php): search, author, category,
@@ -29,7 +30,7 @@ export type BlogFilters = { authors: string[]; categories: string[]; tags: strin
 
 const LOGIN = "/login?mode=login&return=%2Fblogs";
 
-export default function BlogBrowser({ cards, filters, gated }: { cards: BlogCard[]; filters: BlogFilters; gated: boolean }) {
+export default function BlogBrowser({ cards, filters, gated, blog }: { cards: BlogCard[]; filters: BlogFilters; gated: boolean; blog: { label: string; href: string } }) {
   const [search, setSearch] = useState("");
   const [author, setAuthor] = useState("");
   const [cat, setCat] = useState("");
@@ -54,6 +55,8 @@ export default function BlogBrowser({ cards, filters, gated }: { cards: BlogCard
     (!tag || c.tags.includes(tag));
   const visible = ordered.filter(matches).length;
 
+  const inUse = [search.trim(), author, cat, tag, year].filter(Boolean).length + (sort !== "newest" ? 1 : 0);
+
   const clearAll = () => {
     setSearch("");
     setAuthor("");
@@ -65,6 +68,7 @@ export default function BlogBrowser({ cards, filters, gated }: { cards: BlogCard
 
   return (
     <>
+      <FilterToggle link={blog} active={inUse} panelId="blog-filters">
       <div className="blog-toolbar">
         <div className="form-row">
           <div className="fld">
@@ -120,11 +124,15 @@ export default function BlogBrowser({ cards, filters, gated }: { cards: BlogCard
           <span className="blog-result-count" id="result-count" aria-live="polite">
             {visible} {visible === 1 ? "post" : "posts"}
           </span>
-          <button type="button" className="btn-clear" id="btn-clear" onClick={clearAll}>
-            Clear filters
-          </button>
+          <span className="blog-toolbar-buttons">
+            <button type="button" className="btn-clear" id="btn-clear" onClick={clearAll}>
+              Clear filters
+            </button>
+            <HideFilters className="btn-clear" />
+          </span>
         </div>
       </div>
+      </FilterToggle>
 
       <div className="blog-grid" id="blog-grid" style={visible ? undefined : { display: "none" }}>
         {ordered.map((c) => (
