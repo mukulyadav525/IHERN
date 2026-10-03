@@ -267,7 +267,7 @@ export default function HomePage() {
           </div>
         </div>
       </div>
-      <div className="rs-about style1 pt-20 pb-20 md-pt-70 md-pb-70" id="activities">
+      <div className="rs-about ihern-full style1 pt-20 pb-20 md-pt-70 md-pb-70" id="activities">
         <div className="container-xxl">
           <div className="row">
             <div className="col-lg-12 pr-5 md-pr-2 md-mb-50">

@@ -113,3 +113,17 @@ body.defult-home .blog-card-body h2{ font-size:clamp(1.25rem,2.1vw,1.5rem); line
   border-radius:999px; background:var(--ihern-navy); color:#fff !important; font-size:14px !important;
 }
 #mobile-navbar-menu .ihern-acct a.ihern-acct-out:hover{ background:var(--ihern-navy-deep); }
+
+/* ---- Full-width text sections (.ihern-full): Home "Main Activities",
+   About, SIGs. Their paragraphs, lists, activity cards and coordinator
+   boxes use the whole content column, as the Events cards do, instead of
+   ihern-theme.css's 88-character measure. */
+.rs-about.ihern-full .sec-title p,
+.rs-about.ihern-full .sec-title ul,
+.rs-about.ihern-full .sec-title ol,
+.rs-about.ihern-full .sec-title .ihern-prose,
+.rs-about.ihern-full .sec-title2 p,
+.rs-about.ihern-full .sec-title2 ul,
+.rs-about.ihern-full .sec-title2 ol,
+.rs-about.ihern-full .ihern-activities,
+.rs-about.ihern-full .ihern-scope-list{ max-width:none; }

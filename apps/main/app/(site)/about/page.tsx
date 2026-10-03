@@ -23,7 +23,7 @@ export default function AboutPage() {
           </div>
         </div>
       </div>
-      <div className="rs-about style2 pt-100 pb-100 md-pt-70 md-pb-70">
+      <div className="rs-about ihern-full style2 pt-100 pb-100 md-pt-70 md-pb-70">
         <div className="container-xxl">
           <div className="row">
             <div className="col-lg-12 ">
