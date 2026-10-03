@@ -1147,3 +1147,19 @@ p.iherc-notice, .section-title-header p.iherc-notice{ font-family:'Poppins',sans
   .navbar .navbar-collapse.show{ animation:iherc-drawer-in .3s var(--ihern-ease, ease); }
   @keyframes iherc-drawer-in{ from{ transform:translateX(100%); } to{ transform:none; } }
 }
+
+/* ---------- Phones: the bar as the main site draws it - inset 12px from
+   the screen edges (not edge to edge), 72px tall, the 26px wordmark ---------- */
+@media (max-width:575.98px){
+  .navbar.fixed-top{ padding:16px 0 !important; }
+  .navbar.scrolling-navbar.top-nav-collapse{ padding:10px 0 !important; }
+  .navbar.fixed-top > .container{
+    width:calc(100% - 24px) !important; max-width:none !important; flex:0 0 auto;
+    margin:0 auto !important;
+    min-height:72px;
+    border-radius:14px;
+    padding-left:22px; padding-right:12px;
+  }
+  .navbar-brand{ font-size:26px !important; }
+  #header-wrap{ padding-top:104px; }
+}

@@ -8,7 +8,7 @@ import { archiveMonths, listTerms } from "@/lib/content";
 import { blogUrl } from "@ihern/core/env";
 import { headerAccount } from "@/lib/reader";
 import { BLOG_DESCRIPTION, BLOG_NAME, mainUrl, navItems } from "@/lib/site";
-import { u } from "@/lib/paths";
+import { css, u } from "@/lib/paths";
 
 /**
  * The blog's frame: the IHERN header and footer (the main site's own
@@ -50,7 +50,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
         {/* eslint-disable-next-line @next/next/no-page-custom-font */}
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900&display=swap" />
         {STYLES.map((href) => (
-          <link key={href} rel="stylesheet" href={u(href)} />
+          <link key={href} rel="stylesheet" href={css(href)} />
         ))}
       </head>
       <body className="defult-home ihern-blog">

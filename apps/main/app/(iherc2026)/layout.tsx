@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import IhercBehaviour from "@/components/iherc/IhercBehaviour";
 import { siteUrl } from "@ihern/core/env";
-import { u } from "@/lib/paths";
+import { css, u } from "@/lib/paths";
 
 /**
  * The IHERC 2026 conference microsite: its own stylesheets (the template's,
@@ -27,13 +27,13 @@ export default function Iherc2026Layout({ children }: { children: React.ReactNod
     <html lang="en">
       <head>
         {STYLES.map((href) => (
-          <link key={href} rel="stylesheet" href={u(href)} />
+          <link key={href} rel="stylesheet" href={css(href)} />
         ))}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         {/* eslint-disable-next-line @next/next/no-page-custom-font */}
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" />
-        <link rel="stylesheet" href={u("/iherc2026/assets/css/ihern-brand.css")} />
+        <link rel="stylesheet" href={css("/iherc2026/assets/css/ihern-brand.css")} />
       </head>
       <body>
         {children}

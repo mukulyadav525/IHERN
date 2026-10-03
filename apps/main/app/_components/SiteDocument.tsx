@@ -5,7 +5,7 @@ import ScrollUp from "@/components/ScrollUp";
 import { initials, readSession } from "@/lib/auth";
 import { blogUrl, siteUrl } from "@ihern/core/env";
 import { isBlogEditor, isMembershipAdmin } from "@ihern/core/roles";
-import { u } from "@/lib/paths";
+import { css, u } from "@/lib/paths";
 
 /**
  * The frame every main-site page shares: the PHP site's stylesheets in the
@@ -74,7 +74,7 @@ export default async function SiteDocument({ children }: { children: React.React
         {/* eslint-disable-next-line @next/next/no-page-custom-font */}
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900&display=swap" />
         {STYLES.map((href) => (
-          <link key={href} rel="stylesheet" href={u(href)} />
+          <link key={href} rel="stylesheet" href={css(href)} />
         ))}
       </head>
       <body className="defult-home">

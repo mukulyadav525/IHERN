@@ -54,8 +54,12 @@ const friendly = [
   ["/applications/register", "/join"],
 ];
 
+// A version for this build, appended to the stylesheet links (lib/paths.ts css()).
+const assetVersion = Date.now().toString(36);
+
 const nextConfig = {
   reactStrictMode: true,
+  env: { IHERN_ASSET_VERSION: assetVersion },
   // The shared package (packages/core) is TypeScript source.
   transpilePackages: ["@ihern/core"],
   basePath: basePath || undefined,
