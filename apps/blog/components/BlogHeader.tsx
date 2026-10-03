@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useEffect } from "react";
+import AccountMenu, { type AccountMenuData } from "@ihern/core/ui/AccountMenu";
 import { u } from "@/lib/paths";
 
 /**
@@ -11,34 +12,11 @@ import { u } from "@/lib/paths";
  * the reader's account control at the end.
  */
 
-export type HeaderAccount = {
-  initials: string;
-  name: string;
-  email: string;
-  subscribed: boolean;
-  isEditor: boolean;
-  accountUrl: string;
-} | null;
+export type HeaderAccount = AccountMenuData | null;
 
 type NavItem = { label: string; href: string; current: boolean };
 
-function AccountMenu({ account, returnTo }: { account: HeaderAccount; returnTo: string }) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!open) return;
-    const close = (e: MouseEvent | KeyboardEvent) => {
-      if (e instanceof KeyboardEvent ? e.key === "Escape" : !ref.current?.contains(e.target as Node)) setOpen(false);
-    };
-    document.addEventListener("mousedown", close);
-    document.addEventListener("keydown", close);
-    return () => {
-      document.removeEventListener("mousedown", close);
-      document.removeEventListener("keydown", close);
-    };
-  }, [open]);
-
+function Account({ account, returnTo, drawer }: { account: HeaderAccount; returnTo: string; drawer?: boolean }) {
   if (!account) {
     return (
       <a className="ihern-signin-btn" href={u(`/api/sso/login?return=${encodeURIComponent(returnTo)}`)}>
@@ -46,48 +24,10 @@ function AccountMenu({ account, returnTo }: { account: HeaderAccount; returnTo: 
       </a>
     );
   }
-  return (
-    <div className="b-account" ref={ref}>
-      <button
-        type="button"
-        className="b-account-toggle"
-        aria-expanded={open}
-        aria-haspopup="true"
-        title={`${account.name} · ${account.email}`}
-        onClick={() => setOpen((v) => !v)}
-      >
-        <span className="ihern-avatar" aria-hidden="true">
-          {account.initials}
-        </span>
-        <span className="ihern-visually-hidden">My account: {account.name || account.email}</span>
-      </button>
-      <div className="b-account-menu" hidden={!open}>
-        <p className="b-account-person">{account.name}</p>
-        <p className="b-account-email">{account.email}</p>
-        <a className="b-account-link" href={account.accountUrl}>
-          My account
-        </a>
-        {account.subscribed ? (
-          <span className="b-account-status">Subscribed ✓</span>
-        ) : (
-          <Link className="b-account-link" href="/subscribe">
-            Subscribe to the blog
-          </Link>
-        )}
-        {account.isEditor ? (
-          <a className="b-account-link" href={u("/admin")}>
-            Blog admin
-          </a>
-        ) : null}
-        <a className="b-account-link b-account-link--quiet" href={u("/api/sso/logout")}>
-          Sign out
-        </a>
-      </div>
-    </div>
-  );
+  return <AccountMenu data={account} variant={drawer ? "drawer" : "dropdown"} />;
 }
 
-function NavList({ items, account, returnTo }: { items: NavItem[]; account: HeaderAccount; returnTo: string }) {
+function NavList({ items, account, returnTo, drawer }: { items: NavItem[]; account: HeaderAccount; returnTo: string; drawer?: boolean }) {
   return (
     <ul className="nav-menu">
       {items.map((item) => (
@@ -103,7 +43,7 @@ function NavList({ items, account, returnTo }: { items: NavItem[]; account: Head
         </li>
       ))}
       <li className="ihern-account-item">
-        <AccountMenu account={account} returnTo={returnTo} />
+        <Account account={account} returnTo={returnTo} drawer={drawer} />
       </li>
     </ul>
   );
@@ -198,7 +138,7 @@ export default function BlogHeader({ nav, account, mainHome }: { nav: NavItem[];
               </div>
             </a>{" "}
           </div>
-          <NavList items={nav} account={account} returnTo={returnTo} />
+          <NavList items={nav} account={account} returnTo={returnTo} drawer />
         </nav>
       </header>
     </div>

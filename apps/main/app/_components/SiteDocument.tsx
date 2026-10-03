@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import SiteHeader from "@/components/SiteHeader";
+import SiteHeader, { type HeaderAccount } from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import ScrollUp from "@/components/ScrollUp";
 import { initials, readSession } from "@/lib/auth";
-import { siteUrl } from "@ihern/core/env";
+import { blogUrl, siteUrl } from "@ihern/core/env";
+import { isBlogEditor, isMembershipAdmin } from "@ihern/core/roles";
 import { u } from "@/lib/paths";
 
 /**
@@ -44,7 +45,25 @@ export const siteMetadata: Metadata = {
 
 export default async function SiteDocument({ children }: { children: React.ReactNode }) {
   const session = await readSession();
-  const account = session ? { initials: initials(session.name, session.email), name: session.name, email: session.email } : null;
+  let account: HeaderAccount = null;
+  if (session) {
+    // Two small lookups, only for signed-in readers: which admin areas to offer.
+    const [blogEditor, membershipAdmin] = await Promise.all([isBlogEditor(session.email), isMembershipAdmin(session.email)]);
+    const admin = [];
+    if (blogEditor) admin.push({ label: "Blog admin", href: `${blogUrl()}/admin` });
+    if (membershipAdmin) admin.push({ label: "Membership admin", href: u("/membership/admin") });
+    account = {
+      initials: initials(session.name, session.email),
+      name: session.name,
+      email: session.email,
+      links: [
+        { label: "My account", href: u("/account") },
+        { label: "IHERN Blog", href: blogUrl() },
+      ],
+      admin,
+      signOut: u("/logout"),
+    };
+  }
 
   return (
     <html lang="en">

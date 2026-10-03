@@ -1,13 +1,18 @@
 import { redirect } from "next/navigation";
 import AdminNav from "@/components/admin/AdminNav";
-import { AdminBar, AdminGate, AdminShell } from "@ihern/core/ui/AdminFrame";
+import { AdminGate, AdminShell, type AdminLink } from "@ihern/core/ui/AdminFrame";
+import { isBlogEditor } from "@ihern/core/roles";
+import { blogUrl } from "@ihern/core/env";
 import { currentAdmin } from "@/lib/admin";
 import { u } from "@/lib/paths";
 import { signOutAdmin } from "../actions";
 
 export const dynamic = "force-dynamic";
 
-const SITE = { href: u("/"), label: "View site" };
+const LINKS: AdminLink[] = [
+  { label: "IHERN website", href: u("/") },
+  { label: "IHERN Blog", href: blogUrl() },
+];
 
 /** Every page of the panel needs a signed-in admin (page-top.php). */
 export default async function PanelLayout({ children }: { children: React.ReactNode }) {
@@ -15,29 +20,26 @@ export default async function PanelLayout({ children }: { children: React.ReactN
   if (who === null) redirect("/membership/admin/login");
   if (who === "unavailable") {
     return (
-      <AdminGate bar={<AdminBar section="Membership admin" home="/membership/admin" site={SITE} />}>
+      <AdminGate section="Membership admin" home="/membership/admin" links={LINKS}>
         <h1>The membership admin is unavailable</h1>
         <p>The membership database could not be reached. Please try again shortly.</p>
       </AdminGate>
     );
   }
+  const links = (await isBlogEditor(who.email)) ? [...LINKS, { label: "Blog admin", href: `${blogUrl()}/admin` }] : LINKS;
   return (
     <AdminShell
+      section="Membership admin"
+      home="/membership/admin"
+      links={links}
+      user={{ name: who.name || who.email, detail: who.email }}
+      signOut={
+        <form action={signOutAdmin}>
+          <button type="submit" className="adm-me-out">Sign out</button>
+        </form>
+      }
       navLabel="Membership admin"
       nav={<AdminNav />}
-      bar={
-        <AdminBar
-          section="Membership admin"
-          home="/membership/admin"
-          site={SITE}
-          user={{ name: who.name || who.email, detail: who.email }}
-          signOut={
-            <form action={signOutAdmin}>
-              <button type="submit" className="adm-me-out">Sign out</button>
-            </form>
-          }
-        />
-      }
     >
       {children}
     </AdminShell>

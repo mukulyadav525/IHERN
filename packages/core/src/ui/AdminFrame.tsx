@@ -1,56 +1,57 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import AdminDrawer from "./AdminDrawer";
+import { initials } from "../text";
 
 /**
  * The frame of both IHERN admin areas - the blog admin and the membership
  * admin - styled by @ihern/core/styles/admin.css:
  *
  *   the IHERN bar     the public site's floating white navbar: the IHERN
- *                     wordmark, which admin this is, a link back to the
- *                     public site, who is signed in and Sign out
+ *                     wordmark, which admin this is, links out (the IHERN
+ *                     website, the blog, the other admin), who is signed in
+ *                     and Sign out
  *   the side panel    that admin's own pages
+ *   on phones         the bar keeps the wordmark and the public site's
+ *                     nine-dot button, which opens the same black drawer as
+ *                     the public site's, holding all of the above
  *   the page          #main, the target of the skip link
  *
  * The two admins differ only in what they pass in.
  */
 
 export type AdminUser = { name: string; detail: string };
+export type AdminLink = { label: string; href: string };
 
-function initials(name: string): string {
-  const words = name.replace(/^(dr|prof|mr|mrs|ms)\.?\s+/i, "").split(/[\s@._-]+/).filter(Boolean);
-  return ((words[0]?.[0] ?? "") + (words.length > 1 ? words[words.length - 1][0] : "")).toUpperCase() || "?";
-}
-
-export function AdminBar({
-  section,
-  home,
-  site,
-  user,
-  signOut,
-}: {
+type BarProps = {
   section: string;
   home: string;
-  site: { href: string; label: string };
+  links: AdminLink[];
   user?: AdminUser;
   signOut?: ReactNode;
-}) {
+};
+
+/** The IHERN bar. `menu` is the phone menu button (signed-in pages only). */
+export function AdminBar({ section, home, links, user, signOut, menu }: BarProps & { menu?: ReactNode }) {
   return (
     <header className="adm-top">
-      <div className="adm-bar">
+      <div className={`adm-bar${menu ? " adm-bar--menu" : ""}`}>
         <Link className="adm-brand" href={home}>
           <span className="adm-wordmark">IHERN</span>
           <span className="adm-section">{section}</span>
         </Link>
         <div className="adm-bar-end">
-          <a className="adm-bar-link" href={site.href}>
-            {site.label}
-          </a>
+          {links.map((l) => (
+            <a key={l.href} className="adm-bar-link" href={l.href}>
+              {l.label}
+            </a>
+          ))}
           {user || signOut ? (
             <div className="adm-me">
               {user ? (
                 <>
                   <span className="adm-avatar" aria-hidden="true">
-                    {initials(user.name)}
+                    {initials(user.name, user.detail)}
                   </span>
                   <span className="adm-me-text">
                     <span className="adm-me-name">{user.name}</span>
@@ -62,19 +63,27 @@ export function AdminBar({
             </div>
           ) : null}
         </div>
+        {menu}
       </div>
     </header>
   );
 }
 
-/** A signed-in admin page: the bar, the side panel and the page. */
-export function AdminShell({ bar, navLabel, nav, children }: { bar: ReactNode; navLabel: string; nav: ReactNode; children: ReactNode }) {
+/** A signed-in admin page: the bar (with the phone drawer), the side panel and the page. */
+export function AdminShell({ navLabel, nav, children, ...bar }: BarProps & { navLabel: string; nav: ReactNode; children: ReactNode }) {
   return (
     <>
       <a className="adm-skip" href="#main">
         Skip to main content
       </a>
-      {bar}
+      <AdminBar
+        {...bar}
+        menu={
+          <AdminDrawer label={navLabel} links={bar.links} user={bar.user} signOut={bar.signOut}>
+            {nav}
+          </AdminDrawer>
+        }
+      />
       <div className="adm-shell">
         <aside className="adm-side" aria-label={navLabel}>
           <p className="adm-side-title" aria-hidden="true">
@@ -91,10 +100,10 @@ export function AdminShell({ bar, navLabel, nav, children }: { bar: ReactNode; n
 }
 
 /** Sign-in, no access, unavailable: the bar and one card, like the public sign-in page. */
-export function AdminGate({ bar, wide = true, children }: { bar: ReactNode; wide?: boolean; children: ReactNode }) {
+export function AdminGate({ wide = true, children, ...bar }: BarProps & { wide?: boolean; children: ReactNode }) {
   return (
     <>
-      {bar}
+      <AdminBar {...bar} />
       <main className="adm-gate" id="main">
         <div className={`adm-card${wide ? "" : " adm-login"}`}>{children}</div>
       </main>

@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
-import { AdminBar, AdminGate } from "@ihern/core/ui/AdminFrame";
+import { AdminGate } from "@ihern/core/ui/AdminFrame";
+import { blogUrl } from "@ihern/core/env";
 import { currentAdmin } from "@/lib/admin";
 import { u } from "@/lib/paths";
 import AdminLoginForm from "./AdminLoginForm";
@@ -12,7 +13,15 @@ export default async function AdminLoginPage() {
   const who = await currentAdmin();
   if (who && who !== "unavailable") redirect("/membership/admin");
   return (
-    <AdminGate wide={false} bar={<AdminBar section="Membership admin" home="/membership/admin" site={{ href: u("/"), label: "View site" }} />}>
+    <AdminGate
+      wide={false}
+      section="Membership admin"
+      home="/membership/admin"
+      links={[
+        { label: "IHERN website", href: u("/") },
+        { label: "IHERN Blog", href: blogUrl() },
+      ]}
+    >
       <h1>Sign in</h1>
       <p className="adm-muted">
         For IHERN staff. Members sign in at <a href={u("/membership/login")}>Member sign in</a>.
