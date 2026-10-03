@@ -90,7 +90,7 @@ export default async function BlogsPage() {
                 ) : (
                   <span>
                     <Link href="/login?mode=login&return=%2Fblogs">Sign in</Link> or{" "}
-                    <Link href="/login?mode=register&return=%2Fblogs">create an IHERN account</Link> to read posts in full
+                    <Link href="/join">join IHERN</Link> to read posts in full
                   </span>
                 )}
               </div>

@@ -61,7 +61,7 @@ export default function AuthForm({
         <Link
           className={`auth-tab ${mode === "register" ? "is-active" : ""}`}
           aria-current={mode === "register" ? "page" : undefined}
-          href={`/login?mode=register&return=${ret}`}
+          href={`/join?return=${ret}`}
         >
           Create account
         </Link>
@@ -121,7 +121,7 @@ export default function AuthForm({
       </form>
 
       <p className="auth-back">
-        Want to be listed as an IHERN member? <Link href="/join">Join IHERN</Link>
+        Want to be listed as an IHERN member? <Link href={`/join?return=${ret}`}>Join IHERN</Link>
       </p>
     </div>
   );

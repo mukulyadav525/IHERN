@@ -38,13 +38,16 @@ export const TOKEN_TTL = 3600; // seconds
 /** The client registry (sso-config.php). redirect_uris is an exact-match allow-list. */
 export function clients(): Record<string, Client> {
   const dev = isDev();
-  const devBlog = (process.env.IHERN_BLOG_URL || "").replace(/\/+$/, "");
-  const devRedirects = dev
-    ? Array.from(new Set(["http://localhost:3001/?ihern_sso=callback", "http://localhost:8080/?ihern_sso=callback", "https://localhost:8443/?ihern_sso=callback", devBlog ? `${devBlog}/?ihern_sso=callback` : ""].filter(Boolean)))
-    : [];
-  const devLogouts = dev
-    ? Array.from(new Set(["http://localhost:3001/", "http://localhost:8080/", "https://localhost:8443/", devBlog ? `${devBlog}/` : ""].filter(Boolean)))
-    : [];
+  // The blog's own address, as set in this server's settings (IHERN_BLOG_URL):
+  // always allowed, so a blog on another address (a test server, a new host)
+  // can sign people in. Only the server's owner can set it.
+  const ownBlog = (process.env.IHERN_BLOG_URL || "").replace(/\/+$/, "");
+  const devRedirects = Array.from(
+    new Set([...(dev ? ["http://localhost:3001/?ihern_sso=callback", "http://localhost:8080/?ihern_sso=callback", "https://localhost:8443/?ihern_sso=callback"] : []), ownBlog ? `${ownBlog}/?ihern_sso=callback` : ""].filter(Boolean))
+  );
+  const devLogouts = Array.from(
+    new Set([...(dev ? ["http://localhost:3001/", "http://localhost:8080/", "https://localhost:8443/"] : []), ownBlog ? `${ownBlog}/` : ""].filter(Boolean))
+  );
 
   return {
     "ihern-blog": {

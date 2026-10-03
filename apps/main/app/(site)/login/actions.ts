@@ -1,9 +1,8 @@
 "use server";
 
 import { safeReturn, startSession } from "@/lib/auth";
-import { accountsAvailable, createAccount, domainHint, emailDomainAllowed, normaliseEmail, verifyCredentials } from "@ihern/core/store";
-import { allowed, clear, hit, take, SIGN_IN_FAILURES, SIGN_UPS } from "@ihern/core/ratelimit";
-import { clientIp } from "@/lib/request";
+import { accountsAvailable, domainHint, emailDomainAllowed, normaliseEmail, verifyCredentials } from "@ihern/core/store";
+import { allowed, clear, hit, SIGN_IN_FAILURES } from "@ihern/core/ratelimit";
 import { linkAdminOnSignIn } from "@/lib/admin";
 
 const TOO_MANY = "Too many unsuccessful attempts. Please wait 15 minutes and try again, or reset your password.";
@@ -23,7 +22,7 @@ export type AuthState = {
 };
 
 export async function authenticate(prev: AuthState, form: FormData): Promise<AuthState> {
-  let mode: AuthState["mode"] = form.get("mode") === "register" ? "register" : "login";
+  const mode: AuthState["mode"] = form.get("mode") === "register" ? "register" : "login";
   const email = normaliseEmail(String(form.get("email") ?? ""));
   const password = String(form.get("password") ?? "");
   const name = String(form.get("name") ?? "").trim();
@@ -34,21 +33,8 @@ export async function authenticate(prev: AuthState, form: FormData): Promise<Aut
   if (!emailDomainAllowed(email)) return state(`That email address is not permitted. ${domainHint()}`.trim());
   if (!accountsAvailable()) return state("The account service is temporarily unavailable. Please try again shortly.");
 
-  if (mode === "register") {
-    if (name === "" || password.length < 8) return state("Please provide your name and a password of at least 8 characters.");
-    if (!take(SIGN_UPS, await clientIp())) return state("Too many new accounts from this network just now. Please try again later.");
-    const created = await createAccount(email, password, name);
-    if (!created.ok) {
-      if (created.reason === "exists") {
-        mode = "login";
-        return state("An account with that email already exists — try signing in.");
-      }
-      if (created.reason === "domain_not_allowed") return state(`That email address is not permitted. ${domainHint()}`.trim());
-      return state("Could not create your account. Please try again.");
-    }
-    await startSession(created.value.id, created.value.email, created.value.name);
-    return { ...state(""), next: returnTo };
-  }
+  // Accounts are made by joining IHERN (/join), not by this short form.
+  if (mode === "register") return state("Please join IHERN with the membership form to create an account.");
 
   if (!allowed(SIGN_IN_FAILURES, email)) return state(TOO_MANY);
   const result = await verifyCredentials(email, password);
