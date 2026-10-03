@@ -988,13 +988,20 @@ p[align="justify"]{ text-align:left !important; }
 
 /* ---- Back-to-top: the main site's button ---- */
 a.back-to-top{
-  width:42px !important; height:42px !important;
-  border-radius:8px !important;
+  width:46px !important; height:46px !important;
+  border-radius:50% !important;
   background:var(--ihern-navy, #033b86) !important;
-  box-shadow:0 2px 8px rgba(11,23,51,.18) !important;
+  border:1px solid rgba(255,255,255,.22);
+  box-shadow:0 4px 12px rgba(11,23,51,.07), 0 12px 28px rgba(11,23,51,.07) !important;
   display:flex; align-items:center; justify-content:center;
 }
-a.back-to-top i{ font-size:18px !important; line-height:1 !important; color:#fff !important; }
+/* main.css drew the arrow in its own grey 40px circle inside the button */
+a.back-to-top i{
+  display:flex !important; align-items:center; justify-content:center;
+  width:100% !important; height:100% !important; margin:0;
+  font-size:20px !important; line-height:1 !important; color:#fff !important;
+  background:none !important; box-shadow:none !important; border-radius:50%;
+}
 a.back-to-top:hover{ background:var(--ihern-navy-deep, #02255a) !important; }
 
 /* ---- IHERC 2026 Program Committee ---- */
@@ -1065,7 +1072,7 @@ a.back-to-top:hover{ background:var(--ihern-navy-deep, #02255a) !important; }
   #iherc-footer .footer-credit::before{ content:none; }
   #iherc-footer .footer-bottom-row{ flex-direction:column; justify-content:center; text-align:center; }
 }
-/* Below 1280px the footer reaches the fixed back-to-top button (bottom 18px, 42px tall) */
+/* Below 1280px the footer reaches the fixed back-to-top button (bottom 18px, 46px tall) */
 @media (max-width:1279px){
   #iherc-footer .footer-bottom{ padding-bottom:76px; }
 }
