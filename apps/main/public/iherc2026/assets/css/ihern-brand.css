@@ -1085,3 +1085,65 @@ p.iherc-notice, .section-title-header p.iherc-notice{ font-family:'Poppins',sans
 .section-title-header h2.iherc-fee-title{ font-size:36px !important; letter-spacing:-.015em; line-height:1.25; margin:0 0 .5rem; }
 .section-title-header h2.iherc-fee-title::after{ content:none !important; }
 #about .about-content h3.iherc-subhead{ font-size:36px; line-height:1.25; margin:0 0 .5rem; }
+
+/* ---------- Phone/tablet menu: the main site's (and blog's) nine-dot
+   button and black drawer, instead of the three-line button and the white
+   panel. The close button and backdrop are added by IhercBehaviour. ---------- */
+.iherc-nav-close, .iherc-nav-shade{ display:none; }
+@media (max-width:1359.98px){
+  .navbar-toggler{
+    width:44px; height:44px; padding:5.5px !important;
+    border:0 !important; border-radius:10px !important;
+    background-color:transparent !important;
+    background-image:radial-gradient(circle, var(--ihern-navy, #033b86) 2.5px, transparent 3px) !important;
+    background-size:11px 11px; background-repeat:repeat;
+    background-origin:content-box; background-clip:content-box;
+  }
+  .navbar-toggler i{ display:none; }
+  .navbar-toggler:hover{ background-color:transparent !important; opacity:.8; }
+
+  /* the bar's backdrop-filter would hold the fixed drawer inside the bar */
+  body.iherc-nav-open .navbar.fixed-top > .container{ -webkit-backdrop-filter:none !important; backdrop-filter:none !important; }
+  body.iherc-nav-open{ overflow:hidden; }
+
+  .navbar .navbar-collapse.show{
+    position:fixed; top:0; right:0; bottom:0; z-index:1050;
+    width:min(420px, 100vw); height:100vh; height:100dvh; max-height:none;
+    padding:96px 40px 50px 50px; overflow-y:auto;
+    background:#000;
+  }
+  .navbar-collapse.show .iherc-nav-close{
+    display:block; position:absolute; top:25px; right:30px; width:40px; height:40px;
+    padding:0; border:0; background:none; cursor:pointer;
+  }
+  .iherc-nav-close span{ position:absolute; left:8px; top:19px; width:24px; height:2px; border-radius:2px; background:var(--ihern-accent, #0082f1); }
+  .iherc-nav-close span:first-child{ transform:rotate(45deg); }
+  .iherc-nav-close span:last-child{ transform:rotate(-45deg); }
+  body.iherc-nav-open .iherc-nav-shade{ display:block; position:fixed; inset:0; z-index:1040; background:rgba(11,23,51,.45); }
+
+  .navbar-collapse.show .navbar-nav{ margin:0 !important; padding:0; border-top:0; }
+  .navbar-collapse.show .nav-item + .nav-item{ margin-top:0; }
+  .navbar-collapse.show .navbar-nav{ display:block !important; width:100% !important; }
+  .navbar-collapse.show .navbar-nav .nav-item{ display:block !important; width:100%; margin:0 !important; padding:0 !important; }
+  .navbar-collapse.show .navbar-nav .nav-link{
+    display:block !important; width:100% !important; margin:0 !important;
+    min-height:0; padding:10px 0 !important; border-radius:0;
+    border:0 !important; border-bottom:1px solid var(--ihern-line-soft, #eef1f6) !important;
+    background:none !important;
+    font-size:18.4px !important; font-weight:600 !important; line-height:30px !important;
+    color:#fff !important;
+  }
+  .navbar-collapse.show .navbar-nav .nav-link:hover{ color:#9ccaff !important; }
+  .navbar-collapse.show .navbar-nav .nav-item.active > .nav-link{ color:#9ccaff !important; padding-left:0 !important; }
+  .navbar-collapse.show .navbar-nav .nav-item.active > .nav-link::after{ display:none; }
+  /* the way back to IHERN, first in the drawer at every drawer width */
+  .navbar-collapse.show .nav-item-parent{ display:block !important; margin:0 0 18px; padding:0; border:0; }
+  .navbar-collapse.show .nav-item-parent .nav-link{
+    font-size:15px !important; font-weight:500 !important; color:rgba(255,255,255,.75) !important;
+    border-bottom-color:rgba(255,255,255,.18) !important;
+  }
+}
+@media (prefers-reduced-motion:no-preference) and (max-width:1359.98px){
+  .navbar .navbar-collapse.show{ animation:iherc-drawer-in .3s var(--ihern-ease, ease); }
+  @keyframes iherc-drawer-in{ from{ transform:translateX(100%); } to{ transform:none; } }
+}
