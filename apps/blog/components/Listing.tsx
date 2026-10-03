@@ -134,9 +134,9 @@ export async function FilterBar({ values, total }: { values: Record<string, stri
 }
 
 /** "Category / Funding" heading for an archive page: the IHERN page banner. */
-export function ArchiveHeading({ kind, title, children }: { kind: string; title: string; children?: React.ReactNode }) {
+export function ArchiveHeading({ kind, title, photo, children }: { kind: string; title: string; photo?: React.ReactNode; children?: React.ReactNode }) {
   return (
-    <PageBanner kind={kind} title={title} titleClass="b-archive-title">
+    <PageBanner kind={kind} title={title} titleClass="b-archive-title" photo={photo}>
       {children}
     </PageBanner>
   );

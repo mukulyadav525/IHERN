@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getAuthor } from "@/lib/content";
 import { ArchiveHeading, Listing, parsePage } from "@/components/Listing";
+import { mediaPath } from "@ihern/core/blog-paths";
+import { u } from "@/lib/paths";
 
 export const dynamic = "force-dynamic";
 
@@ -24,7 +26,11 @@ export default async function AuthorPage(props: { params: Promise<{ slug: string
   return (
     <main id="main">
       {author ? (
-        <ArchiveHeading kind="Author" title={author.name}>
+        <ArchiveHeading
+          kind="Author"
+          title={author.name}
+          photo={author.photo ? <img src={u(mediaPath(author.photo, 320))} alt={`Photo of ${author.name}`} width={112} height={112} /> : undefined}
+        >
           {author.bio ? <p className="b-archive-desc">{author.bio}</p> : null}
         </ArchiveHeading>
       ) : null}

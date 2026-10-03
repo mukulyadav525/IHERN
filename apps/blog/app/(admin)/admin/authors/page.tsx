@@ -1,6 +1,7 @@
 import { listAuthors } from "@ihern/core/blog";
 import { ActionForm, Submit } from "@/components/admin/Forms";
 import ActionButton from "@/components/admin/ActionButton";
+import AuthorPhoto from "@/components/admin/AuthorPhoto";
 import { deleteAuthorAction, saveAuthorAction } from "../actions";
 
 export const metadata = { title: "Authors" };
@@ -17,6 +18,7 @@ export default async function AuthorsPage() {
         <ActionForm action={saveAuthorAction} reset>
           <label className="adm-field"><span>Name</span><input name="name" required maxLength={190} /></label>
           <label className="adm-field"><span>Short bio <em>(shown under their posts)</em></span><textarea name="bio" rows={3} maxLength={3000} /></label>
+          <AuthorPhoto name="" initial={null} />
           <Submit label="Add author" />
         </ActionForm>
       </section>
@@ -32,6 +34,7 @@ export default async function AuthorsPage() {
                 <label className="adm-field"><span>Address</span><input name="slug" defaultValue={a.slug} maxLength={190} /></label>
               </div>
               <label className="adm-field"><span>Short bio</span><textarea name="bio" rows={3} defaultValue={a.bio} maxLength={3000} /></label>
+              <AuthorPhoto name={a.name} initial={a.photo && a.photoMediaId ? { id: a.photoMediaId, path: a.photo } : null} />
               <div className="adm-row">
                 <Submit label="Save" />
                 <span className="adm-muted">{a.count} published {a.count === 1 ? "post" : "posts"}</span>

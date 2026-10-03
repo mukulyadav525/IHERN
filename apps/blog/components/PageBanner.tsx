@@ -8,11 +8,14 @@ export default function PageBanner({
   title,
   kind,
   titleClass = "b-page-title",
+  photo,
   children,
 }: {
   title: string;
   kind?: string;
   titleClass?: string;
+  /** a round picture above the title (the author page) */
+  photo?: React.ReactNode;
   children?: React.ReactNode;
 }) {
   return (
@@ -20,6 +23,7 @@ export default function PageBanner({
       <div className="container py-5">
         <div className="row justify-content-center">
           <div className="col-lg-10 text-center">
+            {photo ? <div className="b-banner-photo">{photo}</div> : null}
             {kind ? <p className="b-banner-kind">{kind}</p> : null}
             <h1 className={`display-3 text-white ${titleClass}`}>{title}</h1>
             {children}

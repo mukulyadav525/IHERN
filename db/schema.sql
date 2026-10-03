@@ -55,6 +55,9 @@ CREATE TABLE IF NOT EXISTS `blog_authors` (
   `slug`       VARCHAR(190) NOT NULL,
   `name`       VARCHAR(190) NOT NULL,
   `bio`        TEXT NULL,
+  -- their picture: an image in blog_media (no foreign key: blog_media is
+  -- created below; a deleted image simply reads as "no picture")
+  `photo_media_id` INT NULL,
   `wp_id`      INT NULL,
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

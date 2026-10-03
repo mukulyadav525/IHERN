@@ -151,6 +151,7 @@ cp /srv/ihern/shared/main.env.production.local apps/main/.env.production.local
 cp /srv/ihern/shared/blog.env.production.local apps/blog/.env.production.local
 node -v                      # 22.12 or newer
 npm ci && npm run build
+npm run db:schema            # adds any new blog columns; only adds, safe to repeat
 
 # 3. switch
 pm2 delete ihern-main ihern-blog

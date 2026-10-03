@@ -217,7 +217,13 @@ export async function saveAuthorAction(prev: ActionResult, form: FormData): Prom
     const id = /^\d+$/.test(idRaw) ? Number(idRaw) : null;
     const name = String(form.get("name") ?? "").trim();
     if (!name) return failed("Please enter the author's name.");
-    const res = await saveAuthor(id, { name: name.slice(0, 190), slug: slugify(String(form.get("slug") ?? "").trim() || name), bio: String(form.get("bio") ?? "").trim().slice(0, 3000) });
+    const photoRaw = String(form.get("photo_media_id") ?? "");
+    const res = await saveAuthor(id, {
+      name: name.slice(0, 190),
+      slug: slugify(String(form.get("slug") ?? "").trim() || name),
+      bio: String(form.get("bio") ?? "").trim().slice(0, 3000),
+      photoMediaId: /^\d+$/.test(photoRaw) ? Number(photoRaw) : null,
+    });
     if (res === "exists") return failed("Another author already uses that address (slug).");
     if (!res) return failed("Could not save it just now.");
     await refreshBlog();

@@ -112,7 +112,7 @@ export default async function PostPage(props: { params: Promise<{ slug: string }
 
       {post.author ? (
         <section className="b-card b-author-box" aria-label="About the author">
-          <span className="b-author-avatar" aria-hidden="true"><AuthorIcon /></span>
+          <span className="b-author-avatar" aria-hidden="true"><AuthorIcon photo={post.author.photo} size={320} /></span>
           <div>
             <h2 className="b-author-name">
               <Link href={`/author/${post.author.slug}`}>{post.author.name}</Link>
