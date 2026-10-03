@@ -21,8 +21,10 @@ import { absoluteUrl } from "./env";
 
 type Message = { to: string; subject: string; text?: string; html?: string; from?: string; replyTo?: string };
 
-const BLOG_FROM = "IHERN Blog <no-reply@iiitd.ac.in>";
-const MEMBERSHIP_FROM = "IIIT-Delhi <no-reply@iiitd.ac.in>";
+// Every message comes from, and replies go to, the IHERN mailbox.
+const IHERN_MAILBOX = "ihern@iiitd.ac.in";
+const BLOG_FROM = `IHERN Blog <${IHERN_MAILBOX}>`;
+const MEMBERSHIP_FROM = `IHERN <${IHERN_MAILBOX}>`;
 
 function fileMode(): boolean {
   return (process.env.IHERN_MAIL_TRANSPORT || "").toLowerCase() === "file";
@@ -83,7 +85,7 @@ export function sendSubscriptionConfirmation(name: string, email: string): Promi
   return send({
     to: email,
     from: BLOG_FROM,
-    replyTo: "no-reply@iiitd.ac.in",
+    replyTo: IHERN_MAILBOX,
     subject: "You are subscribed to the IHERN Blog",
     text:
       `Hi ${firstName(name)},\n\n` +
@@ -109,7 +111,7 @@ export async function sendNewPostNotifications(
     const ok = await send({
       to: s.email,
       from: BLOG_FROM,
-      replyTo: "no-reply@iiitd.ac.in",
+      replyTo: IHERN_MAILBOX,
       subject: "New on the IHERN Blog: " + clean,
       text:
         `Hi ${firstName(s.name)},\n\n` +
@@ -130,7 +132,7 @@ export function sendMembershipConfirmation(name: string, email: string, number: 
   return send({
     to: email,
     from: MEMBERSHIP_FROM,
-    replyTo: "admin-web@iiitd.ac.in",
+    replyTo: IHERN_MAILBOX,
     subject: "Membership Confirmation for IHERN",
     html:
       `Hello ${esc(name)},<br /><br />Welcome to IHERN!<br/>` +
@@ -143,7 +145,7 @@ export function sendPasswordReset(email: string, link: string): Promise<boolean>
   return send({
     to: email,
     from: MEMBERSHIP_FROM,
-    replyTo: "admin-web@iiitd.ac.in",
+    replyTo: IHERN_MAILBOX,
     subject: "Password Reset",
     html:
       `Dear ${esc(email)},<br /><br />We received your request to reset the password, just click the following ` +
@@ -159,7 +161,7 @@ export async function sendCommentForModeration(to: string[], postTitle: string, 
     await send({
       to: email,
       from: BLOG_FROM,
-      replyTo: "no-reply@iiitd.ac.in",
+      replyTo: IHERN_MAILBOX,
       subject: `Comment awaiting approval: ${postTitle.replace(/[\r\n]+/g, " ")}`,
       text:
         `A new comment on "${postTitle}" is waiting for approval.\n\n` +
