@@ -22,13 +22,15 @@ export default async function AuthorPage(props: { params: Promise<{ slug: string
   const author = await getAuthor({ slug: params.slug });
   if (author === undefined) notFound();
   return (
-    <main className="b-wrap" id="main">
+    <main id="main">
       {author ? (
         <ArchiveHeading kind="Author" title={author.name}>
           {author.bio ? <p className="b-archive-desc">{author.bio}</p> : null}
         </ArchiveHeading>
       ) : null}
-      <Listing base={`/author/${params.slug}`} page={parsePage(searchParams.page)} query={{ author: params.slug }} />
+      <div className="b-wrap">
+        <Listing base={`/author/${params.slug}`} page={parsePage(searchParams.page)} query={{ author: params.slug }} />
+      </div>
     </main>
   );
 }

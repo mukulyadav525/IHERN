@@ -5,7 +5,8 @@
    site's own. This file adds only the blog's pieces. Prefix: .b-
    ========================================================================== */
 
-body.ihern-blog{ background:var(--ihern-surface-alt); }
+/* White, as the main site's pages; cards carry their own border and shadow. */
+body.ihern-blog{ background:#fff; }
 
 /* ---- page frame ---- */
 .b-wrap{
@@ -28,6 +29,19 @@ body.ihern-blog{ background:var(--ihern-surface-alt); }
 body.defult-home .b-page-title{
   font-size:clamp(1.6rem,3vw,2.1rem); line-height:1.25; margin:4px 0 0; color:var(--ihern-ink);
 }
+
+/* ---- page banner: the main site's .page-header (components/PageBanner) ---- */
+body.defult-home .page-header h1.display-3{ color:#fff; margin:0; line-height:1.15; overflow-wrap:break-word; }
+body.defult-home .b-banner-kind{
+  position:relative; z-index:1; margin:0 0 10px;
+  font-size:13px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:rgba(255,255,255,.78);
+}
+body.defult-home .page-header .b-archive-desc{
+  position:relative; z-index:1; max-width:720px; margin:18px auto 0;
+  font-size:16px; line-height:1.65; color:rgba(255,255,255,.86);
+}
+.b-wrap--message{ text-align:center; padding-top:clamp(32px,5vw,56px); }
+.b-wrap--message .b-actions{ justify-content:center; }
 
 /* ---- wordmark: IHERN | Blog ---- */
 .b-wordmark{ display:flex; align-items:center; gap:12px; }
@@ -224,10 +238,6 @@ body.defult-home .b-section-title::after{ content:""; flex:1; height:2px; backgr
 @media (max-width:480px){ .b-missed-grid{ grid-template-columns:1fr; } }
 
 /* ---- archives ---- */
-.b-archive-head{ padding:22px 24px; }
-body.defult-home .b-archive-kind{ margin:0 0 4px; font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--ihern-navy); }
-body.defult-home .b-archive-title{ margin:0; font-size:clamp(1.5rem,2.8vw,2rem); }
-body.defult-home .b-archive-desc{ margin:10px 0 0; }
 .b-empty{ padding:28px 24px; text-align:center; color:var(--ihern-body); }
 .b-empty .b-actions{ justify-content:center; margin-top:16px; }
 

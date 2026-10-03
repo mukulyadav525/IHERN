@@ -17,13 +17,15 @@ export default async function TermPage(props: { params: Promise<{ slug: string }
   const term = await getTerm("tag", { slug: params.slug });
   if (term === undefined) notFound();
   return (
-    <main className="b-wrap" id="main">
+    <main id="main">
       {term ? (
         <ArchiveHeading kind="Tag" title={term.name}>
           {term.description ? <p className="b-archive-desc">{term.description}</p> : null}
         </ArchiveHeading>
       ) : null}
-      <Listing base={`/tag/${params.slug}`} page={parsePage(searchParams.page)} query={{ tag: params.slug }} />
+      <div className="b-wrap">
+        <Listing base={`/tag/${params.slug}`} page={parsePage(searchParams.page)} query={{ tag: params.slug }} />
+      </div>
     </main>
   );
 }

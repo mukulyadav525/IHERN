@@ -2,6 +2,7 @@ import Link from "next/link";
 import { listAuthors, listPosts, listTerms, PAGE_SIZE, type PostQuery } from "@/lib/content";
 import { EmptyState, Pagination, PostRow } from "./PostParts";
 import { u } from "@/lib/paths";
+import PageBanner from "./PageBanner";
 
 /**
  * A list of posts with paging - the "All posts" page, the category, tag,
@@ -132,13 +133,11 @@ export async function FilterBar({ values, total }: { values: Record<string, stri
   );
 }
 
-/** "Category / Funding" heading for an archive page. */
+/** "Category / Funding" heading for an archive page: the IHERN page banner. */
 export function ArchiveHeading({ kind, title, children }: { kind: string; title: string; children?: React.ReactNode }) {
   return (
-    <header className="b-card b-archive-head">
-      <p className="b-archive-kind">{kind}</p>
-      <h1 className="b-archive-title">{title}</h1>
+    <PageBanner kind={kind} title={title} titleClass="b-archive-title">
       {children}
-    </header>
+    </PageBanner>
   );
 }
