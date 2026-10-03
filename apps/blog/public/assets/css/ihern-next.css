@@ -127,3 +127,13 @@ body.defult-home .blog-card-body h2{ font-size:clamp(1.25rem,2.1vw,1.5rem); line
 .rs-about.ihern-full .sec-title2 ol,
 .rs-about.ihern-full .ihern-activities,
 .rs-about.ihern-full .ihern-scope-list{ max-width:none; }
+
+/* ---- Footer bottom row: copyright on the left, the developer credit on
+   the right (centred one above the other on phones, ihern-theme.css). */
+#rs-footer .footer-bottom-row > .footer-credit{
+  display:block; margin:0; font-size:14px; color:rgba(255,255,255,.58) !important; text-align:right;
+}
+#rs-footer .footer-bottom-row > .footer-credit::before{ content:none; }
+@media (max-width:575px){
+  #rs-footer .footer-bottom-row > .footer-credit{ text-align:center; margin-top:-8px; }
+}
