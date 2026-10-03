@@ -5,6 +5,7 @@ import { useFormStatus } from "react-dom";
 import Link from "next/link";
 import { signInMember, type MemberLoginState } from "../actions";
 import { u } from "@/lib/paths";
+import OldMemberNote from "@/components/OldMemberNote";
 
 function Submit() {
   const { pending } = useFormStatus();
@@ -38,6 +39,7 @@ export default function MemberLoginForm() {
     <div className="auth-card">
       <h1 className="auth-title">Member sign in</h1>
       <p className="auth-sub">Sign in to view your IHERN membership registration.</p>
+      <OldMemberNote />
 
       {state.next ? <meta httpEquiv="refresh" content={`0;url=${u(state.next)}`} /> : null}
       {state.error ? (

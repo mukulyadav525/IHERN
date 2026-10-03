@@ -6,6 +6,7 @@ import Link from "next/link";
 import Continue from "@/components/Continue";
 import { authenticate, type AuthState } from "./actions";
 import { u } from "@/lib/paths";
+import OldMemberNote from "@/components/OldMemberNote";
 
 function Submit({ mode }: { mode: AuthState["mode"] }) {
   const { pending } = useFormStatus();
@@ -68,6 +69,8 @@ export default function AuthForm({
       </nav>
 
       {state.next ? <Continue to={state.next} /> : null}
+
+      <OldMemberNote />
 
       {state.error ? (
         <div className="auth-alert" role="alert">

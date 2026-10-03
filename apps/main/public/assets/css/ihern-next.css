@@ -48,7 +48,7 @@ body.defult-home .member-details td{ color:var(--ihern-ink); overflow-wrap:anywh
 .ihern-skip:focus{ top:12px; outline:3px solid #9ccaff; outline-offset:2px; }
 /* Links inside running text are underlined, not told apart by colour alone (WCAG 1.4.1). */
 /* (!important: style.css sets "a { text-decoration: none !important }") */
-.auth-back a, .auth-info a, .ihern-form-note a, .ihern-form-submit a{ text-decoration:underline !important; text-underline-offset:2px; }
+.auth-back a, .auth-info a, .auth-note a, .ihern-form-note a, .ihern-form-submit a{ text-decoration:underline !important; text-underline-offset:2px; }
 /* Headings that sat a level too deep are now the right level (h4 under the
    Events h2 -> h3; Blogs card titles under the page h1 -> h2). These keep
    the look they had at the old level. */
