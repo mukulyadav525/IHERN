@@ -13,3 +13,6 @@ next-env.d.ts
 .data/
 apps/main/uploads/
 apps/blog/uploads/
+
+# the full database (members' personal data): kept locally, never committed
+db/ihern.sql
