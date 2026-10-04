@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { findMembers, memberCounts, PAGE_SIZE } from "@/lib/admin";
 import MemberTable from "@/components/admin/MemberTable";
+import MemberBulk from "@/components/admin/MemberBulk";
+import { updateRequests } from "@/lib/profile-update";
 import { u } from "@/lib/paths";
 
 export const metadata = { title: "Members" };
@@ -25,6 +27,7 @@ export default async function MembersPage(props: { searchParams: Promise<Search>
   const page = Math.max(1, Number(searchParams.page) || 1);
   const [counts, found] = await Promise.all([memberCounts(), findMembers({ q, status, page })]);
   if (!counts || !found) return <p className="adm-flash adm-flash--error">The membership database could not be reached.</p>;
+  const requests = await updateRequests(found.rows.map((m) => m.studentID));
   const pages = Math.max(1, Math.ceil(found.total / PAGE_SIZE));
   const tabs = [
     { key: "", label: "All", n: counts.total },
@@ -59,7 +62,8 @@ export default async function MembersPage(props: { searchParams: Promise<Search>
           {found.total} {found.total === 1 ? "match" : "matches"} for “{q}”. <Link href={href({ status })}>Clear search</Link>
         </p>
       ) : null}
-      {found.rows.length ? <MemberTable rows={found.rows} /> : <p className="adm-card adm-muted">No registrations match.</p>}
+      <MemberBulk active={counts.active} />
+      {found.rows.length ? <MemberTable rows={found.rows} selectable requests={requests} /> : <p className="adm-card adm-muted">No registrations match.</p>}
       {pages > 1 ? (
         <nav className="adm-row adm-pager" aria-label="Pages">
           {page > 1 ? <Link className="adm-btn adm-btn--ghost adm-btn--small" href={href({ q, status, page: page - 1 })}>← Newer</Link> : null}

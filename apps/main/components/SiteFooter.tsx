@@ -39,7 +39,7 @@ export default function SiteFooter() {
                 Research &amp; Events
               </h2>
               <ul className="footer-links">
-                <li><Link href="/#events_heading">Webinars</Link></li>
+                <li><Link href="/events">Events &amp; webinars</Link></li>
                 <li><Link href="/iherc2026">IHERC 2026</Link></li>
                 <li><Link href="/reports">Reports &amp; Papers</Link></li>
                 <li><Link href="/blogs">IHERN Blog</Link></li>
@@ -53,6 +53,7 @@ export default function SiteFooter() {
               <ul className="footer-links">
                 <li><a href="mailto:ihern@iiitd.ac.in">ihern@iiitd.ac.in</a></li>
                 <li><Link href="/join">Join IHERN</Link></li>
+                <li><Link href="/membership/login">Member sign in</Link></li>
                 <li>
                   <a href="https://www.linkedin.com/company/india-higher-education-research-network/about/" target="_blank" rel="noopener">
                     LinkedIn

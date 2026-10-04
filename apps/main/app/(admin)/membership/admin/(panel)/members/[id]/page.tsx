@@ -5,7 +5,8 @@ import { membershipNumber } from "@/lib/membership-options";
 import ActionButton from "@/components/admin/ActionButton";
 import MemberForm from "@/components/admin/MemberForm";
 import { photoUrl } from "@/components/admin/MemberTable";
-import { deleteMemberAction, saveMemberAction, sendMemberResetAction } from "../../../actions";
+import { updateRequests } from "@/lib/profile-update";
+import { deleteMemberAction, requestUpdateAction, saveMemberAction, sendMemberResetAction } from "../../../actions";
 
 export const metadata = { title: "Member" };
 export const dynamic = "force-dynamic";
@@ -17,6 +18,7 @@ export default async function MemberPage(props: { params: Promise<{ id: string }
   const m = await getMember(id);
   if (m === "error") return <p className="adm-flash adm-flash--error">The membership database could not be reached.</p>;
   if (!m) notFound();
+  const request = (await updateRequests([id])).get(id);
   return (
     <>
       <header className="adm-head">
@@ -33,10 +35,22 @@ export default async function MemberPage(props: { params: Promise<{ id: string }
           <div className="adm-card">
             <h2>Membership</h2>
             <dl className="adm-facts">
-              <dt>Membership number</dt><dd>{membershipNumber(m.studentID)}</dd>
+              <dt>Membership number</dt><dd>{membershipNumber(m)}</dd>
               <dt>Registered</dt><dd>{m.regDate}</dd>
               <dt>Status</dt><dd><span className={`adm-status ${m.userStatus === "Y" ? "is-on" : "is-off"}`}>{m.userStatus === "Y" ? "Active" : "Inactive"}</span></dd>
             </dl>
+          </div>
+          <div className="adm-card">
+            <h2>Member&apos;s own update</h2>
+            <p className="adm-muted">
+              {request?.completedAt
+                ? `They last updated their details on ${request.completedAt.slice(0, 10)}. `
+                : request
+                  ? `Asked on ${request.requestedAt.slice(0, 10)}${request.requestedBy ? ` by ${request.requestedBy}` : ""}; not updated yet. `
+                  : ""}
+              This emails {m.studentEmail} a link to check and update their details and photograph themselves, no password needed (it works for 14 days).
+            </p>
+            <ActionButton action={requestUpdateAction.bind(null, id)} label="Ask them to update their details" className="adm-btn adm-btn--ghost adm-btn--small" showMessage />
           </div>
           <div className="adm-card">
             <h2>Password</h2>
@@ -50,7 +64,7 @@ export default async function MemberPage(props: { params: Promise<{ id: string }
               action={deleteMemberAction.bind(null, id)}
               label="Delete this registration"
               className="adm-btn adm-btn--danger adm-btn--small"
-              confirm={`Delete the registration of ${m.studentName} (${membershipNumber(m.studentID)}) and their photograph? This cannot be undone.`}
+              confirm={`Delete the registration of ${m.studentName} (${membershipNumber(m)}) and their photograph? This cannot be undone.`}
               after="/membership/admin/members"
             />
           </div>

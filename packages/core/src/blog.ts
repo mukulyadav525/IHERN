@@ -537,23 +537,33 @@ export async function deleteComment(id: number): Promise<boolean> {
 
 /* ---------------------------------------------------------------- editors */
 
-export type Editor = { id: number; email: string; role: "admin" | "editor"; createdAt: string };
+export type Editor = { id: number; email: string; role: "admin" | "editor"; active: boolean; createdAt: string };
+type EditorRow = { id: number; email: string; role: "admin" | "editor"; active: number; created_at: string };
+const toEditor = (r: EditorRow): Editor => ({ id: Number(r.id), email: r.email, role: r.role, active: Number(r.active) === 1, createdAt: r.created_at });
 
-/** The editor record for this email, undefined when they are not an editor. */
+/** The active editor record for this email, undefined when they are not an editor (or deactivated). */
 export async function getEditor(email: string): Promise<Editor | null | undefined> {
-  const rows = await query<{ id: number; email: string; role: "admin" | "editor"; created_at: string }>("cdnm", "SELECT * FROM blog_editors WHERE email = ? LIMIT 1", [email.toLowerCase()]);
+  const rows = await query<EditorRow>("cdnm", "SELECT * FROM blog_editors WHERE email = ? AND active = 1 LIMIT 1", [email.toLowerCase()]);
   if (rows === null) return null;
-  const r = rows[0];
-  return r ? { id: Number(r.id), email: r.email, role: r.role, createdAt: r.created_at } : undefined;
+  return rows[0] ? toEditor(rows[0]) : undefined;
 }
 
+/** Everyone on the list, deactivated editors included. */
 export async function listEditors(): Promise<Editor[] | null> {
-  const rows = await query<{ id: number; email: string; role: "admin" | "editor"; created_at: string }>("cdnm", "SELECT * FROM blog_editors ORDER BY role, email");
-  return rows === null ? null : rows.map((r) => ({ id: Number(r.id), email: r.email, role: r.role, createdAt: r.created_at }));
+  const rows = await query<EditorRow>("cdnm", "SELECT * FROM blog_editors ORDER BY active DESC, role, email");
+  return rows === null ? null : rows.map(toEditor);
 }
 
-export async function addEditor(email: string, role: "admin" | "editor"): Promise<boolean> {
-  return (await execute("cdnm", "INSERT INTO blog_editors (email, role) VALUES (?, ?) ON DUPLICATE KEY UPDATE role = VALUES(role)", [email.toLowerCase(), role])) !== null;
+/** "added" (new to the list), "updated" (already on it: role changed, active again), or null on failure. */
+export async function addEditor(email: string, role: "admin" | "editor"): Promise<"added" | "updated" | null> {
+  const res = await execute("cdnm", "INSERT INTO blog_editors (email, role) VALUES (?, ?) ON DUPLICATE KEY UPDATE role = VALUES(role), active = 1", [email.toLowerCase(), role]);
+  // MySQL counts 1 for an insert, 2 for an update, 0 when nothing changed.
+  return res === null ? null : res.affectedRows === 1 ? "added" : "updated";
+}
+
+export async function setEditorActive(id: number, active: boolean): Promise<boolean> {
+  const res = await execute("cdnm", "UPDATE blog_editors SET active = ? WHERE id = ?", [active ? 1 : 0, id]);
+  return res !== null && res.affectedRows > 0;
 }
 
 export async function removeEditor(id: number): Promise<boolean> {

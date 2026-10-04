@@ -47,7 +47,7 @@ export async function postComment(prev: CommentState, form: FormData): Promise<C
   if (!status) return fail("Your comment could not be saved just now. Please try again.");
 
   if (status === "pending") {
-    const editors = (await listEditors()) ?? [];
+    const editors = ((await listEditors()) ?? []).filter((e) => e.active);
     await sendCommentForModeration(editors.map((e) => e.email), post.title, reader.name || reader.email, content, `${blogUrl()}/admin/comments`);
   }
   if (status === "approved") revalidateTag(CONTENT_TAG); // the cached comment list

@@ -15,12 +15,14 @@ export default function ActionButton({
   confirm,
   className = "adm-link",
   after,
+  showMessage = false,
 }: {
   action: () => Promise<ActionResult>;
   label: string;
   confirm?: string;
   className?: string;
   after?: string; // navigate here after success
+  showMessage?: boolean; // say so on success too
 }) {
   const router = useRouter();
   const [pending, start] = useTransition();
@@ -46,6 +48,7 @@ export default function ActionButton({
         {pending ? "…" : label}
       </button>
       {msg && !msg.ok ? <span className="adm-inline-error" role="alert">{msg.error}</span> : null}
+      {msg && msg.ok && showMessage ? <span className="adm-inline-ok" role="status">{msg.message}</span> : null}
     </span>
   );
 }

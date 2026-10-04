@@ -26,7 +26,9 @@ export default async function PanelLayout({ children }: { children: React.ReactN
       </AdminGate>
     );
   }
-  const links = (await isBlogEditor(who.email)) ? [...LINKS, { label: "Blog admin", href: `${blogUrl()}/admin` }] : LINKS;
+  const links = (await isBlogEditor(who.email)) ? [...LINKS, { label: "Blog admin", href: `${blogUrl()}/admin` }] : [...LINKS];
+  // Membership admins can always use the events admin (with their IHERN account).
+  links.push({ label: "Events admin", href: u("/events/admin") });
   return (
     <AdminShell
       section="Membership admin"

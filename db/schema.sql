@@ -155,11 +155,14 @@ CREATE TABLE IF NOT EXISTS `blog_comments` (
 
 -- Who may use the blog's admin area. They sign in with their IHERN account;
 -- this list says which accounts may write. `admin` can also manage this list.
+-- Only IHERN members are added (the admin area checks the membership).
 --   npm run blog:add-editor -- someone@iiitd.ac.in admin
 CREATE TABLE IF NOT EXISTS `blog_editors` (
   `id`         INT AUTO_INCREMENT PRIMARY KEY,
   `email`      VARCHAR(190) NOT NULL,
   `role`       ENUM('admin','editor') NOT NULL DEFAULT 'editor',
+  -- 0: deactivated (kept on the list, no access)
+  `active`     TINYINT(1) NOT NULL DEFAULT 1,
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   UNIQUE KEY `uniq_editor_email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -187,4 +190,71 @@ CREATE TABLE IF NOT EXISTS `membership_admin_accounts` (
   `admin_id`      INT NOT NULL,
   `created_at`    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT `fk_admin_account_subscriber` FOREIGN KEY (`subscriber_id`) REFERENCES `blog_subscribers` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Invitations to the membership admin (ihern2024.adminlogin), sent by email.
+-- Opening the link while signed in to the IHERN account with the invited
+-- address (or creating that account from the link) links the two, as
+-- membership_admin_accounts above. The link proves the mailbox is theirs.
+CREATE TABLE IF NOT EXISTS `membership_admin_invites` (
+  `admin_id`   INT NOT NULL PRIMARY KEY,
+  `token_hash` CHAR(64) NOT NULL,
+  `invited_by` VARCHAR(190) NOT NULL DEFAULT '',
+  `expires_at` DATETIME NOT NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY `uniq_invite_token` (`token_hash`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- "Please subscribe" emails a blog admin sent to people who are not
+-- subscribed, so nobody is asked twice in a short time.
+CREATE TABLE IF NOT EXISTS `blog_nudges` (
+  `email`   VARCHAR(190) NOT NULL PRIMARY KEY,
+  `sent_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `sent_by` VARCHAR(190) NOT NULL DEFAULT '',
+  `count`   INT NOT NULL DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ---------------------------------------------------------------------------
+-- Events (the main site's Events section, managed in the events admin)
+-- ---------------------------------------------------------------------------
+
+-- An event: webinar, workshop, conference session... Times are IST.
+-- `links` is a JSON list of {"label", "url"}: a Google Form, a poster PDF...
+CREATE TABLE IF NOT EXISTS `ihern_events` (
+  `id`           INT AUTO_INCREMENT PRIMARY KEY,
+  `tag`          VARCHAR(100) NOT NULL DEFAULT '',
+  `title`        VARCHAR(300) NOT NULL,
+  `description`  TEXT NOT NULL,
+  `speakers`     TEXT NULL,
+  `starts_at`    DATETIME NULL,
+  `ends_at`      DATETIME NULL,
+  `venue`        VARCHAR(300) NOT NULL DEFAULT '',
+  `mode`         ENUM('online','in-person','hybrid') NOT NULL DEFAULT 'online',
+  `join_url`     VARCHAR(1000) NOT NULL DEFAULT '',
+  `join_label`   VARCHAR(100) NOT NULL DEFAULT '',
+  `links`        TEXT NULL,
+  `status`       ENUM('draft','published','trash') NOT NULL DEFAULT 'draft',
+  `published_at` DATETIME NULL,
+  `created_by`   VARCHAR(190) NOT NULL DEFAULT '',
+  `created_at`   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at`   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  -- the email to all members: claimed once, then counted as it goes out
+  `notified_at`  DATETIME NULL,
+  `notify_total` INT NULL,
+  `notify_sent`  INT NOT NULL DEFAULT 0,
+  `seed_key`     VARCHAR(60) NULL,
+  KEY `idx_event_listing` (`status`, `starts_at`),
+  UNIQUE KEY `uniq_event_seed` (`seed_key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Who may use the events admin besides the membership admins (who always
+-- can). They sign in with their IHERN account. `admin` can manage this list.
+CREATE TABLE IF NOT EXISTS `event_editors` (
+  `id`         INT AUTO_INCREMENT PRIMARY KEY,
+  `email`      VARCHAR(190) NOT NULL,
+  `role`       ENUM('admin','editor') NOT NULL DEFAULT 'editor',
+  -- 0: deactivated (kept on the list, no access)
+  `active`     TINYINT(1) NOT NULL DEFAULT 1,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY `uniq_event_editor_email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

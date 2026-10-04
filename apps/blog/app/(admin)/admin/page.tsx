@@ -1,12 +1,19 @@
 import Link from "next/link";
 import { blogCounts, listCommentsForAdmin, listPosts } from "@ihern/core/blog";
 import { formatDate } from "@ihern/core/text";
+import { currentEditor } from "@/lib/admin";
 
 export const metadata = { title: "Dashboard" };
 export const dynamic = "force-dynamic";
 
 export default async function Dashboard() {
-  const [counts, drafts, pending] = await Promise.all([blogCounts(), listPosts({ status: "draft", limit: 5, sort: "updated" }), listCommentsForAdmin("pending")]);
+  const [counts, drafts, pending, me] = await Promise.all([
+    blogCounts(),
+    listPosts({ status: "draft", limit: 5, sort: "updated" }),
+    listCommentsForAdmin("pending"),
+    currentEditor(),
+  ]);
+  const isAdmin = Boolean(me && typeof me !== "string" && me.role === "admin");
   return (
     <>
       <header className="adm-head">
@@ -18,7 +25,11 @@ export default async function Dashboard() {
           <Link className="adm-stat" href="/admin/posts?status=published"><strong>{counts.published}</strong><span>published posts</span></Link>
           <Link className="adm-stat" href="/admin/posts?status=draft"><strong>{counts.drafts}</strong><span>drafts</span></Link>
           <Link className="adm-stat" href="/admin/comments"><strong>{counts.pendingComments}</strong><span>comments to approve</span></Link>
-          <div className="adm-stat"><strong>{counts.subscribers}</strong><span>email subscribers</span></div>
+          {isAdmin ? (
+            <Link className="adm-stat" href="/admin/subscribers"><strong>{counts.subscribers}</strong><span>email subscribers</span></Link>
+          ) : (
+            <div className="adm-stat"><strong>{counts.subscribers}</strong><span>email subscribers</span></div>
+          )}
         </div>
       ) : (
         <p className="adm-flash adm-flash--error">The database could not be reached.</p>

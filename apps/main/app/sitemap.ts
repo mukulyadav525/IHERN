@@ -14,6 +14,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ["stc", 0.7],
     ["sig", 0.7],
     ["reports", 0.6],
+    ["events", 0.7],
     ["blogs", 0.7],
     ["join", 0.6],
     ["iherc2026", 0.9],

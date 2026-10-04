@@ -22,7 +22,21 @@ member sign-in and dashboard, password reset, the Blogs page (now read from the
 blog's tables), the single sign-on server the blog uses, and the **membership
 admin panel** at `/membership/admin`. Staff sign in with their existing admin
 accounts and get the registered members with photographs, activation, editing,
-password reset emails, deletion, the CSV export and import, and admin users.
+password reset emails, deletion, the CSV export and import, bulk actions
+(activate, deactivate, "please update your details" emails) and admin users.
+New members are active at once and get a number IHERN/<year>-<month><n> (the
+n-th member of that year; earlier members keep IHERN/2025-<id>). Members can
+update their own details from My membership, or from an emailed request.
+
+**Events admin** (`/events/admin` on the main site): the events on the home
+page and the Events page (`/events`): tag, title, description, speakers, date
+and time, mode and venue, a joining link, other links and uploaded posters.
+Draft or live, duplicate, trash; one email per event to every active member.
+Membership admins can always use it; others are added by email.
+
+**Admin access** of every kind (blog, events, membership) is given only to
+IHERN members (an active registration with that email), who are emailed
+about it. Deactivating or removing an admin sends no email.
 An admin signed in to their IHERN account goes straight in once the account
 is linked to their admin account (signing in to the admin once with the admin
 password while signed in to the website, or signing in to the website with
@@ -47,7 +61,8 @@ anyone can create an IHERN account with any address.
 - **the admin area at `/admin`** (replaces wp-admin): write and edit posts and
   pages in a visual editor (or HTML), schedule them, choose categories, tags,
   author and featured image; manage categories, tags and authors; upload
-  images; approve comments; and (admins) choose who can edit.
+  images; approve comments; and (admins) choose who can edit, see the
+  subscribers (with a CSV export) and remind people who are not subscribed.
 
 Old WordPress addresses keep working: `/?p=196`, `/?page_id=30`, `/?cat=6`,
 `/?tag=…`, `/?author=5`, `/?s=…`, `/?feed=rss2`, `/?m=202606` all redirect to
@@ -138,6 +153,10 @@ mysql -u <user> -p ihern2024 -e "INSERT INTO adminlogin (adName, adEmail, adMobi
 npm run blog:add-editor -- you@iiitd.ac.in admin
 ```
 
+(`npm run db:schema` also creates the membership tables when `ihern2024` is
+configured, and fills the events table with the home page's past events the
+first time.)
+
 The WordPress migration is only for carrying the old blog across; skip it.
 Change the password at once in the membership admin (Change password).
 
@@ -171,7 +190,7 @@ cp /srv/ihern/shared/main.env.production.local apps/main/.env.production.local
 cp /srv/ihern/shared/blog.env.production.local apps/blog/.env.production.local
 node -v                      # 22.12 or newer
 npm ci && npm run build
-npm run db:schema            # adds any new blog columns; only adds, safe to repeat
+npm run db:schema            # adds new tables and columns in both databases; only adds, safe to repeat
 
 # 3. switch
 pm2 delete ihern-main ihern-blog

@@ -178,3 +178,13 @@ body.defult-home .blog-card-body h2{ font-size:clamp(1.25rem,2.1vw,1.5rem); line
   .ihern-pair{ gap:10px; }
   .ihern-pair-btn{ flex:1 1 0; min-width:0; padding:12px 14px; font-size:14px; }
 }
+
+/* ---------- Events (the home page section and the Events page) ---------- */
+.ihern-events-note{ font-size:15.5px; color:var(--ihern-muted, #6b7280); margin:0 0 20px; }
+.ihern-events-more{ margin:4px 0 0; }
+.ihern-events-heading{ font-size:clamp(1.25rem,2vw,1.5rem); font-weight:700; margin:0 0 18px; }
+.ihern-events-heading + .ihern-events-note{ margin-top:-6px; }
+.ihern-events-section + .ihern-events-section{ margin-top:36px; }
+.ihern-check{ display:inline-flex; align-items:center; gap:8px; font-weight:500; cursor:pointer; }
+.ihern-check input{ width:18px; height:18px; margin:0; accent-color:var(--ihern-navy, #033b86); }
+.ihern-form-intro a, .ihern-form-required a{ text-decoration:underline !important; text-underline-offset:2px; }

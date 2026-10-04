@@ -16,7 +16,7 @@ async function main() {
   const role = roleArg === "admin" ? "admin" : "editor";
   const { addEditor } = await import("@ihern/core/blog");
   const { getPool } = await import("@ihern/core/db");
-  if (!(await addEditor(email, role))) throw new Error("Could not save (is the database configured and the schema applied?).");
+  if ((await addEditor(email, role)) === null) throw new Error("Could not save (is the database configured and the schema applied?).");
   console.log(`${email.toLowerCase()} is now a blog ${role}.`);
   await getPool("cdnm")?.end();
 }

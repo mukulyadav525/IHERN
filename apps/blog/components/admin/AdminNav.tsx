@@ -11,7 +11,8 @@ const ITEMS: AdminNavItem[] = [
   { href: "/admin/comments", label: "Comments" },
 ];
 
-/** The blog admin's pages; Editors only for admins. */
+/** The blog admin's pages; Subscribers and Editors only for admins. */
 export default function AdminNav({ isAdmin }: { isAdmin: boolean }) {
-  return <SharedNav label="Blog admin" items={isAdmin ? [...ITEMS, { href: "/admin/editors", label: "Editors" }] : ITEMS} />;
+  const items = isAdmin ? [...ITEMS, { href: "/admin/subscribers", label: "Subscribers" }, { href: "/admin/editors", label: "Editors" }] : ITEMS;
+  return <SharedNav label="Blog admin" items={items} />;
 }

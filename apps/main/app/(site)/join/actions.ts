@@ -4,7 +4,6 @@ import {
   emailRegistered,
   imageType,
   membershipAvailable,
-  membershipNumber,
   POSITIONS,
   registerMember,
   removePhoto,
@@ -129,7 +128,7 @@ async function register(
   if (errors.length) return result();
 
   const studentName = `${old.title} ${old.studentName}`;
-  const id = await registerMember({
+  const saved = await registerMember({
     studentName,
     studentEmail: old.studentEmail,
     studentMobile: old.studentMobile,
@@ -142,14 +141,14 @@ async function register(
     photo,
   });
 
-  if (id === null) {
+  if (saved === null) {
     if (photo) await removePhoto(photo);
     errors.push("Your registration could not be saved just now. Please try again in a few minutes, or email ihern@iiitd.ac.in.");
     return result();
   }
 
   revalidateTag(MEMBERS_TAG);
-  const number = membershipNumber(id);
+  const { number } = saved;
   const mailed = await sendMembershipConfirmation(studentName, old.studentEmail, number);
   return { seq: prev.seq + 1, errors: [], old: EMPTY_FIELDS, done: { name: studentName, email: old.studentEmail, number, mailed } };
 }

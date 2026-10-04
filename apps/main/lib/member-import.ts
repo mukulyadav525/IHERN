@@ -1,6 +1,7 @@
 import { randomBytes } from "crypto";
 import { query, execute } from "@ihern/core/db";
 import { sha256 } from "./admin";
+import { assignMembershipNumber } from "./membership";
 
 /**
  * Importing members from a CSV file (the membership admin's Members page).
@@ -15,8 +16,9 @@ import { sha256 } from "./admin";
  *   address registered  left alone, or (with "update") its details are
  *                       replaced by the file's non-empty cells.
  *
- * "Membership No." and "Photo" are not imported: numbers are given by the
- * database, and the photographs are files the CSV does not carry.
+ * "Membership No." and "Photo" are not imported: a new member gets the next
+ * IHERN/<year>-<month><n> number for their registration date, and the
+ * photographs are files the CSV does not carry.
  */
 
 export const IMPORT_MAX_BYTES = 2 * 1024 * 1024;
@@ -213,6 +215,7 @@ export async function importMembers(rows: ImportRow[], opts: ImportOptions): Pro
     else {
       sum.added++;
       byEmail.set(r.studentEmail!.toLowerCase(), Number(res.insertId));
+      await assignMembershipNumber(Number(res.insertId));
     }
   }
   return sum;

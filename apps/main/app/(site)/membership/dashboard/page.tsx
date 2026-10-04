@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import PrintButton from "./PrintButton";
 import { currentMember, membershipNumber } from "@/lib/membership";
 import { u } from "@/lib/paths";
@@ -36,7 +37,7 @@ export default async function MemberDashboardPage() {
                 <table className="member-details">
                   <caption>Membership Details for IHERN</caption>
                   <tbody>
-                    <tr><th scope="row">Membership Number</th><td>{membershipNumber(Number(member.studentID))}</td></tr>
+                    <tr><th scope="row">Membership Number</th><td>{membershipNumber(member)}</td></tr>
                     <tr><th scope="row">Name</th><td>{member.studentName}</td></tr>
                     <tr><th scope="row">Email ID</th><td>{member.studentEmail}</td></tr>
                     <tr><th scope="row">Mobile Number</th><td>{member.studentMobile}</td></tr>
@@ -51,6 +52,9 @@ export default async function MemberDashboardPage() {
               </div>
 
               <p className="member-actions">
+                <Link className="auth-secondary" href="/membership/update">
+                  Update my details
+                </Link>
                 <PrintButton />
                 <a className="auth-secondary member-signout" href={u("/membership/logout")}>
                   Sign out

@@ -56,3 +56,5 @@ export function cached<A extends unknown[], R>(
 export const BLOG_CONTENT_TAG = "blog-content";
 /** The public member directory. */
 export const MEMBERS_TAG = "members";
+/** The published events (the home page and the Events page). */
+export const EVENTS_TAG = "events";

@@ -4,6 +4,7 @@ import { mkdir, unlink, writeFile } from "fs/promises";
 import path from "path";
 import { query, execute, isConfigured } from "@ihern/core/db";
 import { readSigned, signValue, SECURE_COOKIES } from "./auth";
+import { formatMembershipNo, TITLES } from "./membership-options";
 
 /**
  * The IHERN membership system - `ihern2024.studentregistration`, the table the
@@ -27,6 +28,8 @@ export type Member = {
   url: string;
   regDate: string;
   userStatus: string;
+  membershipNo: string | null;
+  photo: string | null;
 };
 
 export { TITLES, POSITIONS, membershipNumber } from "./membership-options";
@@ -91,17 +94,91 @@ export type Registration = {
   photo: string | null;
 };
 
-/** USER::register(). Returns the new member id, or null on failure. */
-export async function registerMember(r: Registration): Promise<number | null> {
+/**
+ * USER::register(). A new member is active straight away (the PHP form left
+ * them inactive until an admin switched them on). Returns the new member's
+ * id and membership number, or null on failure.
+ */
+export async function registerMember(r: Registration): Promise<{ id: number; number: string } | null> {
   const res = await execute(
     "ihern2024",
     `INSERT INTO studentregistration (studentName, studentEmail, studentMobile, institutionName, areasofinterest,
-       areasofinteresthe, yourTitle, url, studentPassword, photo, tokenCode)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       areasofinteresthe, yourTitle, url, studentPassword, photo, tokenCode, userStatus)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Y')`,
     [r.studentName, r.studentEmail, r.studentMobile, r.institutionName, r.areasofinterest, r.areasofinteresthe,
       r.yourTitle, r.url, sha256(r.password), r.photo, randomBytes(16).toString("hex")]
   );
-  return res === null ? null : Number(res.insertId);
+  if (res === null) return null;
+  const id = Number(res.insertId);
+  return { id, number: (await assignMembershipNumber(id)) ?? `IHERN/2025-${id}` };
+}
+
+/**
+ * Gives a new registration its membership number, IHERN/<year>-<month><n>,
+ * from its registration date: n counts everyone who registered that year up
+ * to and including this member. A number already taken (after a deletion),
+ * or one that reads like an earlier member's IHERN/2025-<id>, is skipped.
+ * Returns the number, or null if it could not be saved.
+ */
+export async function assignMembershipNumber(id: number): Promise<string | null> {
+  const rows = await query<{ y: string; m: string; membershipNo: string | null }>(
+    "ihern2024",
+    "SELECT DATE_FORMAT(regDate, '%Y') AS y, DATE_FORMAT(regDate, '%c') AS m, membershipNo FROM studentregistration WHERE studentID = ?",
+    [id]
+  );
+  const row = rows?.[0];
+  if (!row) return null;
+  if (row.membershipNo) return row.membershipNo;
+  const year = Number(row.y);
+  const month = Number(row.m);
+  const count = await query<{ n: number }>(
+    "ihern2024",
+    "SELECT COUNT(*) AS n FROM studentregistration WHERE regDate >= ? AND regDate < ? AND studentID <= ?",
+    [`${year}-01-01`, `${year + 1}-01-01`, id]
+  );
+  if (!count) return null;
+  for (let n = Math.max(1, Number(count[0]?.n ?? 1)), tries = 0; tries < 100; n++, tries++) {
+    const number = formatMembershipNo(year, month, n);
+    const legacy = number.match(/^IHERN\/2025-(\d+)$/);
+    if (legacy) {
+      const clash = await query("ihern2024", "SELECT 1 FROM studentregistration WHERE studentID = ? AND membershipNo IS NULL LIMIT 1", [Number(legacy[1])]);
+      if (clash === null) return null;
+      if (clash.length) continue;
+    }
+    const taken = await query("ihern2024", "SELECT 1 FROM studentregistration WHERE membershipNo = ? LIMIT 1", [number]);
+    if (taken === null) return null;
+    if (taken.length) continue;
+    const res = await execute("ihern2024", "UPDATE studentregistration SET membershipNo = ? WHERE studentID = ? AND membershipNo IS NULL", [number, id]);
+    // null: someone took it in the meantime (the unique key refused it); try the next.
+    if (res && res.affectedRows) return number;
+  }
+  return null;
+}
+
+/** The details a member can change themselves (not the email address, which is their sign-in, nor the status). */
+export type OwnDetails = Pick<Member, "studentName" | "studentMobile" | "institutionName" | "areasofinterest" | "areasofinteresthe" | "yourTitle" | "url">;
+
+/** Saves a member's own changes, and their name on their IHERN account too. */
+export async function updateOwnDetails(id: number, d: OwnDetails): Promise<boolean> {
+  const res = await execute(
+    "ihern2024",
+    `UPDATE studentregistration SET studentName = ?, studentMobile = ?, institutionName = ?, areasofinterest = ?, areasofinteresthe = ?,
+       yourTitle = ?, url = ? WHERE studentID = ?`,
+    [d.studentName, d.studentMobile, d.institutionName, d.areasofinterest, d.areasofinteresthe, d.yourTitle, d.url, id]
+  );
+  if (res === null || res.affectedRows === 0) return false;
+  const rows = await query<{ studentEmail: string }>("ihern2024", "SELECT studentEmail FROM studentregistration WHERE studentID = ?", [id]);
+  const email = rows?.[0]?.studentEmail;
+  if (email && isConfigured("cdnm")) await execute("cdnm", "UPDATE blog_subscribers SET name = ? WHERE LOWER(email) = ?", [d.studentName, String(email).trim().toLowerCase()]);
+  return true;
+}
+
+/** "Dr. Asha Rao" -> ["Dr.", "Asha Rao"]; a name without a known title -> ["", name]. */
+export function splitTitle(name: string): [string, string] {
+  const m = /^(mr|dr|prof|mrs|ms)\.?\s+(.*)$/i.exec(name.trim());
+  if (!m) return ["", name.trim()];
+  const title = TITLES.find((t) => t.toLowerCase() === `${m[1].toLowerCase()}.`) ?? "";
+  return [title, m[2].trim()];
 }
 
 /* ---------------- member sign-in ---------------- */
@@ -158,7 +235,7 @@ export async function currentMember(): Promise<Member | null | "unavailable"> {
   const rows = await query<Member>(
     "ihern2024",
     `SELECT st.studentID, st.studentName, st.studentEmail, st.studentMobile, st.institutionName, st.yourTitle,
-            st.areasofinterest, st.areasofinteresthe, st.url, st.regDate, st.userStatus
+            st.areasofinterest, st.areasofinteresthe, st.url, st.regDate, st.userStatus, st.membershipNo, st.photo
        FROM studentregistration st JOIN authsession ads ON ads.studentID = st.studentID
       WHERE st.studentEmail = ? AND ads.authtokenid = ? LIMIT 1`,
     [s.email, s.token]

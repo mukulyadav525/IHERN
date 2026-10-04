@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import AdminNav from "@/components/admin/AdminNav";
 import { AdminGate, AdminShell, type AdminLink } from "@ihern/core/ui/AdminFrame";
-import { isMembershipAdmin } from "@ihern/core/roles";
+import { isEventEditor, isMembershipAdmin } from "@ihern/core/roles";
 import { currentEditor } from "@/lib/admin";
 import { u } from "@/lib/paths";
 import { mainUrl } from "@/lib/site";
@@ -26,7 +26,11 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     { label: "IHERN website", href: mainUrl("") },
     { label: "View blog", href: u("/") },
   ];
-  if (typeof who !== "string" && (await isMembershipAdmin(who.email))) links.push({ label: "Membership admin", href: mainUrl("membership/admin") });
+  if (typeof who !== "string") {
+    const [membershipAdmin, eventEditor] = await Promise.all([isMembershipAdmin(who.email), isEventEditor(who.email)]);
+    if (membershipAdmin) links.push({ label: "Membership admin", href: mainUrl("membership/admin") });
+    if (eventEditor) links.push({ label: "Events admin", href: mainUrl("events/admin") });
+  }
   const signOut = (
     <a className="adm-me-out" href={u("/api/sso/logout")}>
       Sign out

@@ -11,6 +11,11 @@ import { absoluteUrl } from "./env";
  *   membership confirmation     applications/register.php
  *   password reset link         applications/forgotPassword.php
  *
+ * and the ones the new admin areas send: a new event to every member, an
+ * invitation to the membership admin, "please update your details" to a
+ * member, and "please subscribe" to people not subscribed to the blog.
+ * Messages to many people go one at a time over one connection (sendMany).
+ *
  * Configured with IHERN_SMTP_HOST / _PORT / _USER / _PASS (see .env.example).
  * Every send is best-effort: a mail failure never fails the action that
  * triggered it, and the caller is told whether the message went.
@@ -34,15 +39,13 @@ export function mailConfigured(): boolean {
   return fileMode() || Boolean(process.env.IHERN_SMTP_HOST);
 }
 
-let cached: Transporter | null = null;
-function transport(): Transporter {
-  if (cached) return cached;
+function smtpOptions() {
   const port = Number(process.env.IHERN_SMTP_PORT || 587);
   // Through a tunnel (IHERN_SMTP_HOST=127.0.0.1 forwarded to smtp.gmail.com:465):
   // IHERN_SMTP_SECURE=1 and IHERN_SMTP_TLS_SERVERNAME=smtp.gmail.com, so the
   // connection is still encrypted and checked against Gmail's certificate.
   const servername = process.env.IHERN_SMTP_TLS_SERVERNAME || undefined;
-  cached = nodemailer.createTransport({
+  return {
     host: process.env.IHERN_SMTP_HOST,
     port,
     secure: port === 465 || process.env.IHERN_SMTP_SECURE === "1",
@@ -50,11 +53,16 @@ function transport(): Transporter {
     auth: process.env.IHERN_SMTP_USER
       ? { user: process.env.IHERN_SMTP_USER, pass: process.env.IHERN_SMTP_PASS || "" }
       : undefined,
-  });
+  };
+}
+
+let cached: Transporter | null = null;
+function transport(): Transporter {
+  if (!cached) cached = nodemailer.createTransport(smtpOptions());
   return cached;
 }
 
-async function send(msg: Message): Promise<boolean> {
+async function send(msg: Message, via?: Transporter): Promise<boolean> {
   if (!mailConfigured()) {
     console.warn(`[IHERN mail] not configured - skipped "${msg.subject}"`);
     return false;
@@ -66,7 +74,7 @@ async function send(msg: Message): Promise<boolean> {
       await appendFile(path.join(dir, "mail.log"), JSON.stringify({ at: new Date().toISOString(), ...msg }) + "\n");
       return true;
     }
-    await transport().sendMail({
+    await (via ?? transport()).sendMail({
       from: process.env.IHERN_MAIL_FROM || msg.from,
       to: msg.to,
       replyTo: msg.replyTo,
@@ -80,6 +88,34 @@ async function send(msg: Message): Promise<boolean> {
     return false;
   }
 }
+
+/**
+ * Many messages, one at a time over one kept-open connection (a mail server
+ * refuses hundreds of connections at once). `progress` is told the running
+ * count of messages sent. Returns how many went.
+ */
+async function sendMany(messages: Message[], progress?: (sent: number) => unknown): Promise<number> {
+  if (!messages.length) return 0;
+  const pool = !fileMode() && mailConfigured() ? nodemailer.createTransport({ ...smtpOptions(), pool: true, maxConnections: 1, maxMessages: 200 }) : undefined;
+  let sent = 0;
+  try {
+    for (const m of messages) {
+      if (!EMAIL.test(m.to)) continue;
+      if (await send(m, pool)) {
+        sent++;
+        // Every 10 messages is often enough for a progress count.
+        if (progress && (sent % 10 === 0 || sent === messages.length)) await progress(sent);
+      }
+    }
+  } finally {
+    pool?.close();
+  }
+  if (progress) await progress(sent);
+  return sent;
+}
+
+const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const SIGNATURE = "— IHERN\nIndia Higher Education Research Network\nihern@iiitd.ac.in\n";
 
 const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
@@ -175,4 +211,125 @@ export async function sendCommentForModeration(to: string[], postTitle: string, 
         "— IHERN Blog\n",
     });
   }
+}
+
+/* ---------------------------------------------------------------- the admin areas */
+
+/** An event as the announcement shows it (formatted by the caller). */
+export type EventMail = {
+  tag: string;
+  title: string;
+  when: string;
+  venue: string;
+  description: string;
+  speakers: string[];
+  links: { label: string; url: string }[];
+  /** the events page on the website */
+  page: string;
+};
+
+/** A newly published event, to every member. Returns how many went. */
+export function sendEventAnnouncements(members: { name: string; email: string }[], ev: EventMail, progress?: (sent: number) => unknown): Promise<number> {
+  const title = ev.title.replace(/[\r\n]+/g, " ").trim();
+  const body =
+    `${ev.tag ? ev.tag + ": " : ""}${title}\n\n` +
+    (ev.when ? `When: ${ev.when}\n` : "") +
+    (ev.venue ? `Where: ${ev.venue}\n` : "") +
+    `\n${ev.description.trim()}\n` +
+    (ev.speakers.length ? `\nSpeakers\n${ev.speakers.join("\n")}\n` : "") +
+    (ev.links.length ? `\n${ev.links.map((l) => `${l.label}: ${l.url}`).join("\n")}\n` : "") +
+    `\nAll IHERN events: ${ev.page}\n\n` +
+    "You are receiving this as a member of IHERN.\n\n" +
+    SIGNATURE;
+  return sendMany(
+    members.map((m) => ({
+      to: m.email,
+      from: MEMBERSHIP_FROM,
+      replyTo: IHERN_MAILBOX,
+      subject: `IHERN event: ${title}`,
+      text: `Dear ${firstName(m.name)},\n\nYou are invited to an IHERN event.\n\n${body}`,
+    })),
+    progress
+  );
+}
+
+/** An invitation to the membership admin: the link signs the invited address in to it. */
+export function sendAdminInvitation(email: string, invitedBy: string, link: string): Promise<boolean> {
+  return send({
+    to: email,
+    from: MEMBERSHIP_FROM,
+    replyTo: IHERN_MAILBOX,
+    subject: "You are invited to the IHERN membership admin",
+    text:
+      "Hello,\n\n" +
+      `${invitedBy} has given ${email} access to the IHERN membership admin, where IHERN's members are managed.\n\n` +
+      `Accept the invitation (the link works for 7 days):\n${link}\n\n` +
+      "You will sign in with your IHERN account for this email address, or set one up from the link. No separate admin password is needed.\n\n" +
+      "If you were not expecting this, you can ignore this email.\n\n" +
+      SIGNATURE,
+  });
+}
+
+/** "Please check and update your IHERN details", one link per member. Returns how many went. */
+export function sendProfileUpdateRequests(members: { name: string; email: string; link: string }[], progress?: (sent: number) => unknown): Promise<number> {
+  return sendMany(
+    members.map((m) => ({
+      to: m.email,
+      from: MEMBERSHIP_FROM,
+      replyTo: IHERN_MAILBOX,
+      subject: "Please update your IHERN membership details",
+      text:
+        `Dear ${firstName(m.name)},\n\n` +
+        "IHERN is updating its member records. Please take a moment to check your membership details - your position, " +
+        "organisation, research interests and photograph - and update anything that has changed.\n\n" +
+        `Your details (the link works for 14 days, no password needed):\n${m.link}\n\n` +
+        "Thank you for being a part of IHERN.\n\n" +
+        SIGNATURE,
+    })),
+    progress
+  );
+}
+
+/** "Subscribe to the IHERN Blog", to people who are not subscribed. Returns how many went. */
+export function sendSubscribeNudges(people: { name: string; email: string }[], links: { subscribe: string; reset: string }, progress?: (sent: number) => unknown): Promise<number> {
+  return sendMany(
+    people.map((p) => ({
+      to: p.email,
+      from: BLOG_FROM,
+      replyTo: IHERN_MAILBOX,
+      subject: "Subscribe to the IHERN Blog",
+      text:
+        `Dear ${firstName(p.name)},\n\n` +
+        "The IHERN Blog publishes writing on higher education research in India from IHERN's members and friends. " +
+        "Subscribe, and new posts will reach you by email.\n\n" +
+        `Subscribe: ${links.subscribe}\n\n` +
+        "Sign in with your IHERN account (members: the email address you joined with). If you joined IHERN before " +
+        `5 October 2026, please first set a password for the new website: ${links.reset}\n\n` +
+        "You can cancel the subscription any time from My account.\n\n" +
+        "— IHERN Blog\nIndia Higher Education Research Network\n",
+    })),
+    progress
+  );
+}
+
+/**
+ * "You now have access to the <area>": to someone just given access to the
+ * blog admin or the events admin. (The membership admin sends its invitation
+ * instead.) Nothing is sent when access is taken away.
+ */
+export function sendAdminAccessGranted(email: string, name: string, area: string, role: string, link: string, givenBy: string): Promise<boolean> {
+  return send({
+    to: email,
+    from: MEMBERSHIP_FROM,
+    replyTo: IHERN_MAILBOX,
+    subject: `You now have access to the ${area}`,
+    text:
+      `Dear ${firstName(name)},\n\n` +
+      `${givenBy} has given you access to the ${area} as ${/^[aeiou]/i.test(role) ? "an" : "a"} ${role}.\n\n` +
+      `Open it here:\n${link}\n\n` +
+      `Sign in with your IHERN account for ${email}: your IHERN membership email address and password. If you joined IHERN ` +
+      `before 5 October 2026, please first set a password for the new website: ${absoluteUrl("membership/forgot-password")}\n\n` +
+      "If you were not expecting this, please let us know by replying to this email.\n\n" +
+      SIGNATURE,
+  });
 }

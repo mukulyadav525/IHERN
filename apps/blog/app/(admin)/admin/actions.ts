@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath, revalidateTag } from "next/cache";
+import { after } from "next/server";
 import { CONTENT_TAG } from "@/lib/content";
 import { notifyMainSite } from "@/lib/session";
 import {
@@ -18,6 +19,7 @@ import {
   listMedia,
   removeEditor,
   saveAuthor,
+  setEditorActive,
   savePost,
   setCommentStatus,
   setPostStatus,
@@ -30,11 +32,15 @@ import {
 import { postUrl } from "@ihern/core/blog-paths";
 import { query } from "@ihern/core/db";
 import { sanitizePostHtml } from "@ihern/core/html";
-import { sendNewPostNotifications } from "@ihern/core/mail";
+import { sendAdminAccessGranted, sendNewPostNotifications, sendSubscribeNudges } from "@ihern/core/mail";
+import { activeMember, MEMBERSHIP_UNREADABLE, NOT_A_MEMBER } from "@ihern/core/roles";
+import { blogUrl } from "@ihern/core/env";
 import { activeSubscribers } from "@ihern/core/store";
 import { slugify } from "@ihern/core/text";
 import { NotAllowed, requireEditor } from "@/lib/admin";
 import { MAX_UPLOAD, removeUpload, sniff, storeUpload, TYPES } from "@/lib/uploads";
+import { listProspects, NUDGE_DAYS, recentlyNudged, recordNudges } from "@/lib/subscribers";
+import { mainUrl } from "@/lib/site";
 
 /**
  * Everything the admin area changes. Each action checks that the caller is
@@ -332,12 +338,38 @@ export async function deleteCommentAction(id: number): Promise<ActionResult> {
 
 /* ---------------------------------------------------------------- editors (admins only) */
 
+/** Gives an IHERN member access, and emails them about it (the first time only). */
 export async function addEditorAction(prev: ActionResult, form: FormData): Promise<ActionResult> {
   return guard(async () => {
+    const me = await requireEditor("admin");
     const email = String(form.get("email") ?? "").trim().toLowerCase();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return failed("Please enter a valid email address.");
+    const member = await activeMember(email);
+    if (member === "unavailable") return failed(MEMBERSHIP_UNREADABLE);
+    if (!member) return failed(NOT_A_MEMBER);
     const role = form.get("role") === "admin" ? "admin" : "editor";
-    return (await addEditor(email, role)) ? done(`${email} can now use the blog admin as ${role === "admin" ? "an admin" : "an editor"}.`) : failed("Could not save it just now.");
+    const res = await addEditor(email, role);
+    if (!res) return failed("Could not save it just now.");
+    revalidatePath("/admin/editors");
+    const as = role === "admin" ? "an admin" : "an editor";
+    if (res === "updated") return done(`${email} can use the blog admin as ${as}.`);
+    const mailed = await sendAdminAccessGranted(email, member.name, "IHERN Blog admin", role, `${blogUrl()}/admin`, me.name || me.email);
+    return done(`${email} can now use the blog admin as ${as}. ${mailed ? "They have been emailed about it." : "The email to tell them could not be sent: please let them know."}`);
+  }, "admin") as Promise<ActionResult>;
+}
+
+/** Deactivate (kept on the list, no access) or activate again. No email either way. */
+export async function setEditorActiveAction(id: number, active: boolean): Promise<ActionResult> {
+  return guard(async () => {
+    const me = await requireEditor("admin");
+    const all = (await listEditors()) ?? [];
+    const target = all.find((e) => e.id === id);
+    if (!target) return failed("Already removed.");
+    if (target.email === me.email.toLowerCase()) return failed("You cannot change your own access.");
+    if (!active && target.role === "admin" && all.filter((e) => e.role === "admin" && e.active).length <= 1) return failed("The blog needs at least one active admin.");
+    if (!(await setEditorActive(id, active))) return failed("Could not change it just now.");
+    revalidatePath("/admin/editors");
+    return done(active ? `${target.email} is active again.` : `${target.email} is deactivated.`);
   }, "admin") as Promise<ActionResult>;
 }
 
@@ -348,7 +380,42 @@ export async function removeEditorAction(id: number): Promise<ActionResult> {
     const target = all.find((e) => e.id === id);
     if (!target) return failed("Already removed.");
     if (target.email === me.email.toLowerCase()) return failed("You cannot remove yourself.");
-    if (target.role === "admin" && all.filter((e) => e.role === "admin").length <= 1) return failed("The blog needs at least one admin.");
+    if (target.role === "admin" && target.active && all.filter((e) => e.role === "admin" && e.active).length <= 1) return failed("The blog needs at least one active admin.");
     return (await removeEditor(id)) ? done(`${target.email} removed.`) : failed("Could not remove it just now.");
+  }, "admin") as Promise<ActionResult>;
+}
+
+/* ---------------------------------------------------------------- subscribers (admins only) */
+
+const NUDGE_LINKS = () => ({ subscribe: `${blogUrl()}/subscribe`, reset: mainUrl("membership/forgot-password") });
+
+/** "Please subscribe" to one person who is not subscribed (only to someone on the Not subscribed list). */
+export async function nudgeAction(email: string): Promise<ActionResult> {
+  return guard(async () => {
+    const me = await requireEditor("admin");
+    const p = (await listProspects())?.find((x) => x.email.toLowerCase() === email.toLowerCase());
+    if (!p) return failed("This address is not on the Not subscribed list any more.");
+    if (p.nudgedAt && Date.now() - Date.parse(p.nudgedAt.replace(" ", "T") + ":00+05:30") < 24 * 3600 * 1000) return failed("Already reminded in the last day.");
+    if (!(await sendSubscribeNudges([p], NUDGE_LINKS()))) return failed("The email could not be sent just now.");
+    await recordNudges([p.email], me.email);
+    revalidatePath("/admin/subscribers");
+    return done(`Reminder sent to ${p.email}.`);
+  }, "admin") as Promise<ActionResult>;
+}
+
+/** "Please subscribe" to everyone not subscribed, except anyone reminded recently. Sent after the answer. */
+export async function nudgeAllAction(): Promise<ActionResult> {
+  return guard(async () => {
+    const me = await requireEditor("admin");
+    const all = await listProspects();
+    if (!all) return failed("The database could not be reached.");
+    const now = Date.now();
+    const due = all.filter((p) => !recentlyNudged(p, now));
+    if (!due.length) return failed(`Nobody to remind: everyone not subscribed was reminded in the last ${NUDGE_DAYS} days.`);
+    await recordNudges(due.map((p) => p.email), me.email);
+    after(() => sendSubscribeNudges(due, NUDGE_LINKS()).then((sent) => console.log(`[blog admin] subscribe reminders: ${sent} of ${due.length} emailed`)));
+    revalidatePath("/admin/subscribers");
+    const skipped = all.length - due.length;
+    return done(`Reminding ${due.length} ${due.length === 1 ? "person" : "people"}: the emails are going out now.${skipped ? ` ${skipped} reminded in the last ${NUDGE_DAYS} days left out.` : ""}`);
   }, "admin") as Promise<ActionResult>;
 }

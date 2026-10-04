@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
   const lines = [(all ? [...HEADERS, "Status"] : HEADERS).map(cell).join(",")];
   rows.forEach((m, i) => {
     const values: (string | number)[] = [
-      i + 1, membershipNumber(m.studentID), m.studentName, m.studentEmail, m.studentMobile, m.institutionName,
+      i + 1, membershipNumber(m), m.studentName, m.studentEmail, m.studentMobile, m.institutionName,
       m.areasofinterest, m.areasofinteresthe, m.yourTitle, m.url, m.photo, m.regDate,
     ];
     if (all) values.push(m.userStatus === "Y" ? "Active" : "Inactive");

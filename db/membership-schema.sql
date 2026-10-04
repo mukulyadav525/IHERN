@@ -17,14 +17,18 @@ CREATE TABLE IF NOT EXISTS `studentregistration` (
   `studentPassword`   VARCHAR(100) NOT NULL,   -- SHA-256 hex
   `regDate`           DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `tokenCode`         VARCHAR(100) NOT NULL,
-  `userStatus`        ENUM('Y','N') DEFAULT 'N',
+  `userStatus`        ENUM('Y','N') DEFAULT 'Y',
   `yourTitle`         VARCHAR(150) DEFAULT NULL,
   `institutionName`   VARCHAR(200) DEFAULT NULL,
   `areasofinterest`   TEXT,
   `areasofinteresthe` TEXT,
   `photo`             VARCHAR(255) DEFAULT NULL,
   `url`               VARCHAR(255) DEFAULT NULL,
-  KEY `idx_student_email` (`studentEmail`)
+  -- IHERN/<year>-<month><nth member that year>, e.g. IHERN/2026-1007. Empty
+  -- for members who joined before 5 October 2026: theirs is IHERN/2025-<id>.
+  `membershipNo`      VARCHAR(40) DEFAULT NULL,
+  KEY `idx_student_email` (`studentEmail`),
+  UNIQUE KEY `uniq_membership_no` (`membershipNo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Member sign-ins.
@@ -47,4 +51,17 @@ CREATE TABLE IF NOT EXISTS `adminlogin` (
   `tokenCode`  VARCHAR(100) NOT NULL,
   `userStatus` ENUM('Y','N') DEFAULT 'N',
   UNIQUE KEY `uniq_admin_email` (`adEmail`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- "Please update your IHERN details" requests from the membership admin. The
+-- emailed link opens the member's details for editing without a password;
+-- it works until it expires or is used.
+CREATE TABLE IF NOT EXISTS `member_update_requests` (
+  `studentID`    INT NOT NULL PRIMARY KEY,
+  `token_hash`   CHAR(64) NOT NULL,
+  `requested_by` VARCHAR(190) NOT NULL DEFAULT '',
+  `requested_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `expires_at`   DATETIME NOT NULL,
+  `completed_at` DATETIME NULL,
+  UNIQUE KEY `uniq_update_token` (`token_hash`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

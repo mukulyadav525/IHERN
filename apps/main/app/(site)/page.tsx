@@ -1,4 +1,7 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import EventCard from "@/components/EventCard";
+import { publishedEvents } from "@/lib/events";
 import { pageMeta } from "@/lib/seo";
 import { u } from "@/lib/paths";
 
@@ -9,7 +12,15 @@ export const metadata: Metadata = pageMeta(
   "IHERN is a collective of scholars in higher education in India, working to enhance research and studies in higher education in the country and build a research ecosystem that can feed into policy making."
 );
 
-export default function HomePage() {
+export const dynamic = "force-dynamic";
+
+/** How many past events the home page shows after the upcoming ones (the Events page has them all). */
+const RECENT_PAST = 3;
+
+export default async function HomePage() {
+  // From the events admin (cdnm.ihern_events), shared between visitors.
+  const events = await publishedEvents();
+  const shown = events ? [...events.upcoming, ...events.past.slice(0, RECENT_PAST)] : [];
   return (
     <main id="main">
       <h1 className="ihern-visually-hidden">
@@ -110,159 +121,18 @@ export default function HomePage() {
               </div>
             </div>
             <div className="col-lg-12 pr-5 md-pr-2 md-mb-50">
-              <div className="sec-title2 mb-30 event-card">
-                <p className="event-badge">
-                  IHERN SIGs Webinar
+              {events === null ? (
+                <p className="ihern-events-note">The events could not be loaded just now. Please try again shortly.</p>
+              ) : shown.length ? (
+                shown.map((ev) => <EventCard key={ev.id} ev={ev} />)
+              ) : (
+                <p className="ihern-events-note">New events will be announced here.</p>
+              )}
+              {events && events.past.length > RECENT_PAST ? (
+                <p className="ihern-events-more">
+                  <Link className="ihern-pair-btn" href="/events">All IHERN events</Link>
                 </p>
-                <h3>
-                  Inaugural IHERN Special Interest Groups (SIGs) Webinar
-                </h3>
-                <p>
-                  The inaugural IHERN Special Interest Groups (SIGs) Webinar will provide an opportunity to introduce the IHERN SIGs, discuss their objectives and proposed activities, and explore how members can become active participants in the activities of their SIGs.
-                </p>
-                <dl className="event-meta">
-                  <dt>
-                    Date
-                  </dt>
-                  <dd>
-                    Monday, 21 September 2026
-                  </dd>
-                  <dt>
-                    Time
-                  </dt>
-                  <dd>
-                    10:30 AM IST
-                  </dd>
-                  <dt>
-                    Venue
-                  </dt>
-                  <dd>
-                    Online (Zoom)
-                  </dd>
-                </dl>
-                <p>
-                  Please fill in the Google Form to help us gauge your interest in the SIGs. Your responses will help us better understand the scope of the SIGs and enable us to develop meaningful activities for them.
-                </p>
-                <p className="event-actions">
-                  <a className="event-poster-btn" href="https://iiitd-ac-in.zoom.us/j/94327035439?pwd=xsH9qyEAaw06NawgiGPxvaCKpmhBLg.1" target="_blank" rel="noopener">
-                    Join via Zoom
-                  </a>
-                  {" "}
-                  <a className="event-poster-btn" href="https://docs.google.com/forms/d/e/1FAIpQLSdPZszVfFi6JCnBbqNcnDhxQ9_MiSO1vuMUsMkj5AkWjvPnjA/viewform" target="_blank" rel="noopener">
-                    SIGs interest form{" "}
-                    <span className="ihern-file-note">
-                      (Google Form)
-                    </span>
-                  </a>
-                </p>
-              </div>
-              <div className="sec-title2 mb-30 event-card">
-                <p className="event-badge">
-                  IHERN Webinar
-                </p>
-                <h3>
-                  Introducing the Emerging &apos;Components Toward an Indigenous Inclusive College Readiness Framework&apos; for Tribal Youth in India- Plus, Steps Forward
-                </h3>
-                <p>
-                  A session of the IHERN Higher Education Research Webinar Series, featuring a talk on Introducing the Emerging &apos;Components Toward an Indigenous Inclusive College Readiness Framework&apos; for Tribal Youth in India- Plus, Steps Forward. The talk will unpack the nuances of what it means to be &apos;college ready&apos; among the tribal youth of Odisha and Jharkhand, and how the knowledge gained can help them build a bridge program between the tribal communities and colleges.
-                </p>
-                <dl className="event-meta">
-                  <dt>
-                    Date
-                  </dt>
-                  <dd>
-                    Friday, 29 May 2026
-                  </dd>
-                  <dt>
-                    Time
-                  </dt>
-                  <dd>
-                    10:30 AM IST
-                  </dd>
-                  <dt>
-                    Venue
-                  </dt>
-                  <dd>
-                    Online (Zoom)
-                  </dd>
-                </dl>
-                <p className="event-speakers">
-                  <strong>
-                    Speakers
-                  </strong>
-                  <br />
-                  <strong>
-                    Matthew A. Witenstein
-                  </strong>
-                  , Associate Professor of Educational Leadership and Policy, University of New Mexico
-                  <br />
-                  {" "}Anthony J. Chipre, EdD Student, University of New Mexico
-                </p>
-                <p className="event-actions">
-                  <a className="event-poster-btn" href={u("/IHERN%20Webinar%2029%20May%202026.pdf")} target="_blank" rel="noopener">
-                    View webinar poster{" "}
-                    <span className="ihern-file-note">
-                      (PDF)
-                    </span>
-                  </a>
-                </p>
-                <hr />
-              </div>
-              <div className="sec-title2 mb-30 event-card">
-                <p className="event-badge">
-                  IHERN Webinar
-                </p>
-                <h3>
-                  Integrating Research into Undergraduate Teacher Education
-                </h3>
-                <p>
-                  A session of the IHERN Higher Education Research Webinar Series, featuring a talk on Integrating Research into Undergraduate Teacher Education. The talk will delve into the nature of integrating research into higher education with special reference to initial teacher education, and an empirical study of a project(s) in the B.El.Ed teacher education degree programme of University of Delhi.
-                </p>
-                <dl className="event-meta">
-                  <dt>
-                    Date
-                  </dt>
-                  <dd>
-                    Thursday, 23 April 2026
-                  </dd>
-                  <dt>
-                    Time
-                  </dt>
-                  <dd>
-                    3:00 PM IST
-                  </dd>
-                  <dt>
-                    Venue
-                  </dt>
-                  <dd>
-                    Online (Zoom)
-                  </dd>
-                </dl>
-                <p className="event-speakers">
-                  <strong>
-                    Speakers
-                  </strong>
-                  <br />
-                  <strong>
-                    Dr. Gunjan Sharma
-                  </strong>
-                  , Associate Professor, School of Education Studies, Dr. B.R. Ambedkar University Delhi
-                  <br />
-                  <strong>
-                    Prof. Jyoti Raina
-                  </strong>
-                  , Professor of Education, Gargi College, University of Delhi
-                </p>
-                <p className="event-actions">
-                  <a className="event-poster-btn" href={u("/23rd%20Webinar%20Final%20IHERN.pdf")} target="_blank" rel="noopener">
-                    View webinar poster{" "}
-                    <span className="ihern-file-note">
-                      (PDF)
-                    </span>
-                  </a>
-                </p>
-                <hr />
-              </div>
+              ) : null}
             </div>
           </div>
         </div>
