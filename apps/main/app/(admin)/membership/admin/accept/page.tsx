@@ -1,12 +1,12 @@
 import { AdminGate, type AdminLink } from "@ihern/core/ui/AdminFrame";
 import { getAccountByEmail } from "@ihern/core/store";
 import { blogUrl } from "@ihern/core/env";
-import { readInvite, INVITE_PATH } from "@/lib/admin";
+import { redirect } from "next/navigation";
+import { acceptInvite, readInvite, INVITE_PATH } from "@/lib/admin";
 import { readSession } from "@/lib/auth";
 import { u } from "@/lib/paths";
-import ActionButton from "@/components/admin/ActionButton";
 import { ActionForm, Submit } from "@/components/admin/Forms";
-import { acceptInviteAction, setUpInvitedAccountAction } from "../actions";
+import { setUpInvitedAccountAction } from "../actions";
 
 export const metadata = { title: "Accept invitation" };
 export const dynamic = "force-dynamic";
@@ -44,18 +44,12 @@ export default async function AcceptInvitePage(props: { searchParams: Promise<{ 
     );
   }
 
-  const sameEmail = session && session.email.toLowerCase() === invite.email.toLowerCase();
-  if (sameEmail) {
-    return gate(
-      <>
-        <h1>Join the membership admin</h1>
-        <p>You have been invited to manage IHERN&apos;s members as <strong>{invite.email}</strong>.</p>
-        <p className="adm-muted">You will come in with your IHERN account from now on, with no separate admin password.</p>
-        <p className="adm-row">
-          <ActionButton action={acceptInviteAction.bind(null, token)} label="Accept and open the membership admin" className="adm-btn" />
-        </p>
-      </>
-    );
+  // Signed in as the invited address: the link (proof the mailbox is theirs)
+  // and the account together are the acceptance. Straight in.
+  if (session && session.email.toLowerCase() === invite.email.toLowerCase()) {
+    const res = await acceptInvite(token, session);
+    if (res === "ok") redirect("/membership/admin");
+    return gate(<><h1>Accept invitation</h1><p className="adm-flash adm-flash--error">The invitation could not be accepted just now. Please open the link again shortly.</p></>);
   }
   if (session) {
     return gate(

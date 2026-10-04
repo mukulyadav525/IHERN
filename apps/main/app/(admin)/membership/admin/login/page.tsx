@@ -4,6 +4,8 @@ import { blogUrl } from "@ihern/core/env";
 import { accountMatchingAdmin, currentAdmin } from "@/lib/admin";
 import { u } from "@/lib/paths";
 import AdminLoginForm from "./AdminLoginForm";
+import ActionButton from "@/components/admin/ActionButton";
+import { resendOwnInviteAction } from "../actions";
 
 export const metadata = { title: "Sign in" };
 export const dynamic = "force-dynamic";
@@ -28,12 +30,27 @@ export default async function AdminLoginPage() {
       <p className="adm-muted">
         For IHERN staff. Members sign in at <a href={u("/membership/login")}>Member sign in</a>.
       </p>
-      {account ? (
-        <p className="adm-flash adm-flash--note">
-          You are signed in to IHERN as {account.email}. Sign in here once with your admin password: after that, your IHERN sign-in opens the membership admin.
-        </p>
-      ) : null}
-      <AdminLoginForm email={account?.email} />
+      {account?.invited ? (
+        <>
+          <p className="adm-flash adm-flash--note">
+            You are signed in to IHERN as {account.email}, and you have been invited to the membership admin. Open the link in the invitation email in
+            this browser: it takes you straight in. No admin password is needed.
+          </p>
+          <p>
+            <ActionButton action={resendOwnInviteAction} label="Email me a new invitation link" className="adm-btn" showMessage />
+          </p>
+        </>
+      ) : (
+        <>
+          {account ? (
+            <p className="adm-flash adm-flash--note">
+              You are signed in to IHERN as {account.email}. Sign in here once with your admin password: after that, your IHERN sign-in opens the membership
+              admin.
+            </p>
+          ) : null}
+          <AdminLoginForm email={account?.email} />
+        </>
+      )}
     </AdminGate>
   );
 }

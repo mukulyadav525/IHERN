@@ -6,6 +6,7 @@ import { revalidatePath, revalidateTag } from "next/cache";
 import { MEMBERS_TAG } from "@ihern/core/cached";
 import {
   acceptInvite,
+  accountMatchingAdmin,
   adminLogin,
   adminLogout,
   changeAdminPassword,
@@ -263,15 +264,25 @@ export async function resendInviteAction(id: number): Promise<ActionResult> {
 
 /* ---------------- accepting an invitation (no admin session yet) ---------------- */
 
-/** Signed in to the invited address's IHERN account: link it, and in. */
-export async function acceptInviteAction(token: string): Promise<ActionResult> {
-  const account = await readSession();
-  if (!account) return failed("Please sign in first.");
-  const res = await acceptInvite(token, account);
-  if (res === "invalid") return failed("This invitation has expired or has already been used. Ask a membership admin to send a new one.");
-  if (res === "other-account") return failed("This invitation is for a different email address.");
-  if (res === "error") return failed(UNAVAILABLE);
-  redirect("/membership/admin");
+/**
+ * "Email me a new invitation link", on the sign-in page: for an invited admin
+ * signed in to their IHERN account. The link goes to the admin's own address,
+ * so asking for it proves nothing by itself - opening it does.
+ */
+export async function resendOwnInviteAction(): Promise<ActionResult> {
+  try {
+    const match = await accountMatchingAdmin();
+    if (!match || !match.invited) return failed("There is no invitation for this account. Please ask a membership admin.");
+    if (!take(RESET_EMAILS, `invite:${match.email.toLowerCase()}`)) return failed("A link was sent recently. Please check your inbox (and spam), or wait a while.");
+    const token = await newInvite(match.adminId, match.email);
+    if (!token) return failed(UNAVAILABLE);
+    const link = absoluteUrl(`${INVITE_PATH.slice(1)}?token=${token}`);
+    if (!(await sendAdminInvitation(match.email, "IHERN", link))) return failed("The email could not be sent just now. Please try again later.");
+    return done(`A new invitation link was emailed to ${match.email}. Open it in this browser: it takes you straight in.`);
+  } catch (e) {
+    console.error("[membership admin]", (e as Error).message);
+    return failed("Something went wrong. Please try again.");
+  }
 }
 
 /** No IHERN account for the invited address yet: set it up from the link (the link proves the mailbox), then accept. */

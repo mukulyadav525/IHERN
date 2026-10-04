@@ -152,12 +152,19 @@ export async function linkAdminOnSignIn(subscriberId: number, email: string, pas
   }
 }
 
-/** Whether the signed-in IHERN account could be linked (same email as an active admin), for the sign-in page's note. */
-export async function accountMatchingAdmin(): Promise<{ email: string } | null> {
+/**
+ * The active admin with the signed-in IHERN account's email, for the sign-in
+ * page: `invited` when they were added by email (an invitation, live or
+ * expired, is on record) - they have no admin password, only the link.
+ */
+export async function accountMatchingAdmin(): Promise<{ email: string; adminId: number; invited: boolean } | null> {
   const account = await readSession();
   if (!account) return null;
-  const rows = await query("ihern2024", "SELECT 1 FROM adminlogin WHERE LOWER(adEmail) = ? AND userStatus = 'Y' LIMIT 1", [account.email.toLowerCase()]);
-  return rows?.length ? { email: account.email } : null;
+  const rows = await query<{ adID: number }>("ihern2024", "SELECT adID FROM adminlogin WHERE LOWER(adEmail) = ? AND userStatus = 'Y' LIMIT 1", [account.email.toLowerCase()]);
+  if (!rows?.length) return null;
+  const adminId = Number(rows[0].adID);
+  const inv = await query("cdnm", "SELECT 1 FROM membership_admin_invites WHERE admin_id = ? LIMIT 1", [adminId]);
+  return { email: account.email, adminId, invited: Boolean(inv?.length) };
 }
 
 export class NotSignedIn extends Error {}
