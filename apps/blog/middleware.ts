@@ -46,8 +46,7 @@ export function middleware(req: NextRequest) {
   // Silent sign-in check: page navigations only, for people, not crawlers.
   const isPage = req.method === "GET" && (req.headers.get("sec-fetch-dest") === "document" || (req.headers.get("accept") || "").includes("text/html")) && !req.headers.get("rsc");
   if (isPage && !req.cookies.get("ihern_blog_session") && !BOTS.test(req.headers.get("user-agent") || "")) {
-    const mainHost = hostOf(process.env.IHERN_SITE_URL);
-    const fromMain = mainHost !== "" && hostOf(req.headers.get("referer")) === mainHost && !req.cookies.get("ihern_sso_reprobe");
+    const fromMain = fromMainSite(req.headers.get("referer")) && !req.cookies.get("ihern_sso_reprobe");
     if (!req.cookies.get("ihern_sso_probed") || fromMain) {
       // Served in place (a rewrite, not a redirect): the sign-in route
       // answers this request with its redirect to the main site, and its
@@ -64,15 +63,28 @@ export function middleware(req: NextRequest) {
   return NextResponse.next();
 }
 
-function hostOf(u: string | null | undefined): string {
+/**
+ * Did the reader come from a main-site page? The two sites can share a host
+ * (iiitd.ac.in/IHERN and iiitd.ac.in/IHERN/blog), so the host alone is not
+ * enough: the page must be on the main site's path and not on the blog's own.
+ */
+function fromMainSite(referer: string | null): boolean {
   try {
-    return u ? new URL(u).host.toLowerCase() : "";
+    if (!referer || !process.env.IHERN_SITE_URL) return false;
+    const from = new URL(referer);
+    const main = new URL(process.env.IHERN_SITE_URL);
+    if (from.host.toLowerCase() !== main.host.toLowerCase()) return false;
+    const blogBase = (process.env.NEXT_PUBLIC_BASE_PATH || "").replace(/\/+$/, "");
+    if (blogBase && (from.pathname === blogBase || from.pathname.startsWith(blogBase + "/"))) return false;
+    return from.pathname.startsWith(main.pathname.replace(/\/+$/, "") || "/");
   } catch {
-    return "";
+    return false;
   }
 }
 
 export const config = {
   // Pages and the front-page query routes; not assets, uploads, the admin or APIs.
-  matcher: ["/((?!_next/|api/|admin|wp-content/|assets/|favicon|feed|sitemap|robots|.*\\.[a-z0-9]{2,5}$).*)"],
+  // "/" on its own too: under a base path (/IHERN/blog) the pattern below does
+  // not match the bare front page, where sign-in and old links arrive.
+  matcher: ["/", "/((?!_next/|api/|admin|wp-content/|assets/|favicon|feed|sitemap|robots|.*\\.[a-z0-9]{2,5}$).*)"],
 };

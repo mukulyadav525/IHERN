@@ -56,9 +56,9 @@ export function clients(): Record<string, Client> {
       // IHERN_SSO_BLOG_SECRET in the environment, the same value as the blog's
       // IHERN_SSO_CLIENT_SECRET. With nothing set, single sign-on stays off.
       secret: process.env.IHERN_SSO_BLOG_SECRET || (dev ? "local-development-secret-not-for-production" : ""),
-      redirectUris: ["https://ihernblog.iiitd.ac.in/?ihern_sso=callback", ...devRedirects],
+      redirectUris: ["https://iiitd.ac.in/IHERN/blog/?ihern_sso=callback", ...devRedirects],
       backchannelLogoutUri: blogUrl() + "/?ihern_sso=backchannel-logout",
-      postLogoutRedirectUris: ["https://ihernblog.iiitd.ac.in/", ...devLogouts],
+      postLogoutRedirectUris: ["https://iiitd.ac.in/IHERN/blog/", ...devLogouts],
     },
   };
 }

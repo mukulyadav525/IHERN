@@ -31,6 +31,6 @@ export function absoluteUrl(path = ""): string {
 
 /** The IHERN Blog's public address, no trailing slash (apps/blog). */
 export function blogUrl(): string {
-  const v = process.env.IHERN_BLOG_URL || (isDev() ? "http://localhost:3001" : "https://ihernblog.iiitd.ac.in");
+  const v = process.env.IHERN_BLOG_URL || (isDev() ? "http://localhost:3001" : "https://iiitd.ac.in/IHERN/blog");
   return v.replace(/\/+$/, "");
 }

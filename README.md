@@ -5,7 +5,7 @@ Both IHERN sites, in one repository, as two Next.js 15 apps (React 19, TypeScrip
 | App | Address | Replaces |
 |---|---|---|
 | `apps/main` | https://iiitd.ac.in/IHERN/ | the PHP website (`IHERN_New/main-site`) |
-| `apps/blog` | https://ihernblog.iiitd.ac.in/ | the WordPress blog (`IHERN_New/blog`) |
+| `apps/blog` | https://iiitd.ac.in/IHERN/blog | the WordPress blog (`IHERN_New/blog`) |
 | `packages/core` | — | shared code: database, IHERN accounts, subscriptions, blog content, mail |
 
 No PHP and no WordPress. Both apps use the existing MySQL databases (`cdnm`

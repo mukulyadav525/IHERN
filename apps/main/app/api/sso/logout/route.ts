@@ -7,7 +7,7 @@ import { BASE_PATH } from "@/lib/paths";
  * IHERN SSO - shared sign-out, served at /sso-logout.php (port of
  * sso-logout.php).
  *
- *   GET ?client_id=ihern-blog&post_logout_redirect_uri=https://ihernblog.iiitd.ac.in/
+ *   GET ?client_id=ihern-blog&post_logout_redirect_uri=https://iiitd.ac.in/IHERN/blog/
  *
  * Ends the IHERN session, so signing out on the blog signs the reader out of
  * the main website too. The blog has already ended its own session, so this
