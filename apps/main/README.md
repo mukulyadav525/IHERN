@@ -140,13 +140,9 @@ The app needs Node.js 22.12 or newer (Node 22 LTS) and the two MySQL databases.
    in. `NEXT_PUBLIC_BASE_PATH` and `IHERN_SITE_URL` are used at build time.
 3. **Build and run** from the repository root: `npm ci`, `npm run build`,
    then keep it running with `deploy/ecosystem.config.cjs` (pm2) or systemd.
-4. **Web server.** To take over `https://iiitd.ac.in/IHERN/`, build with
-   `NEXT_PUBLIC_BASE_PATH=/IHERN` and proxy that path to the app, e.g. Apache:
-   ```apache
-   ProxyPreserveHost On
-   ProxyPass        /IHERN http://127.0.0.1:3000/IHERN
-   ProxyPassReverse /IHERN http://127.0.0.1:3000/IHERN
-   ```
+4. **Web server.** The site is at the root of `https://ihern.iiitd.edu.in`
+   (`NEXT_PUBLIC_BASE_PATH` empty), the blog at `/blog` of the same address.
+   `deploy/apache.conf` has the Apache settings for both.
 5. **The blog.** `IHERN_BLOG_URL` here is the blog's address, and the blog's
    `IHERN_SSO_CLIENT_SECRET` must equal `IHERN_SSO_BLOG_SECRET` here.
 6. **Membership photographs** go to `IHERN_UPLOAD_DIR` (default `uploads/uploadDoc`,

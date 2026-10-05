@@ -65,7 +65,7 @@ export function middleware(req: NextRequest) {
 
 /**
  * Did the reader come from a main-site page? The two sites can share a host
- * (iiitd.ac.in/IHERN and iiitd.ac.in/IHERN/blog), so the host alone is not
+ * (ihern.iiitd.edu.in and ihern.iiitd.edu.in/blog), so the host alone is not
  * enough: the page must be on the main site's path and not on the blog's own.
  */
 function fromMainSite(referer: string | null): boolean {
@@ -84,7 +84,7 @@ function fromMainSite(referer: string | null): boolean {
 
 export const config = {
   // Pages and the front-page query routes; not assets, uploads, the admin or APIs.
-  // "/" on its own too: under a base path (/IHERN/blog) the pattern below does
+  // "/" on its own too: under a base path (/blog) the pattern below does
   // not match the bare front page, where sign-in and old links arrive.
   matcher: ["/", "/((?!_next/|api/|admin|wp-content/|assets/|favicon|feed|sitemap|robots|.*\\.[a-z0-9]{2,5}$).*)"],
 };

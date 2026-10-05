@@ -2,7 +2,7 @@
   "name": "@ihern/main",
   "version": "1.0.0",
   "private": true,
-  "description": "IHERN main website (iiitd.ac.in/IHERN)",
+  "description": "IHERN main website (ihern.iiitd.edu.in)",
   "scripts": {
     "dev": "next dev -p 3000",
     "build": "next build",

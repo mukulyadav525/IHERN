@@ -142,7 +142,7 @@ export default function Iherc2025Registration() {
                 </p>
                 <p className="iherc-notice" style={{ "fontWeight": "bold", "fontSize": "20px" }}>
                   Become an IHERN Member for FREE by filling out the{" "}
-                  <a href="https://iiitd.ac.in/IHERN/applications/register.php" target="_blank" style={{ "textDecoration": "underline", "color": "rgb(0, 0, 0)" }}>
+                  <a href={u("/join")} target="_blank" style={{ "textDecoration": "underline", "color": "rgb(0, 0, 0)" }}>
                     membership form.
                   </a>
                 </p>

@@ -4,8 +4,8 @@ Both IHERN sites, in one repository, as two Next.js 15 apps (React 19, TypeScrip
 
 | App | Address | Replaces |
 |---|---|---|
-| `apps/main` | https://iiitd.ac.in/IHERN/ | the PHP website (`IHERN_New/main-site`) |
-| `apps/blog` | https://iiitd.ac.in/IHERN/blog | the WordPress blog (`IHERN_New/blog`) |
+| `apps/main` | https://ihern.iiitd.edu.in | the PHP website (`IHERN_New/main-site`, was iiitd.ac.in/IHERN) |
+| `apps/blog` | https://ihern.iiitd.edu.in/blog | the WordPress blog (`IHERN_New/blog`, was ihernblog.iiitd.ac.in) |
 | `packages/core` | — | shared code: database, IHERN accounts, subscriptions, blog content, mail |
 
 No PHP and no WordPress. Both apps use the existing MySQL databases (`cdnm`
@@ -119,10 +119,10 @@ shell's: `pm2 show ihern-blog` lists it as "node.js version".
 1. `npm ci` then fill in `apps/main/.env.production.local` and
    `apps/blog/.env.production.local` from the `.env.example` files. The two
    SSO secrets must match (`IHERN_SSO_BLOG_SECRET` on the main site =
-   `IHERN_SSO_CLIENT_SECRET` on the blog). To serve the main site at
-   iiitd.ac.in/IHERN/, keep `NEXT_PUBLIC_BASE_PATH=/IHERN` in
-   `apps/main/.env.production.local`: it is needed when building and again
-   when starting (set only for the build, every page answers 404).
+   `IHERN_SSO_CLIENT_SECRET` on the blog). The main site is at the root of
+   https://ihern.iiitd.edu.in (`NEXT_PUBLIC_BASE_PATH` empty) and the blog at
+   /blog (`NEXT_PUBLIC_BASE_PATH=/blog` in `apps/blog/.env.production.local`:
+   it is needed when building and again when starting).
 2. `npm run db:schema`, then the WordPress migration (above), then add editors.
 3. `npm run build`.
 4. Keep both running: `deploy/ecosystem.config.cjs` (pm2) starts the main
@@ -166,10 +166,9 @@ Ten scripts in the PHP site's `applications/admin/` answer **without
 signing in**: the seven `export*.php` spreadsheets (members, applications,
 fees and payments), `delete_member.php` and `delete_memberD.php` (change an
 application's status), and `batch.php`, which also builds its SQL from the
-posted `program` value (SQL injection). Once Apache sends `/IHERN` to this
-app they are no longer reachable there (this app answers 404 for them), but
-until then, and through any other address that still serves the PHP files,
-they are open. Block or remove `applications/admin/` on the PHP server now
+posted `program` value (SQL injection). The new site does not serve them,
+but wherever the PHP files are still served (iiitd.ac.in/IHERN), they are
+open. Block or remove `applications/admin/` on the PHP server now
 (for example `Require all denied` for that directory), and remove the PHP
 site after the switch.
 

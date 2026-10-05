@@ -210,7 +210,7 @@ export default function Iherc2025Home() {
                 <div className="col-12" style={{ "padding": "0" }}>
                   <br />
                   <center>
-                    <a className="btn btn-common" href="https://iiitd.ac.in/IHERN/iherc report 2025-GK1812.pdf" target="_blank">
+                    <a className="btn btn-common" href={u("/iherc%20report%202025-GK1812.pdf")} target="_blank">
                       Report 2025
                     </a>
                   </center>

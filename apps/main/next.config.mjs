@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 
-// Serve the site from a sub-path (the PHP site lives at https://iiitd.ac.in/IHERN/)
-// by building with NEXT_PUBLIC_BASE_PATH=/IHERN. Empty = the domain root.
+// The site is at the root of https://ihern.iiitd.edu.in. To serve it from a
+// sub-path instead, build with NEXT_PUBLIC_BASE_PATH (e.g. /IHERN).
 const basePath = (process.env.NEXT_PUBLIC_BASE_PATH || "").replace(/\/+$/, "");
 
 // Every address the PHP site answered at keeps working: bookmarks, search

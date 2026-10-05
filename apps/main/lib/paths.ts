@@ -1,8 +1,8 @@
 /**
  * Paths to files in /public and to pages, with the deployment's base path.
  *
- * The site can be served from a sub-path (the PHP site lives at
- * https://iiitd.ac.in/IHERN/). next/link and redirect() add the base path on
+ * The site can be served from a sub-path (e.g. /IHERN; in production it is
+ * at the root of https://ihern.iiitd.edu.in). next/link and redirect() add the base path on
  * their own; plain <img src>, <a href> and <link href> do not, so they go
  * through u():
  *

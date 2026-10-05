@@ -15,12 +15,12 @@ export function isDev(): boolean {
 
 /**
  * The canonical address of the main IHERN site, with a trailing slash and
- * including any base path (https://iiitd.ac.in/IHERN/ by default). Used in
+ * including any base path (https://ihern.iiitd.edu.in/ by default). Used in
  * emails, canonical URLs and anywhere an absolute URL is unavoidable. Matches
  * IHERN_MAIN_SITE_URL / IHERN_SSO_BASE in the blog's wp-config.php.
  */
 export function siteUrl(): string {
-  const v = process.env.IHERN_SITE_URL || (isDev() ? "http://localhost:3000/" : "https://iiitd.ac.in/IHERN/");
+  const v = process.env.IHERN_SITE_URL || (isDev() ? "http://localhost:3000/" : "https://ihern.iiitd.edu.in/");
   return v.replace(/\/+$/, "") + "/";
 }
 
@@ -31,6 +31,6 @@ export function absoluteUrl(path = ""): string {
 
 /** The IHERN Blog's public address, no trailing slash (apps/blog). */
 export function blogUrl(): string {
-  const v = process.env.IHERN_BLOG_URL || (isDev() ? "http://localhost:3001" : "https://iiitd.ac.in/IHERN/blog");
+  const v = process.env.IHERN_BLOG_URL || (isDev() ? "http://localhost:3001" : "https://ihern.iiitd.edu.in/blog");
   return v.replace(/\/+$/, "");
 }

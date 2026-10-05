@@ -2,7 +2,7 @@
   "name": "@ihern/blog",
   "version": "1.0.0",
   "private": true,
-  "description": "IHERN Blog (iiitd.ac.in/IHERN/blog) - replaces the WordPress blog",
+  "description": "IHERN Blog (ihern.iiitd.edu.in/blog) - replaces the WordPress blog",
   "scripts": {
     "dev": "next dev -p 3001",
     "build": "next build",
