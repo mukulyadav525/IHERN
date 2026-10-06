@@ -1040,15 +1040,15 @@ a.back-to-top:hover{ background:var(--ihern-navy-deep, #02255a) !important; }
 .iherc-person-org{ font-size:14.5px; line-height:1.5; color:var(--ihern-body, #4a5266); }
 .iherc-person-place{ font-size:13.5px; line-height:1.5; color:var(--ihern-muted, #6b7280); margin-top:2px !important; }
 
-/* ---- Hero: the two actions side by side ---- */
+/* ---- Hero: the actions side by side, stacked on a phone ---- */
 .hero-actions{
   display:flex; flex-wrap:wrap; justify-content:center; gap:14px 16px;
   margin:28px 0 8px;
 }
 .hero-actions .btn{ margin:0 !important; min-width:220px; }
-@media (max-width:479.98px){
-  .hero-actions{ flex-wrap:nowrap; gap:10px; }
-  .hero-actions .btn{ flex:1 1 0; min-width:0; padding:12px 8px !important; font-size:12.5px !important; letter-spacing:.02em; white-space:nowrap; }
+@media (max-width:575.98px){
+  .hero-actions{ flex-direction:column; align-items:center; gap:10px; }
+  .hero-actions .btn{ width:100%; max-width:320px; min-width:0; }
 }
 
 /* ---- Fixed navbar: a solid white strip (content scrolls underneath) ---- */

@@ -61,6 +61,86 @@ li { list-style: none;}
           }
 `;
 
+type Person = { name: string; role: string; photo: string };
+type CommitteeMember = { name: string; org: string; place: string; photo?: string };
+
+const SPEAKER_IMG = "/iherc2026/assets/img/speaker/";
+const COMMITTEE_IMG = "/assets/images/team/committee/";
+
+/*
+ * The people on this page. Each section's heading follows its count
+ * ("Distinguished Speaker" for one, "Distinguished Speakers" for more), so
+ * adding or removing someone here is all an update needs.
+ */
+const KEYNOTE_SPEAKERS: Person[] = [
+  { name: "Prof. Ananya Mukherjee", role: "Vice-Chancellor, Shiv Nadar University", photo: SPEAKER_IMG + "ananya-mukherjee.jpg" },
+  { name: "Prof. Graeme Atherton", role: "Associate Pro-Vice-Chancellor (Regional Engagement), Vice-Principal, Ruskin College, University of West London", photo: SPEAKER_IMG + "Graeme%20Atherton.jpg" },
+  { name: "Prof. Simon Marginson", role: "Professor of Higher Education, Linacre College, University of Oxford", photo: SPEAKER_IMG + "Simon%20Marginson.jpg" },
+];
+
+const DISTINGUISHED_SPEAKERS: Person[] = [
+  { name: "Prof. Philip Altbach", role: "Professor Emeritus, Boston College", photo: SPEAKER_IMG + "Philip%20Altbach.jpg" },
+];
+
+const GENERAL_CHAIRS: Person[] = [
+  { name: "Prof. Fazal Rizvi", role: "University of Melbourne, Australia", photo: SPEAKER_IMG + "proffazal.jpg" },
+  { name: "Prof. N.V. Varghese", role: "National Institute of Educational Planning and Administration", photo: "/iherc2026/Varghese-Photo-1.jpg" },
+];
+
+const PROGRAM_CHAIRS: Person[] = [
+  { name: "Prof. Saumen Chattopadhyay", role: "Jawaharlal Nehru University", photo: SPEAKER_IMG + "Saumen-Chattopadhyay.jpg" },
+  { name: "Dr. Gwilym Croucher", role: "University of Melbourne, Australia", photo: SPEAKER_IMG + "dr-gwilym-croucher_.jpg" },
+];
+
+const PROGRAM_COMMITTEE: CommitteeMember[] = [
+  { name: "Camille B. Kandiko Howson", org: "Imperial College", place: "London, UK", photo: COMMITTEE_IMG + "camille-kandiko-howson.jpg" },
+  { name: "Debananda Misra", org: "Indian Institute of Technology Delhi", place: "India", photo: COMMITTEE_IMG + "debananda-misra.jpg" },
+  { name: "Emon Nandi", org: "Tata Institute of Social Sciences", place: "Mumbai, India", photo: COMMITTEE_IMG + "emon-nandi.jpg" },
+  { name: "Giulio Marini", org: "University of Catania", place: "Italy", photo: COMMITTEE_IMG + "giulio-marini.jpg" },
+  { name: "Malish C.M.", org: "Indian Institute of Technology Bombay", place: "India", photo: COMMITTEE_IMG + "malish-cm.jpg" },
+  { name: "Matthew A. Witenstein", org: "University of New Mexico", place: "USA", photo: COMMITTEE_IMG + "matthew-witenstein.jpg" },
+  { name: "Miguel Antonio Lim", org: "The University of Manchester", place: "UK", photo: COMMITTEE_IMG + "miguel-antonio-lim.jpg" },
+  { name: "Sayantan Mandal", org: "Jawaharlal Nehru University", place: "New Delhi, India", photo: COMMITTEE_IMG + "sayantan-mandal.jpg" },
+];
+
+/** "Keynote Speaker" for one person, "Keynote Speakers" for several. */
+const titled = (people: unknown[], singular: string) => (people.length === 1 ? singular : singular + "s");
+
+/** Initials for someone without a photograph ("Malish C.M." -> "MC"). */
+const initials = (name: string) => {
+  const words = name.replace(/\./g, " ").split(/\s+/).filter(Boolean);
+  return (words[0][0] + (words.length > 1 ? words[words.length - 1][0] : "")).toUpperCase();
+};
+
+function PeopleRow({ people, col }: { people: Person[]; col: string }) {
+  return (
+    <div className="row justify-content-center">
+      {people.map((p) => (
+        <div className={col} key={p.name}>
+          <div className="team-item wow fadeInUp" data-wow-delay="0.2s">
+            <div className="team-img">
+              <img className="img-fluid" src={u(p.photo)} alt={p.name} width="240" height="309" loading="lazy" decoding="async" />
+              <div className="team-overlay">
+                <div className="overlay-social-icon text-center"></div>
+              </div>
+            </div>
+            <div className="info-text">
+              <h3>
+                <a href="#">
+                  {p.name}
+                </a>
+              </h3>
+              <p>
+                {p.role}
+              </p>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function Iherc2026Home() {
   return (
     <>
@@ -141,6 +221,14 @@ export default function Iherc2026Home() {
                 <br />
                 {" "}Research Conference 2026
               </h2>
+              <h2 className="head-title" style={{ "fontSize": "30px" }}>
+                <i className="lni-map-marker"></i>
+                {" "}Indraprastha Institute of Information Technology Delhi
+              </h2>
+              <h2 className="head-title" style={{ "fontSize": "30px" }}>
+                <i className="lni-calendar"></i>
+                {" "}27-28 November 2026
+              </h2>
             </center>
             <br />
             <div className="hero-actions">
@@ -150,6 +238,10 @@ export default function Iherc2026Home() {
               {" "}
               <a className="btn btn-common" href="https://cmt3.research.microsoft.com/IHERC2026/Submission/Index" target="_blank" rel="noopener">
                 Abstract Submission
+              </a>
+              {" "}
+              <a className="btn btn-common" href={u("/iherc2026/registration")}>
+                Registration for IHERC 2026
               </a>
             </div>
             <section id="register" style={{ "padding": "0", "margin": "0" }}>
@@ -250,7 +342,7 @@ export default function Iherc2026Home() {
             <div className="col-12">
               <div className="section-title-header text-center">
                 <h2 className="section-title wow fadeInUp" data-wow-delay="0.2s">
-                  Keynote Speakers
+                  {titled(KEYNOTE_SPEAKERS, "Keynote Speaker")}
                 </h2>
               </div>
             </div>
@@ -258,68 +350,7 @@ export default function Iherc2026Home() {
           <div className="row justify-content-center">
             <div className="col-12">
               <div className="governance-content">
-                <div className="row">
-                  <div className="col-md-4">
-                    <div className="team-item wow fadeInUp" data-wow-delay="0.2s">
-                      <div className="team-img">
-                        <img className="img-fluid" src={u("/iherc2026/assets/img/speaker/profvramgopalrao.jpg")} alt="profvramgopalrao" width="240" height="309" loading="lazy" decoding="async" />
-                        <div className="team-overlay">
-                          <div className="overlay-social-icon text-center"></div>
-                        </div>
-                      </div>
-                      <div className="info-text">
-                        <h3>
-                          <a href="#">
-                            Prof. V. Ramgopal Rao
-                          </a>
-                        </h3>
-                        <p>
-                          Vice Chancellor, BITS Pilani, India
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-md-4">
-                    <div className="team-item wow fadeInUp" data-wow-delay="0.2s">
-                      <div className="team-img">
-                        <img className="img-fluid" src={u("/iherc2026/assets/img/speaker/proffazal.jpg")} alt="proffazal" width="240" height="309" loading="lazy" decoding="async" />
-                        <div className="team-overlay">
-                          <div className="overlay-social-icon text-center"></div>
-                        </div>
-                      </div>
-                      <div className="info-text">
-                        <h3>
-                          <a href="#">
-                            Prof. Fazal Rizvi
-                          </a>
-                        </h3>
-                        <p>
-                          Professor, University of Melbourne, Australia
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-md-4">
-                    <div className="team-item wow fadeInUp" data-wow-delay="0.2s">
-                      <div className="team-img">
-                        <img className="img-fluid" src={u("/iherc2026/assets/img/speaker/profabhay.jpg")} alt="proffazal" width="240" height="309" loading="lazy" decoding="async" />
-                        <div className="team-overlay">
-                          <div className="overlay-social-icon text-center"></div>
-                        </div>
-                      </div>
-                      <div className="info-text">
-                        <h3>
-                          <a href="#">
-                            Prof. Abhay Karandikar
-                          </a>
-                        </h3>
-                        <p>
-                          Secretary, Department of Science &amp; Technology (DST), Government of India
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <PeopleRow people={KEYNOTE_SPEAKERS} col="col-md-4" />
               </div>
               <hr />
             </div>
@@ -331,70 +362,9 @@ export default function Iherc2026Home() {
           <div className="row">
             <div className="col-12">
               <h4>
-                Distinguished Speakers
+                {titled(DISTINGUISHED_SPEAKERS, "Distinguished Speaker")}
               </h4>
-              <div className="row">
-                <div className="col-md-4">
-                  <div className="team-item wow fadeInUp" data-wow-delay="0.2s">
-                    <div className="team-img">
-                      <img className="img-fluid" src={u("/iherc2026/assets/img/speaker/Simon%20Marginson.jpg")} alt="Prof. Simon Marginson" width="240" height="309" loading="lazy" decoding="async" />
-                      <div className="team-overlay">
-                        <div className="overlay-social-icon text-center"></div>
-                      </div>
-                    </div>
-                    <div className="info-text">
-                      <h3>
-                        <a href="#">
-                          Prof. Simon Marginson
-                        </a>
-                      </h3>
-                      <p>
-                        Professor of Higher Education, Linacre College, University of Oxford
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div className="col-md-4">
-                  <div className="team-item wow fadeInUp" data-wow-delay="0.2s">
-                    <div className="team-img">
-                      <img className="img-fluid" src={u("/iherc2026/assets/img/speaker/Graeme%20Atherton.jpg")} alt="Prof. Graeme Atherton" width="240" height="309" loading="lazy" decoding="async" />
-                      <div className="team-overlay">
-                        <div className="overlay-social-icon text-center"></div>
-                      </div>
-                    </div>
-                    <div className="info-text">
-                      <h3>
-                        <a href="#">
-                          Prof. Graeme Atherton
-                        </a>
-                      </h3>
-                      <p>
-                        Associate Pro-Vice-Chancellor (Regional Engagement), Vice-Principal, Ruskin College, University of West London
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div className="col-md-4">
-                  <div className="team-item wow fadeInUp" data-wow-delay="0.2s">
-                    <div className="team-img">
-                      <img className="img-fluid" src={u("/iherc2026/assets/img/speaker/Philip%20Altbach.jpg")} alt="Prof. Philip Altbach" width="240" height="309" loading="lazy" decoding="async" />
-                      <div className="team-overlay">
-                        <div className="overlay-social-icon text-center"></div>
-                      </div>
-                    </div>
-                    <div className="info-text">
-                      <h3>
-                        <a href="#">
-                          Prof. Philip Altbach
-                        </a>
-                      </h3>
-                      <p>
-                        Professor Emeritus, Boston College
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <PeopleRow people={DISTINGUISHED_SPEAKERS} col="col-md-4" />
             </div>
           </div>
           <br />
@@ -412,96 +382,14 @@ export default function Iherc2026Home() {
             <div className="col-12">
               <div className="governance-content">
                 <h3>
-                  General Chairs
+                  {titled(GENERAL_CHAIRS, "General Chair")}
                 </h3>
-                <div className="row">
-                  <div className="col-md-6">
-                    <div className="team-item wow fadeInUp" data-wow-delay="0.2s">
-                      <div className="team-img">
-                        <img className="img-fluid" src={u("/iherc2026/assets/img/speaker/proffazal.jpg")} alt="Prof. Fazal Rizvi" width="240" height="309" loading="lazy" decoding="async" />
-                        <div className="team-overlay">
-                          <div className="overlay-social-icon text-center"></div>
-                        </div>
-                      </div>
-                      <div className="info-text">
-                        <h3>
-                          <a href="#">
-                            Prof. Fazal Rizvi
-                          </a>
-                        </h3>
-                        <p>
-                          University of Melbourne, Australia
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-md-6">
-                    <div className="team-item wow fadeInUp" data-wow-delay="0.2s">
-                      <div className="team-img">
-                        <img className="img-fluid" src={u("/iherc2026/Varghese-Photo-1.jpg")} alt="N.V. Varghese" width="240" height="309" />
-                        <div className="team-overlay">
-                          <div className="overlay-social-icon text-center"></div>
-                        </div>
-                      </div>
-                      <div className="info-text">
-                        <h3>
-                          <a href="#">
-                            Prof. N.V. Varghese
-                          </a>
-                        </h3>
-                        <p>
-                          National Institute of Educational Planning and Administration
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <PeopleRow people={GENERAL_CHAIRS} col="col-md-6" />
                 <hr />
                 <h3>
-                  Program Chairs
+                  {titled(PROGRAM_CHAIRS, "Program Chair")}
                 </h3>
-                <div className="row">
-                  <div className="col-md-6">
-                    <div className="team-item wow fadeInUp" data-wow-delay="0.2s">
-                      <div className="team-img">
-                        <img className="img-fluid" src={u("/iherc2026/assets/img/speaker/Saumen-Chattopadhyay.jpg")} alt="Prof. Saumen Chattopadhyay" width="240" height="309" loading="lazy" decoding="async" />
-                        <div className="team-overlay">
-                          <div className="overlay-social-icon text-center"></div>
-                        </div>
-                      </div>
-                      <div className="info-text">
-                        <h3>
-                          <a href="#">
-                            Prof. Saumen Chattopadhyay
-                          </a>
-                        </h3>
-                        <p>
-                          Jawaharlal Nehru University
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-md-6">
-                    <div className="team-item wow fadeInUp" data-wow-delay="0.2s">
-                      <div className="team-img">
-                        <img className="img-fluid" src={u("/iherc2026/assets/img/speaker/dr-gwilym-croucher_.jpg")} alt="Dr.Gwilym Croucher" width="240" height="309" loading="lazy" decoding="async" />
-                        <div className="team-overlay">
-                          <div className="overlay-social-icon text-center"></div>
-                        </div>
-                      </div>
-                      <div className="info-text">
-                        <h3>
-                          <a href="#">
-                            Dr.Gwilym Croucher
-                          </a>
-                        </h3>
-                        <p>
-                          University of Melbourne, Australia
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <PeopleRow people={PROGRAM_CHAIRS} col="col-md-6" />
               </div>
             </div>
           </div>
@@ -518,94 +406,26 @@ export default function Iherc2026Home() {
             </p>
           </div>
           <ul className="iherc-committee-grid">
-            <li className="iherc-person">
-              <img className="iherc-person-photo" src={u("/assets/images/team/committee/camille-kandiko-howson.jpg")} alt="Camille B. Kandiko Howson" width="300" height="300" loading="lazy" decoding="async" />
-              <h3 className="iherc-person-name">
-                Camille B. Kandiko Howson
-              </h3>
-              <p className="iherc-person-org">
-                Imperial College
-              </p>
-              <p className="iherc-person-place">
-                London, UK
-              </p>
-            </li>
-            <li className="iherc-person">
-              <img className="iherc-person-photo" src={u("/assets/images/team/committee/debananda-misra.jpg")} alt="Debananda Misra" width="300" height="300" loading="lazy" decoding="async" />
-              <h3 className="iherc-person-name">
-                Debananda Misra
-              </h3>
-              <p className="iherc-person-org">
-                Indian Institute of Technology Delhi
-              </p>
-              <p className="iherc-person-place">
-                India
-              </p>
-            </li>
-            <li className="iherc-person">
-              <img className="iherc-person-photo" src={u("/assets/images/team/committee/emon-nandi.jpg")} alt="Emon Nandi" width="300" height="300" loading="lazy" decoding="async" />
-              <h3 className="iherc-person-name">
-                Emon Nandi
-              </h3>
-              <p className="iherc-person-org">
-                Tata Institute of Social Sciences
-              </p>
-              <p className="iherc-person-place">
-                Mumbai, India
-              </p>
-            </li>
-            <li className="iherc-person">
-              <img className="iherc-person-photo" src={u("/assets/images/team/committee/giulio-marini.jpg")} alt="Giulio Marini" width="300" height="300" loading="lazy" decoding="async" />
-              <h3 className="iherc-person-name">
-                Giulio Marini
-              </h3>
-              <p className="iherc-person-org">
-                University of Catania
-              </p>
-              <p className="iherc-person-place">
-                Italy
-              </p>
-            </li>
-            <li className="iherc-person">
-              <span className="iherc-person-photo iherc-person-initials" aria-hidden="true">
-                MC
-              </span>
-              <h3 className="iherc-person-name">
-                Malish C.M.
-              </h3>
-              <p className="iherc-person-org">
-                Indian Institute of Technology Bombay
-              </p>
-              <p className="iherc-person-place">
-                India
-              </p>
-            </li>
-            <li className="iherc-person">
-              <span className="iherc-person-photo iherc-person-initials" aria-hidden="true">
-                MW
-              </span>
-              <h3 className="iherc-person-name">
-                Matthew A. Witenstein
-              </h3>
-              <p className="iherc-person-org">
-                University of New Mexico
-              </p>
-              <p className="iherc-person-place">
-                USA
-              </p>
-            </li>
-            <li className="iherc-person">
-              <img className="iherc-person-photo" src={u("/assets/images/team/committee/sayantan-mandal.jpg")} alt="Sayantan Mandal" width="300" height="300" loading="lazy" decoding="async" />
-              <h3 className="iherc-person-name">
-                Sayantan Mandal
-              </h3>
-              <p className="iherc-person-org">
-                Jawaharlal Nehru University
-              </p>
-              <p className="iherc-person-place">
-                New Delhi, India
-              </p>
-            </li>
+            {PROGRAM_COMMITTEE.map((m) => (
+              <li className="iherc-person" key={m.name}>
+                {m.photo ? (
+                  <img className="iherc-person-photo" src={u(m.photo)} alt={m.name} width="300" height="300" loading="lazy" decoding="async" />
+                ) : (
+                  <span className="iherc-person-photo iherc-person-initials" aria-hidden="true">
+                    {initials(m.name)}
+                  </span>
+                )}
+                <h3 className="iherc-person-name">
+                  {m.name}
+                </h3>
+                <p className="iherc-person-org">
+                  {m.org}
+                </p>
+                <p className="iherc-person-place">
+                  {m.place}
+                </p>
+              </li>
+            ))}
           </ul>
         </div>
       </section>

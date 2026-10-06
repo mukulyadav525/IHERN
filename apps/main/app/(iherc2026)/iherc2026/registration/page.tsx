@@ -17,6 +17,13 @@ li { list-style: none;}
          stylesheet. Navbar styling now lives in assets/css/ihern-brand.css. */
 `;
 
+/** Category, full registration amount, discounted rate (IHERN pays half). */
+const FEES: [string, string, string][] = [
+  ["IHERN Members", "Rs. 8000", "Rs. 4000"],
+  ["Non-IHERN members/faculty/researchers", "Rs. 12000", "\u2014"],
+  ["Students", "Rs. 3000", "Rs. 1500"],
+];
+
 export default function Iherc2026Registration() {
   return (
     <>
@@ -111,7 +118,7 @@ export default function Iherc2026Registration() {
               </h2>
               <h2 className="head-title" style={{ "fontSize": "30px" }}>
                 <i className="lni-map-marker"></i>
-                {" "}R&amp;D Building, IIIT-Delhi
+                {" "}Indraprastha Institute of Information Technology Delhi
               </h2>
               <h2 className="head-title" style={{ "fontSize": "30px" }}>
                 <i className="lni-calendar"></i>
@@ -130,10 +137,19 @@ export default function Iherc2026Registration() {
         <div className="container">
           <div className="row">
             <div className="col-12">
-              <div className="section-title-header text-center">
-                <p className="iherc-notice" style={{ "fontWeight": "bold", "fontSize": "20px" }}>
-                  IHERN members receive a 50% reduction on the registration fee for IHERC 2026.
+              <div className="about-text">
+                <p align="justify" style={{ "marginBottom": "16px" }}>
+                  We are pleased to invite you to register for the India Higher Education Research Conference (IHERC) 2026, organised by the India Higher Education Research Network (IHERN). The conference, centred on the theme &ldquo;Research into Practice and Practice into Research,&rdquo; will bring together researchers, faculty members, practitioners, policymakers and students to engage with emerging research, ideas and debates in higher education, in an Indian and global context. The conference will be held on 27-28 November 2026 at the Indraprastha Institute of Information Technology Delhi (IIIT-D), and will provide an important platform for sharing research, fostering scholarly exchange and strengthening the higher education research community.
                 </p>
+                <p align="justify" style={{ "marginBottom": "16px" }}>
+                  To encourage wider participation, IHERN is offering special discounted registration rates to IHERN members and students. For this year&apos;s conference, IHERN will cover 50% of the registration fee for the two categories, enabling them to register at the discounted rates listed below. Participants who are not currently IHERN members are encouraged to become IHERN members to avail themselves of the member discount. Non-IHERN members/faculty/researchers will be required to pay the full registration amount.
+                </p>
+                <p align="justify" style={{ "marginBottom": "16px" }}>
+                  Please note that you must compulsorily register to attend the conference. In case of papers that have multiple authors that are presenting, every presenter must be registered for the conference.
+                </p>
+              </div>
+              <br />
+              <div className="section-title-header text-center">
                 <p className="iherc-notice" style={{ "fontWeight": "bold", "fontSize": "20px" }}>
                   Become an IHERN Member for FREE by filling out the{" "}
                   <a href={u("/join")} target="_blank" style={{ "textDecoration": "underline", "color": "rgb(0, 0, 0)" }}>
@@ -143,6 +159,15 @@ export default function Iherc2026Registration() {
                 <p className="iherc-notice">
                   (Please note your membership number for future reference)
                 </p>
+                <section id="register" style={{ "padding": "0", "margin": "0" }}>
+                  <br />
+                  <center>
+                    <a className="btn btn-common" href="https://form.qfixonline.com/iherclink" target="_blank" rel="noopener">
+                      Payment link for IHERC 2026
+                    </a>
+                  </center>
+                  <br />
+                </section>
                 <h2 className="iherc-fee-title">
                   Registration fee
                 </h2>
@@ -151,62 +176,47 @@ export default function Iherc2026Registration() {
                     <tbody>
                       <tr>
                         <th>
-                          CATEGORY
+                          Category
                         </th>
                         <th>
-                          IHERN MEMBERS
+                          Registration Amount
                         </th>
                         <th>
-                          NON-IHERN MEMBERS
+                          Discounted Rate*
                         </th>
                       </tr>
-                      <tr>
-                        <td>
-                          Student
-                        </td>
-                        <td>
-                          1500*
-                        </td>
-                        <td>
-                          3000*
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          Faculty/Researcher
-                        </td>
-                        <td>
-                          4000*
-                        </td>
-                        <td>
-                          8000*
-                        </td>
-                      </tr>
+                      {FEES.map(([category, amount, discounted]) => (
+                        <tr key={category}>
+                          <td>
+                            {category}
+                          </td>
+                          <td>
+                            {amount}
+                          </td>
+                          <td>
+                            {discounted}
+                          </td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>
                 <p>
-                  <strong>
-                    *All fees are exclusive of 18% GST.
-                  </strong>
+                  Note: All fees are exclusive of 18% GST.
                 </p>
-                <section id="register" style={{ "padding": "0", "margin": "0" }}>
-                  <div className="row" style={{ "margin": "0" }}>
-                    <div className="col-12" style={{ "padding": "0" }}>
-                      <br />
-                      <center>
-                        <a className="btn btn-common" href="https://form.qfixonline.com/iiiddpof" target="_blank">
-                          Pay Here
-                        </a>
-                      </center>
-                      <br />
-                    </div>
-                  </div>
-                </section>
+                <br />
+                <p>
+                  *The discounted rates for IHERN members and students reflect the 50% contribution towards registration by IHERN for IHERC 2026.
+                </p>
+                <p>
+                  For any other information, please write to{" "}
+                  <a href="mailto:jeemut@iiitd.ac.in">
+                    jeemut@iiitd.ac.in
+                  </a>
+                </p>
               </div>
             </div>
           </div>
-          <div className="row"></div>
         </div>
       </section>
       </main>
