@@ -97,19 +97,7 @@ export default function Iherc2026Registration() {
             <br />
             <br />
             <br />
-            <div className="row intro-wrapper">
-              <div className="col-lg-2 col-md-6 col-xs-12">
-                <div>
-                  <img src={u("/iherc2026/assets/img/SRHE_blue_bg-removebg-preview.png")} alt="Society for Research into Higher Education" style={{ "width": "79%", "paddingTop": "32px" }} />
-                </div>
-              </div>
-              <div className="col-lg-8 col-md-6 col-xs-12"></div>
-              <div className="col-lg-2 col-md-6 col-xs-12">
-                <div>
-                  <img src={u("/iherc2026/assets/img/IHERN.png")} alt="India Higher Education Research Network" style={{ "width": "79%", "paddingTop": "32px" }} />
-                </div>
-              </div>
-            </div>
+            <div className="row intro-wrapper"></div>
             <center>
               <h2 className="head-title" style={{ "fontSize": "60px" }}>
                 India Higher Education
