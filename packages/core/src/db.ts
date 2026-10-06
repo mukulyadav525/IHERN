@@ -47,13 +47,16 @@ const QUERY_TIMEOUT_MS = Math.max(1000, Number(process.env.IHERN_DB_QUERY_TIMEOU
 
 function config(which: DbName): mysql.PoolOptions | null {
   const key = which.toUpperCase();
-  const host = process.env.IHERN_DB_HOST;
+  const socketPath = process.env.IHERN_DB_SOCKET || undefined;
+  // A socket alone is enough: the host is then not used.
+  const host = process.env.IHERN_DB_HOST || (socketPath ? "localhost" : undefined);
   const database = process.env[`IHERN_DB_${key}_NAME`] || which;
   const user = process.env[`IHERN_DB_${key}_USER`];
   const password = process.env[`IHERN_DB_${key}_PASS`];
 
-  // Without host/user/password we cannot connect. Returning null lets callers
-  // show an honest "service unavailable" state instead of inventing data.
+  // Without a host (or socket), user and password we cannot connect. Returning
+  // null lets callers show an honest "service unavailable" state instead of
+  // inventing data.
   if (!host || !user || password === undefined) return null;
 
   return {
@@ -61,7 +64,7 @@ function config(which: DbName): mysql.PoolOptions | null {
     // Optional: a non-standard port, or the server's Unix socket (what PHP's
     // "localhost" uses) when TCP is not enabled.
     port: process.env.IHERN_DB_PORT ? Number(process.env.IHERN_DB_PORT) : undefined,
-    socketPath: process.env.IHERN_DB_SOCKET || undefined,
+    socketPath,
     user,
     password,
     database,
@@ -85,7 +88,7 @@ export function getPool(which: DbName): mysql.Pool | null {
   const cfg = config(which);
   if (!cfg) {
     console.warn(
-      `[IHERN] Database "${which}" is not configured. Set IHERN_DB_HOST and ` +
+      `[IHERN] Database "${which}" is not configured. Set IHERN_DB_HOST (or IHERN_DB_SOCKET) and ` +
         `IHERN_DB_${which.toUpperCase()}_USER / _PASS (see .env.example).`
     );
     pools.set(which, null);
