@@ -8,6 +8,12 @@
  *
  * Settings come from each app's .env.production.local.
  *
+ * Ports: 3000 (main site) and 3001 (blog) unless IHERN_MAIN_PORT /
+ * IHERN_BLOG_PORT are set when starting - for a server where those are taken.
+ * Apache must send traffic to the same ports (deploy/apache.conf):
+ *
+ *   IHERN_MAIN_PORT=3100 IHERN_BLOG_PORT=3101 pm2 start deploy/ecosystem.config.cjs
+ *
  * ONE process per site (fork mode, one instance): each keeps its page cache
  * and sign-in rate limits in memory, so several processes per site (cluster
  * mode, -i max) would each hold their own and disagree. Do not scale with -i.
@@ -20,6 +26,9 @@ const path = require("path");
 // Absolute paths: pm2 resolves a relative cwd against the directory it is run
 // from, so "./apps/main" only worked when started from the repository root.
 const app = (name) => path.join(__dirname, "..", "apps", name);
+const port = (v, fallback) => (/^\d{2,5}$/.test(String(v || "")) ? String(v) : fallback);
+const MAIN_PORT = port(process.env.IHERN_MAIN_PORT, "3000");
+const BLOG_PORT = port(process.env.IHERN_BLOG_PORT, "3001");
 
 module.exports = {
   apps: [
@@ -29,7 +38,7 @@ module.exports = {
       instances: 1,
       cwd: app("main"),
       script: "../../node_modules/next/dist/bin/next",
-      args: "start -p 3000 -H 127.0.0.1",
+      args: `start -p ${MAIN_PORT} -H 127.0.0.1`,
       interpreter: "node",
       env: { NODE_ENV: "production" },
       // Node's heap is capped below pm2's restart limit, so under heavy traffic
@@ -46,7 +55,7 @@ module.exports = {
       instances: 1,
       cwd: app("blog"),
       script: "../../node_modules/next/dist/bin/next",
-      args: "start -p 3001 -H 127.0.0.1",
+      args: `start -p ${BLOG_PORT} -H 127.0.0.1`,
       interpreter: "node",
       env: { NODE_ENV: "production" },
       // Node's heap is capped below pm2's restart limit, so under heavy traffic
