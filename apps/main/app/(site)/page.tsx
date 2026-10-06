@@ -96,7 +96,7 @@ export default async function HomePage() {
                       . As of now, the membership fee is waived.
                     </p>
                     <p align="justify">
-                      Nomination for Fellowship for 2025 for members will open shortly. All members will be informed about it and the process via email.
+                      Nomination for Fellowship for 2026 for members will open shortly. All members will be informed about it and the process via email.
                     </p>
                     <div className="btn-part mt-45 md-mt-30">
                       <a className="readon consultant discover" href={u("/join")}>
