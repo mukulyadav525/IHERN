@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { pageMeta } from "@/lib/seo";
 import { u } from "@/lib/paths";
+import RegistrationDesk from "@/components/iherc/RegistrationDesk";
+import { FEE_ORDER, FEES, rupees } from "@/lib/iherc-fees";
 
 export const metadata: Metadata = pageMeta(
   "iherc2026/registration",
@@ -16,13 +18,6 @@ li { list-style: none;}
          laying the navigation out as ruby annotation text and beat every
          stylesheet. Navbar styling now lives in assets/css/ihern-brand.css. */
 `;
-
-/** Category, full registration amount, discounted rate (IHERN pays half). */
-const FEES: [string, string, string][] = [
-  ["IHERN Members", "Rs. 8000", "Rs. 4000"],
-  ["Non-IHERN members/faculty/researchers", "Rs. 12000", "\u2014"],
-  ["Students", "Rs. 3000", "Rs. 1500"],
-];
 
 export default function Iherc2026Registration() {
   return (
@@ -166,16 +161,16 @@ export default function Iherc2026Registration() {
                     </tr>
                   </thead>
                   <tbody>
-                    {FEES.map(([category, amount, discounted]) => (
-                      <tr key={category}>
+                    {FEE_ORDER.map((c) => (
+                      <tr key={c}>
                         <td>
-                          {category}
+                          {FEES[c].label}
                         </td>
                         <td>
-                          {amount}
+                          {rupees(FEES[c].amount)}
                         </td>
                         <td>
-                          {discounted}
+                          {FEES[c].discounted === null ? "\u2014" : rupees(FEES[c].discounted)}
                         </td>
                       </tr>
                     ))}
@@ -191,17 +186,15 @@ export default function Iherc2026Registration() {
                 </li>
               </ul>
             </div>
-            <div className="iherc-reg-pay" id="register">
-              <a className="btn btn-common" href="https://form.qfixonline.com/iherclink" target="_blank" rel="noopener">
-                Payment link for IHERC 2026
-              </a>
-              <p className="iherc-reg-muted">
-                For any other information, please write to{" "}
-                <a href="mailto:jeemut@iiitd.ac.in">
-                  jeemut@iiitd.ac.in
-                </a>
-              </p>
+            <div id="register">
+              <RegistrationDesk />
             </div>
+            <p className="iherc-reg-muted iherc-reg-contact">
+              For any other information, please write to{" "}
+              <a href="mailto:jeemut@iiitd.ac.in">
+                jeemut@iiitd.ac.in
+              </a>
+            </p>
           </div>
         </div>
       </section>

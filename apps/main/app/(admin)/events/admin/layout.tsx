@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import EventsNav from "@/components/admin/EventsNav";
 import { AdminGate, AdminShell, type AdminLink } from "@ihern/core/ui/AdminFrame";
-import { isBlogEditor } from "@ihern/core/roles";
+import { isBlogEditor, isIhercEditor } from "@ihern/core/roles";
 import { blogUrl } from "@ihern/core/env";
 import { currentEventsUser } from "@/lib/events-admin";
 import { u } from "@/lib/paths";
@@ -48,7 +48,9 @@ export default async function EventsAdminLayout({ children }: { children: React.
   }
   const links = [...LINKS];
   if (who.membershipAdmin) links.push({ label: "Membership admin", href: u("/membership/admin") });
-  if (await isBlogEditor(who.email)) links.push({ label: "Blog admin", href: `${blogUrl()}/admin` });
+  const [blogEditor, ihercEditor] = await Promise.all([isBlogEditor(who.email), isIhercEditor(who.email)]);
+  if (ihercEditor) links.push({ label: "IHERC admin", href: u("/iherc2026/admin") });
+  if (blogEditor) links.push({ label: "Blog admin", href: `${blogUrl()}/admin` });
   return (
     <AdminShell
       section="Events admin"

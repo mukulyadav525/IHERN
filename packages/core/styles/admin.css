@@ -261,6 +261,16 @@ a.adm-stat:hover{ border-color:rgba(3,59,134,.3); box-shadow:var(--ihern-shadow-
 .adm-badge{ margin-left:8px; }
 .adm-status.is-on{ background:var(--ihern-ok-bg); color:var(--ihern-ok); }
 .adm-status.is-off{ background:#f1f2f5; color:#4b5563; }
+.adm-status.is-warn{ background:#fff4dc; color:#7a4b00; }
+.adm-status.is-bad{ background:#fdecec; color:#9b1c1c; }
+.iherc-adm-note{ max-width:42ch; margin-top:4px; }
+.iherc-adm-who{ min-width:240px; }
+.iherc-raw{ display:flex; flex-direction:column; gap:12px; margin:0; }
+.iherc-raw > div{ display:flex; flex-direction:column; gap:2px; padding-bottom:10px; border-bottom:1px solid var(--ihern-line); }
+.iherc-raw > div:last-child{ border-bottom:0; padding-bottom:0; }
+.iherc-raw dt{ font-size:12.5px; line-height:1.45; color:var(--ihern-muted); }
+.iherc-raw dd{ margin:0; font-size:14px; color:var(--ihern-ink); overflow-wrap:anywhere; }
+@media (max-width:860px){ .iherc-adm-who{ min-width:0; } }
 
 /* ---- messages: the sign-in page's alerts / the blog's notices ----------- */
 .adm-flash{ padding:11px 14px; border-radius:var(--ihern-radius-sm); margin:0; font-size:14px; border:1px solid transparent; }

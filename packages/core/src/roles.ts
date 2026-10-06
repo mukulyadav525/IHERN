@@ -8,6 +8,7 @@ import { isConfigured, query } from "./db";
  *   blog editor        the email is in cdnm.blog_editors
  *   membership admin   an active ihern2024.adminlogin row has the email
  *   events admin       the email is in cdnm.event_editors, or is a membership admin
+ *   IHERC admin        the email is in cdnm.iherc_editors, or is a membership admin
  *
  * A database that is not configured or not reachable reads as "no".
  */
@@ -27,6 +28,14 @@ export async function isMembershipAdmin(email: string): Promise<boolean> {
 export async function isEventEditor(email: string): Promise<boolean> {
   if (isConfigured("cdnm")) {
     const rows = await query("cdnm", "SELECT 1 FROM event_editors WHERE LOWER(email) = ? AND active = 1 LIMIT 1", [email.toLowerCase()]);
+    if (rows?.length) return true;
+  }
+  return isMembershipAdmin(email);
+}
+
+export async function isIhercEditor(email: string): Promise<boolean> {
+  if (isConfigured("cdnm")) {
+    const rows = await query("cdnm", "SELECT 1 FROM iherc_editors WHERE LOWER(email) = ? AND active = 1 LIMIT 1", [email.toLowerCase()]);
     if (rows?.length) return true;
   }
   return isMembershipAdmin(email);

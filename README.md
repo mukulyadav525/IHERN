@@ -34,7 +34,24 @@ and time, mode and venue, a joining link, other links and uploaded posters.
 Draft or live, duplicate, trash; one email per event to every active member.
 Membership admins can always use it; others are added by email.
 
-**Admin access** of every kind (blog, events, membership) is given only to
+**IHERC 2026 registration** (`/iherc2026/registration`): the fee is paid on the
+finance department's payment form (form.qfixonline.com), which this site can
+neither change nor fill in. So "Register and pay" asks who is paying first.
+IHERN members confirm their membership (signed in, membership number, or
+email + mobile; a number alone shows only their name and number) and get
+their details, field by field with copy buttons, and the exact amount
+including GST; students and others get their amount too. The fees are in
+`apps/main/lib/iherc-fees.ts`, the one place to change them.
+
+**IHERC admin** (`/iherc2026/admin`): finance's list of payments (Excel .xlsx
+or CSV, as downloaded) is imported and every payment checked against the
+member list and the fees: OK, balance due (e.g. paid the member rate without
+being a member), check, or not paid. Balance requests are emailed one by one
+or all at once; payments can be noted and marked sorted out; CSV download;
+imports can be undone. "Members confirmed" lists who confirmed their
+membership on the registration page. Same access rules as the events admin.
+
+**Admin access** of every kind (blog, events, IHERC, membership) is given only to
 IHERN members (an active registration with that email), who are emailed
 about it. Deactivating or removing an admin sends no email.
 An admin signed in to their IHERN account goes straight in once the account

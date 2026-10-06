@@ -4,7 +4,7 @@ import SiteFooter from "@/components/SiteFooter";
 import ScrollUp from "@/components/ScrollUp";
 import { initials, readSession } from "@/lib/auth";
 import { blogUrl, siteUrl } from "@ihern/core/env";
-import { isBlogEditor, isEventEditor, isMember, isMembershipAdmin } from "@ihern/core/roles";
+import { isBlogEditor, isEventEditor, isIhercEditor, isMember, isMembershipAdmin } from "@ihern/core/roles";
 import { css, u } from "@/lib/paths";
 
 /**
@@ -48,16 +48,18 @@ export default async function SiteDocument({ children }: { children: React.React
   let account: HeaderAccount = null;
   if (session) {
     // Small lookups, only for signed-in readers: which admin areas to offer.
-    const [blogEditor, membershipAdmin, eventEditor, member] = await Promise.all([
+    const [blogEditor, membershipAdmin, eventEditor, ihercEditor, member] = await Promise.all([
       isBlogEditor(session.email),
       isMembershipAdmin(session.email),
       isEventEditor(session.email),
+      isIhercEditor(session.email),
       isMember(session.email),
     ]);
     const admin = [];
     if (blogEditor) admin.push({ label: "Blog admin", href: `${blogUrl()}/admin` });
     if (membershipAdmin) admin.push({ label: "Membership admin", href: u("/membership/admin") });
     if (eventEditor) admin.push({ label: "Events admin", href: u("/events/admin") });
+    if (ihercEditor) admin.push({ label: "IHERC admin", href: u("/iherc2026/admin") });
     account = {
       initials: initials(session.name, session.email),
       name: session.name,

@@ -333,3 +333,27 @@ export function sendAdminAccessGranted(email: string, name: string, area: string
       SIGNATURE,
   });
 }
+
+/** IHERC: a payment below the fee for the payer's category. */
+export type IhercBalanceMail = { name: string; email: string; paid: string; due: string; balance: string; reason: string; ref: string; payLink: string; page: string };
+
+/** "A balance is due on your IHERC registration": the reason, the amounts and how to pay. */
+export function sendIhercBalanceRequest(m: IhercBalanceMail): Promise<boolean> {
+  return send({
+    to: m.email,
+    from: MEMBERSHIP_FROM,
+    replyTo: IHERN_MAILBOX,
+    subject: "IHERC 2026 registration: balance due",
+    text:
+      `Dear ${firstName(m.name)},\n\n` +
+      "Thank you for registering for the India Higher Education Research Conference (IHERC) 2026.\n\n" +
+      `${m.reason}\n\n` +
+      `Paid: ${m.paid}${m.ref ? ` (payment reference ${m.ref})` : ""}\n` +
+      `Registration fee for your category: ${m.due}\n` +
+      `Balance due: ${m.balance} (all amounts include 18% GST)\n\n` +
+      `Please pay the balance using the IHERC 2026 payment form, entering ${m.balance} as the amount:\n${m.payLink}\n\n` +
+      "If you are an IHERN member, please reply to this email with your membership number instead, and we will check it. " +
+      `IHERN membership is free: ${m.page}\n\n` +
+      SIGNATURE,
+  });
+}

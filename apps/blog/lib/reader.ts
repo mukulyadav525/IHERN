@@ -1,6 +1,6 @@
 import { cache } from "react";
 import { initials } from "@ihern/core/text";
-import { isEventEditor, isMember, isMembershipAdmin } from "@ihern/core/roles";
+import { isEventEditor, isIhercEditor, isMember, isMembershipAdmin } from "@ihern/core/roles";
 import type { AccountMenuData } from "@ihern/core/ui/AccountMenu";
 import { u } from "./paths";
 import { readReaderState, type Reader } from "./session";
@@ -27,9 +27,10 @@ export const headerAccount = cache(async (): Promise<AccountMenuData | null> => 
   const { reader } = state;
   const admin = [];
   if (state.editor) admin.push({ label: "Blog admin", href: u("/admin") });
-  const [membershipAdmin, eventEditor, member] = await Promise.all([isMembershipAdmin(reader.email), isEventEditor(reader.email), isMember(reader.email)]);
+  const [membershipAdmin, eventEditor, ihercEditor, member] = await Promise.all([isMembershipAdmin(reader.email), isEventEditor(reader.email), isIhercEditor(reader.email), isMember(reader.email)]);
   if (membershipAdmin) admin.push({ label: "Membership admin", href: mainUrl("membership/admin") });
   if (eventEditor) admin.push({ label: "Events admin", href: mainUrl("events/admin") });
+  if (ihercEditor) admin.push({ label: "IHERC admin", href: mainUrl("iherc2026/admin") });
   return {
     initials: initials(reader.name, reader.email),
     name: reader.name,

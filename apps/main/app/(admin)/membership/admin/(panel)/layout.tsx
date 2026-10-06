@@ -27,8 +27,9 @@ export default async function PanelLayout({ children }: { children: React.ReactN
     );
   }
   const links = (await isBlogEditor(who.email)) ? [...LINKS, { label: "Blog admin", href: `${blogUrl()}/admin` }] : [...LINKS];
-  // Membership admins can always use the events admin (with their IHERN account).
+  // Membership admins can always use the events and IHERC admins (with their IHERN account).
   links.push({ label: "Events admin", href: u("/events/admin") });
+  links.push({ label: "IHERC admin", href: u("/iherc2026/admin") });
   return (
     <AdminShell
       section="Membership admin"

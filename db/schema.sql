@@ -258,3 +258,86 @@ CREATE TABLE IF NOT EXISTS `event_editors` (
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   UNIQUE KEY `uniq_event_editor_email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ---------------------------------------------------------------------------
+-- IHERC registrations and payments (the IHERC admin, /iherc2026/admin).
+--
+-- The fee is paid on the finance department's form (form.qfixonline.com),
+-- which this site cannot change or read. So: the registration page confirms a
+-- member before they pay (and tells them exactly what to enter), and the
+-- payments list finance hands over is imported here and checked against the
+-- member list.
+-- ---------------------------------------------------------------------------
+
+-- Who may use the IHERC admin (membership admins always may).
+CREATE TABLE IF NOT EXISTS `iherc_editors` (
+  `id`         INT AUTO_INCREMENT PRIMARY KEY,
+  `email`      VARCHAR(190) NOT NULL,
+  `role`       ENUM('admin','editor') NOT NULL DEFAULT 'editor',
+  -- 0: deactivated (kept on the list, no access)
+  `active`     TINYINT(1) NOT NULL DEFAULT 1,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY `uniq_iherc_editor_email` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Members confirmed on the registration page before paying: who, how
+-- (signed in / membership number / email and phone) and the amount shown.
+CREATE TABLE IF NOT EXISTS `iherc_checks` (
+  `id`            INT AUTO_INCREMENT PRIMARY KEY,
+  `member_id`     INT NOT NULL,
+  `membership_no` VARCHAR(40) NOT NULL,
+  `name`          VARCHAR(190) NOT NULL DEFAULT '',
+  `email`         VARCHAR(190) NOT NULL DEFAULT '',
+  `method`        ENUM('account','number','email-phone') NOT NULL,
+  `amount`        INT NOT NULL,
+  `checks`        INT NOT NULL DEFAULT 1,
+  `first_at`      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `last_at`       DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY `uniq_iherc_check_member` (`member_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- One import of finance's payments list (to see it, or undo it).
+CREATE TABLE IF NOT EXISTS `iherc_imports` (
+  `id`          INT AUTO_INCREMENT PRIMARY KEY,
+  `file_name`   VARCHAR(190) NOT NULL DEFAULT '',
+  `rows_added`  INT NOT NULL DEFAULT 0,
+  `rows_known`  INT NOT NULL DEFAULT 0,
+  `imported_by` VARCHAR(190) NOT NULL DEFAULT '',
+  `imported_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- The payments, as finance's list has them. The check (member? right
+-- amount?) is worked out when the list is shown, against the member list as
+-- it is then; only what an admin decides is stored (resolved, a note, when
+-- the balance was asked for).
+CREATE TABLE IF NOT EXISTS `iherc_payments` (
+  `id`              INT AUTO_INCREMENT PRIMARY KEY,
+  `import_id`       INT NOT NULL,
+  -- the payment's own reference (transaction / order number), when the list has one
+  `ref`             VARCHAR(120) NULL DEFAULT NULL,
+  -- the same payment imported twice is recognised by this (ref, or the row's contents)
+  `fingerprint`     CHAR(64) NOT NULL,
+  `paid_at`         DATETIME NULL DEFAULT NULL,
+  `name`            VARCHAR(190) NOT NULL DEFAULT '',
+  `email`           VARCHAR(190) NOT NULL DEFAULT '',
+  `phone`           VARCHAR(60) NOT NULL DEFAULT '',
+  `category`        VARCHAR(120) NOT NULL DEFAULT '',
+  `says_member`     VARCHAR(40) NOT NULL DEFAULT '',
+  `membership_no`   VARCHAR(80) NOT NULL DEFAULT '',
+  `designation`     VARCHAR(190) NOT NULL DEFAULT '',
+  `affiliation`     VARCHAR(255) NOT NULL DEFAULT '',
+  `gst_no`          VARCHAR(60) NOT NULL DEFAULT '',
+  `paper_no`        VARCHAR(120) NOT NULL DEFAULT '',
+  `dinner`          VARCHAR(40) NOT NULL DEFAULT '',
+  `amount`          DECIMAL(10,2) NULL DEFAULT NULL,
+  `pay_status`      VARCHAR(60) NOT NULL DEFAULT '',
+  -- the whole row as imported, heading -> value
+  `raw`             TEXT,
+  `resolved`        TINYINT(1) NOT NULL DEFAULT 0,
+  `note`            VARCHAR(500) NOT NULL DEFAULT '',
+  `balance_asked_at` DATETIME NULL DEFAULT NULL,
+  `updated_by`      VARCHAR(190) NOT NULL DEFAULT '',
+  UNIQUE KEY `uniq_iherc_payment` (`fingerprint`),
+  KEY `idx_iherc_payment_import` (`import_id`),
+  KEY `idx_iherc_payment_email` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
