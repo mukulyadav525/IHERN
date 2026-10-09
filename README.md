@@ -151,6 +151,27 @@ Run **one process per site** (as the pm2 file does). Each keeps its cache and
 its sign-in rate limits in memory; several processes per site would each keep
 their own.
 
+### Preview without Apache (a public link)
+
+Until the web server sends traffic to the apps, a Cloudflare quick tunnel gives
+the running site a temporary public https address (free, no account, no sudo;
+the server only connects out). `deploy/proxy.cjs` puts both apps behind one
+port for it:
+
+```bash
+mkdir -p ~/bin && curl -L -o ~/bin/cloudflared https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 && chmod +x ~/bin/cloudflared
+BIND=127.0.0.1 PROTO=https PORT=3300 MAIN_PORT=3100 BLOG_PORT=3101 pm2 start deploy/proxy.cjs --name ihern-proxy
+pm2 start ~/bin/cloudflared --name ihern-tunnel -- tunnel --no-autoupdate --protocol http2 --url http://127.0.0.1:3300
+pm2 logs ihern-tunnel --lines 30 --nostream | grep -o 'https://[a-z0-9-]*\.trycloudflare\.com'
+```
+
+Then set `IHERN_SITE_URL` (with a trailing `/`) and `IHERN_BLOG_URL` (ending
+`/blog`) in **both** `.env.production.local` files to that address, run
+`npm run build` (the blog keeps `IHERN_SITE_URL` from the build) and
+`pm2 restart ihern-main ihern-blog`. The address changes whenever the tunnel
+restarts; repeat this step then. When Apache is ready: `pm2 delete ihern-tunnel
+ihern-proxy && pm2 save`, put the real addresses back, build and restart.
+
 After the switch, WordPress and the whole PHP site (admin panel included) can be switched off. Keep a copy
 of the WordPress database tables and uploads until you are satisfied.
 
