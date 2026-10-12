@@ -30,6 +30,17 @@ const port = (v, fallback) => (/^\d{2,5}$/.test(String(v || "")) ? String(v) : f
 const MAIN_PORT = port(process.env.IHERN_MAIN_PORT, "3000");
 const BLOG_PORT = port(process.env.IHERN_BLOG_PORT, "3001");
 
+// Listen as "localhost", resolved to 127.0.0.1 (IPv4 first): this machine
+// only, at the address Apache forwards to. Not "-H 127.0.0.1": Next gives the
+// middleware the address http(s)://localhost:<port>, and when that differs from
+// the -H address it takes the middleware's rewrites (the blog's sign-in
+// callback, old WordPress links) for another site and fetches them - over
+// https behind Apache (X-Forwarded-Proto), which fails: "Internal Server
+// Error" on signing in to the blog. Without ipv4first, "localhost" can become
+// ::1, which Apache (127.0.0.1) cannot reach.
+const HOST = "localhost";
+const NODE_ARGS = "--max-old-space-size=768 --dns-result-order=ipv4first";
+
 module.exports = {
   apps: [
     {
@@ -38,7 +49,7 @@ module.exports = {
       instances: 1,
       cwd: app("main"),
       script: "../../node_modules/next/dist/bin/next",
-      args: `start -p ${MAIN_PORT} -H 127.0.0.1`,
+      args: `start -p ${MAIN_PORT} -H ${HOST}`,
       interpreter: "node",
       env: { NODE_ENV: "production" },
       // Node's heap is capped below pm2's restart limit, so under heavy traffic
@@ -46,7 +57,7 @@ module.exports = {
       // restarted mid-peak (measured: without the cap the blog passed 1 GB at
       // ~500 requests/s and pm2 restarted it). max_memory_restart stays as the
       // safety net for a real leak; idle, a process falls back to ~150 MB.
-      node_args: "--max-old-space-size=768",
+      node_args: NODE_ARGS,
       max_memory_restart: "1G",
     },
     {
@@ -55,7 +66,7 @@ module.exports = {
       instances: 1,
       cwd: app("blog"),
       script: "../../node_modules/next/dist/bin/next",
-      args: `start -p ${BLOG_PORT} -H 127.0.0.1`,
+      args: `start -p ${BLOG_PORT} -H ${HOST}`,
       interpreter: "node",
       env: { NODE_ENV: "production" },
       // Node's heap is capped below pm2's restart limit, so under heavy traffic
@@ -63,7 +74,7 @@ module.exports = {
       // restarted mid-peak (measured: without the cap the blog passed 1 GB at
       // ~500 requests/s and pm2 restarted it). max_memory_restart stays as the
       // safety net for a real leak; idle, a process falls back to ~150 MB.
-      node_args: "--max-old-space-size=768",
+      node_args: NODE_ARGS,
       max_memory_restart: "1G",
     },
   ],
